@@ -132,7 +132,7 @@ export default function About() {
                 My first build was an ASUS with 4GBs of DDR2 RAM. A caveman that thing is these days.
               </p>
               <p>
-                Taking classes and becoming more aware advancements in technology. At 15 I had been taking a computer class
+                Taking classes and becoming more aware with the advancements in technology. At 15 I had been taking a computer class
                 that only a few kids got allowed to take. Excited, I learned about HTML, CSS, and JS along with how it
                 works on the computer itself going down to assembly code.
                 I had built a Facebook clone single page showcasing myself, my future career, and why.
