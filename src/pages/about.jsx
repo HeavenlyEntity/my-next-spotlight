@@ -129,7 +129,7 @@ export default function About() {
               <p>
                 The only thing I loved more than computers as a kid was cars, art, and taking things apart.
                 At 13 I began building computers for the time trying to create the biggest and baddest gaming PC.
-                My first build was an ASUS with 4GBs of DDR2 4GBs of DDR2 RAM. A caveman that thing is these days.
+                My first build was an ASUS with 4GBs of DDR2 RAM. A caveman that thing is these days.
               </p>
               <p>
                 Taking classes and becoming more aware advancements in technology. At 15 I had been taking a computer class
