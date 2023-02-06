@@ -29,7 +29,7 @@ export default function Uses() {
   return (
     <>
       <Head>
-        <title>Uses - Spencer Sharp</title>
+        <title>Uses - Alec Mingione</title>
         <meta
           name="description"
           content="Software I use, gadgets I love, and other things I recommend."
@@ -41,41 +41,32 @@ export default function Uses() {
       >
         <div className="space-y-20">
           <ToolsSection title="Workstation">
-            <Tool title="16” MacBook Pro, M1 Max, 64GB RAM (2021)">
-              I was using an Intel-based 16” MacBook Pro prior to this and the
-              difference is night and day. I’ve never heard the fans turn on a
-              single time, even under the incredibly heavy loads I put it
-              through with our various launch simulations.
+            <Tool title="MSI M7 ACK, 128GB RAM">
+              Its time to get more portable I know. The laptop is a bit behind with the amount of load I put through it for testing, debugging, and rendering models.
+              I would much prefer to have a Macbook to be able to cross plat build for mobile. Loving art I gotta have all the cores ready to paint the canvas in every medium.
             </Tool>
-            <Tool title="Apple Pro Display XDR (Standard Glass)">
-              The only display on the market if you want something HiDPI and
-              bigger than 27”. When you’re working at planetary scale, every
+            <Tool title="LG 144hz LED 39 Ultra-Wide">
+              The best display for multi-tasking, video editing, designing, and all else you can split for your processes that&#39;s
+              bigger than 27”. When you’re working to create masterpieces, every
               pixel you can get counts.
             </Tool>
-            <Tool title="IBM Model M SSK Industrial Keyboard">
+            <Tool title="SteelSeries APEX Pro">
               They don’t make keyboards the way they used to. I buy these any
               time I see them go up for sale and keep them in storage in case I
               need parts or need to retire my main.
             </Tool>
-            <Tool title="Apple Magic Trackpad">
-              Something about all the gestures makes me feel like a wizard with
-              special powers. I really like feeling like a wizard with special
-              powers.
-            </Tool>
-            <Tool title="Herman Miller Aeron Chair">
+            <Tool title="Secret Lab - Titan">
               If I’m going to slouch in the worst ergonomic position imaginable
               all day, I might as well do it in an expensive chair.
             </Tool>
           </ToolsSection>
           <ToolsSection title="Development tools">
-            <Tool title="Sublime Text 4">
-              I don’t care if it’s missing all of the fancy IDE features
-              everyone else relies on, Sublime Text is still the best text
-              editor ever made.
+            <Tool title="WebStorm">
+              Its like a bag full of all the power-tools I need to build a house without all the weight. I get everything I need in one place.
             </Tool>
-            <Tool title="iTerm2">
-              I’m honestly not even sure what features I get with this that
-              aren’t just part of the macOS Terminal but it’s what I use.
+            <Tool title="IDEA Ultimate">
+              The C#, Java, C++ stuff I use to create cool stuff in all kinds of environments. Games, APIs, programmed graphic animations, and more neat stuff.
+              I typically follow it with Shadron to render the graphic bits of my code.
             </Tool>
             <Tool title="TablePlus">
               Great software for working with databases. Has saved me from
@@ -91,16 +82,19 @@ export default function Uses() {
             </Tool>
           </ToolsSection>
           <ToolsSection title="Productivity">
-            <Tool title="Alfred">
-              It’s not the newest kid on the block but it’s still the fastest.
-              The Sublime Text of the application launcher world.
+            <Tool title="Rize">
+              If you find yourself not knowing when to take a break because everything is so interstellar.
+              This is the definition of time management and productivity. The past few years this has helped train my instincts to time,
+              and how just a short break can solve your current problem(s).
             </Tool>
-            <Tool title="Reflect">
+            <Tool title="Jira">
+              Its been around for a while. The classic KANBAN board which I love for any project to organize the priority of tasks and bugs.
+            </Tool>
+            <Tool title="Stashpad">
               Using a daily notes system instead of trying to keep things
               organized by topics has been super powerful for me. And with
-              Reflect, it’s still easy for me to keep all of that stuff
-              discoverable by topic even though all of my writing happens in the
-              daily note.
+              Stashpad, it’s still easy for me to keep all of that stuff
+              discoverable by topic even though all of my writing happens in bucket.
             </Tool>
             <Tool title="SavvyCal">
               Great tool for scheduling meetings while protecting my calendar

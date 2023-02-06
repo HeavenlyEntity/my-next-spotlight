@@ -1,3 +1,4 @@
+import {useEffect, useState} from "react";
 import Image from 'next/image'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -21,11 +22,27 @@ import image5 from '@/images/photos/image-5.jpg'
 import logoAirbnb from '@/images/logos/airbnb.svg'
 import logoFacebook from '@/images/logos/facebook.svg'
 import logoPlanetaria from '@/images/logos/planetaria.svg'
+import logoRlcanning from '@/images/logos/rlcanning-logo.png'
+import logoDotCom from '@/images/logos/Dot_Com_Development.png'
+import logoMipi from '@/images/logos/mipi.svg'
+import logoSchwab from '@/images/logos/charles-schwab.png'
+import logoNewgen from '@/images/logos/newgen.png'
 import logoStarbucks from '@/images/logos/starbucks.svg'
 import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
-import {useEffect, useState} from "react";
+
+const onDownloadResume = () => {
+  fetch(file).then((response) => {
+    response.blob().then((blob) => {
+      let url = window.URL.createObjectURL(blob);
+      let a = document.createElement("a");
+      a.href = url;
+      a.download = "testFile.docx";
+      a.click();
+    });
+  });
+};
 
 function MailIcon(props) {
   return (
@@ -143,7 +160,7 @@ function Resume() {
     {
       company: 'MiPi',
       title: 'Founder & CEO',
-      logo: logoPlanetaria,
+      logo: logoMipi,
       start: '2022',
       end: {
         label: 'Present',
@@ -153,7 +170,7 @@ function Resume() {
     {
       company: 'NewGen Business Solutions',
       title: 'Senior Software Engineer',
-      logo: logoPlanetaria,
+      logo: logoNewgen,
       start: '2021',
       end: {
         label: 'Present',
@@ -163,21 +180,21 @@ function Resume() {
     {
       company: 'Charles Schwab',
       title: 'Software Engineer',
-      logo: logoAirbnb,
+      logo: logoSchwab,
       start: '2019',
       end: '2021',
     },
     {
       company: 'Dot Com Development',
       title: 'Junior Software Engineer',
-      logo: logoFacebook,
+      logo: logoDotCom,
       start: '2018',
       end: '2019',
     },
     {
       company: 'RL Canning',
       title: 'Automation Programmer & Desktop Specialist',
-      logo: logoStarbucks,
+      logo: logoRlcanning,
       start: '2017',
       end: '2020',
     },
@@ -223,7 +240,7 @@ function Resume() {
           </li>
         ))}
       </ol>
-      <Button href="#" variant="secondary" className="group mt-6 w-full">
+      <Button href="https://1drv.ms/w/s!AtN3Vou-qYxDq4Qm5DVDGeI-BjimoQ?e=7xzfZI" variant="secondary" className="group mt-6 w-full">
         Download CV
         <ArrowDownIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
       </Button>
@@ -400,9 +417,12 @@ export default function Home({ articles }) {
       <Container className="mt-24 md:mt-28">
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <div className="flex flex-col gap-16">
-            {articles.map((article) => (
-              <Article key={article.slug} article={article} />
-            ))}
+            <div style={{ fontFamily: 'Layer, sans-serif' }} className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl py-3">
+              Articles Coming Soon!
+            </div>
+            {/*{articles.map((article) => (*/}
+            {/*  <Article key={article.slug} article={article} />*/}
+            {/*))}*/}
           </div>
           <div className="space-y-10 lg:pl-16 xl:pl-24">
             <Newsletter />

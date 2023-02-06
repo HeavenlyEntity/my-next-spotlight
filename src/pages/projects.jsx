@@ -5,16 +5,19 @@ import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
 import logoAnimaginary from '@/images/logos/animaginary.svg'
 import logoCosmos from '@/images/logos/cosmos.svg'
-import logoHelioStream from '@/images/logos/helio-stream.svg'
+import logoPortalGen from '@/images/logos/PortalGen Fav-1.png'
 import logoOpenShuttle from '@/images/logos/open-shuttle.svg'
 import logoPlanetaria from '@/images/logos/planetaria.svg'
+import logoFuriousFroth from '@/images/logos/FF.svg'
+import logoChamoji from '@/images/logos/chamoji_logo-ico.png'
+import logoWindstone from '@/images/logos/Windstone icon-1.png'
 import logoMipi from '@/images/logos/mipi.svg'
 
 const projects = [
   {
     name: 'M i P i',
     description:
-      'Creating technology to empower freedom of speech, privacy, and self promotion.',
+      'Creating technology to empower freedom of speech, privacy, and self promotion. In progress with Windstone integration.',
     link: { href: 'http://mipi.io', label: 'mipi.io' },
     logo: logoMipi,
   },
@@ -23,27 +26,41 @@ const projects = [
     description:
       'Highly private web browser desktop application built in electron.',
     link: { href: '#', label: 'github.com' },
-    logo: logoAnimaginary,
+    logo: logoWindstone,
   },
   {
     name: 'PortalGen™',
     description:
-      'Completely customizable system for generating PWAs (Portal web applications) using Oracle NetSuite backend technologies.',
+      'Completely customizable system for generating PWAs (Portal web applications) using Oracle NetSuite backend technologies.\n- Built at NewGen',
     link: { href: 'https://newgennow.com/portalgen', label: 'newgennow.com/portalgen' },
-    logo: logoHelioStream,
+    logo: logoPortalGen,
   },
   {
     name: 'Furious Froth Coffee®',
     description:
       'The ultimate coffee site powered by Shopify with a headless storefront powered by Next.js',
     link: { href: '#', label: 'github.com' },
-    logo: logoCosmos,
+    logo: logoFuriousFroth,
   },
   {
     name: 'Chamoji',
     description:
       'The modern CLI alternative to gitmoji-changelog. Still in progress getting cool things rigged up.',
     link: { href: 'https://github.com/HeavenlyEntity/chamoji', label: 'github.com' },
+    logo: logoChamoji,
+  },
+  {
+    name: 'VRSA',
+    description:
+      'A automated patching tool for internal servers, making it easy to analyze, schedule, and patch server vulnerabilities all within a react & Dot Net powered system.',
+    link: { href: '#', label: '🔒 Internal' },
+    logo: logoPlanetaria,
+  },
+  {
+    name: 'VB Remote Sat',
+    description:
+      'This tool is used by all desktop support techs across the globe at Honeywell to increase efficiency allowing for multiple remote sessions, imaging, and automating all set up processes within a couple minutes instead of hours.',
+    link: { href: '#', label: '🔒 Internal' },
     logo: logoOpenShuttle,
   },
 ]

@@ -38,21 +38,24 @@ export default function ArticlesIndex({ articles }) {
   return (
     <>
       <Head>
-        <title>Articles - Spencer Sharp</title>
+        <title>Articles - Alec Mingione</title>
         <meta
           name="description"
           content="All of my long-form thoughts on programming, leadership, product design, and more, collected in chronological order."
         />
       </Head>
       <SimpleLayout
-        title="Writing on software design, company building, and the aerospace industry."
+        title="Writing on software design, company building, and the art industry."
         intro="All of my long-form thoughts on programming, leadership, product design, and more, collected in chronological order."
       >
         <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
           <div className="flex max-w-3xl flex-col space-y-16">
-            {articles.map((article) => (
-              <Article key={article.slug} article={article} />
-            ))}
+              <div style={{ fontFamily: 'Layer, sans-serif' }} className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl py-3">
+                  Articles Coming Soon!
+              </div>
+            {/*{articles.map((article) => (*/}
+            {/*  <Article key={article.slug} article={article} />*/}
+            {/*))}*/}
           </div>
         </div>
       </SimpleLayout>
