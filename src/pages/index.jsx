@@ -401,12 +401,12 @@ export default function Home({ articles }) {
               icon={InstagramIcon}
             />
             <SocialLink
-              href="https://github.com"
+              href="https://github.com/HeavenlyEntity"
               aria-label="Follow on GitHub"
               icon={GitHubIcon}
             />
             <SocialLink
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/alec-mingione-90bb63aa/"
               aria-label="Follow on LinkedIn"
               icon={LinkedInIcon}
             />
