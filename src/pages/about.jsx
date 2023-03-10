@@ -52,13 +52,18 @@ export default function About() {
         <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-12">
           <div className="lg:pl-20">
             <motion.div
-                initial={{
+                animate={{
                   rotateZ: 3
                 }}
                 whileHover={{
                   scale: 0.95,
                   rotateZ: 0,
                   borderRadius: 15,
+                }}
+                transition={{
+                    duration: 0.5,
+                    type: 'spring',
+                    stiffness: 300
                 }}
                 className="max-w-xs px-2.5 lg:max-w-none"
             >
