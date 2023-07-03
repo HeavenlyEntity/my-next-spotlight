@@ -18,7 +18,7 @@ const projects = [
     name: 'M i P i',
     description:
       'Creating technology to empower freedom of speech, privacy, and self promotion. In progress with Windstone integration.',
-    link: { href: 'http://mipi.io', label: 'mipi.io' },
+    link: { href: 'http://launch.mipi.io', label: 'launch.mipi.io' },
     logo: logoMipi,
   },
   {
