@@ -75,9 +75,8 @@ In this section, we will go over how to use **lodash** in our SuiteScript files.
 
 ### Setting up the AMD Configuration
 Depending on how you have your project set up and if it is bundled or not you may have to make a logical decision on how to set up the AMD Configuration. For this example we will assume that we are using the **SuiteApp** project type that we are having to bundle for distribution.
-
 1. ### Adding the AMD Configuration
-    First, we need to add the AMD Configuration to our project. We can do this by adding the following code to our `gulpfile.js`:
+    First, we need to add the AMD Configuration *JSON* file to our project. We can do this by adding the following code to our `amdConfig.json`:
 
     ```json
     {
@@ -87,12 +86,121 @@ Depending on how you have your project set up and if it is bundled or not you ma
       }
     }
     ```
-    > You will add the AMD Configuration to your `gulpfile.js` in the root of your SuiteApp/Account Customization Project.
-    > Project types differ in the location the `gulpfile.js` should be placed. See below for the location of the `gulpfile.js` for each project type.
-    > - **SuiteApp** Project Type: `src/FileCabinet/SuiteApps/YourSuiteApp/gulpfile.js`
-    > - **Account Customization** Project Type: `src/FileCabinet/SuiteScripts/gulpfile.js`
+    > You will add the AMD Configuration to the root of your SuiteApp/Account Customization Project.
+    > Project types differ in the location the `amdConfig.json` should be placed. See below for the location of the `amdConfig.json` for each project type.
+    > - **SuiteApp** Project Type: `src/FileCabinet/SuiteApps/YourSuiteApp/amdConfig.json`
+    > - **Account Customization** Project Type: `src/FileCabinet/SuiteScripts/amdConfig.json`
 
+    > The AMD config should be put into a root most level or root of the relative folder for example:
+    > `src/FileCabinet/SuiteApps/YourSuiteApp/scripts/user-event/amdConfig.json`, `src/FileCabinet/SuiteApps/YourSuiteApp/scripts/amdConfig.json` etc.
 
+    Lets put the AMD file in the root of the `scripts/user-event` folder for this example. I will explain why this is the best route later.
 
+2. ### Setting up the AMD File Contents
+    The contents of this file are very important. This is where we will tell the AMD engine where to find our **lodash** library. We can do this by adding the following code to our `amdConfig.json`:
 
+        ```json
+        {
+          "baseUrl": "../../packages",
+          "paths": {
+            "lodash": "@lodash/lodash/lodash.min.js"
+          }
+        }
+        ```
+    This will point to all us to import lodash in our SuiteScript files. When we normally `define` a module we would do something like this:
 
+    ```javascript
+    define(['N/record'], function(record) {
+      // do something with record
+    })
+    ```
+    For a custom module you create a SuiteScript file it looks something like this:
+
+    ```javascript
+    define(['../lib/pt_ex_cm_test.js'], function(customModule) {
+      // do something with custom module
+        const foo = () => {
+            return 'foo'
+        }
+
+        const bar = () => {
+            return 'bar'
+        }
+
+        return {
+            foo,
+            bar
+        }
+    })
+    ```
+    But now we can do something like this:
+
+    ```javascript
+    define(['lodash'], function(_) {
+      // do something with lodash
+    })
+    ```
+    #### Way better right? 🎉
+3. ### Using lodash in our SuiteScript files
+    Now we can use **lodash** in our SuiteScript files, but there is a prerequisite in order to tell NetSuite that we are using an AMD config.
+    The prerequisite is to add the following code to the top of our SuiteScript file:
+
+    ```javascript
+    /**
+     * @NApiVersion 2.1
+     * @NModuleScope SameAccount
+     * @NScriptType UserEventScript
+     * @NAMDConfig ./amdConfig.json <-- This is the AMD config we created
+     */
+    ```
+    > You will add the AMD config *JSDoc* tag `NAMDConfig` to the top of your SuiteScript file. This is a prerequisite for using any custom AMD options tailored to your project.
+
+    Following up on the reason why we put the `amdConfig.json` in the root of the `scripts/user-event` folder is because when NetSuite tries to load the `amdConfig.json` too far out say if its even one directory back, and we had to change its path to `../amdConfig.json` for instance.
+    The file for an odd reason will not be loaded or considered by the compilation. I am not sure if this is a known bug but, I know no AMD config will work that isn't in the *current script's* same directory.
+
+    Now we can use **lodash** in our SuiteScript files. We can do this by adding the following code to our SuiteScript file:
+
+    ```javascript
+    /**
+     * @NApiVersion 2.1
+     * @NModuleScope SameAccount
+     * @NScriptType UserEventScript
+     * @NAMDConfig ./amdConfig.json
+     */
+
+   /**
+   * @param {lodash} _
+   */
+
+    define(['lodash'], (_) => {
+      // do something with lodash
+      /**
+       * Defines the function definition that is executed before record is loaded.
+       * @param {Object} scriptContext
+       * @param {Record} scriptContext.newRecord - New record
+       * @param {string} scriptContext.type - Trigger type; use values from the context.UserEventType enum
+       * @param {Form} scriptContext.form - Current form
+       * @param {ServerRequest} scriptContext.request - HTTP request information sent from the browser for a client action only.
+       * @since 2015.2
+       */
+        const beforeLoad = (scriptContext) => {
+          // Test lodash
+          let testArray= [1, 2, 2, 3, 3, 0, 4, 5]
+           // Remove duplicates
+           let uniqueArray = _.uniq(testArray)
+           log.debug({title: 'uniqueArray', details: uniqueArray})
+        }
+
+        return {
+            beforeLoad
+        }
+    })
+   ```
+### Bada Bing Bada Boom! 🚀
+You can now repeat this process with **any** library that is compatible with the AMD engine. Just revisit these setup steps and you will be good to go!
+
+## Conclusion
+In this article, we went over how to use libraries compatible with the AMD engine.
+We also went over how to use **lodash** in our SuiteScript files.
+I hope this article was helpful and you learned something new.
+If you have any questions or comments please shoot me an email! Thanks for reading! 😎
