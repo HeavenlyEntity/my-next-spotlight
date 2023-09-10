@@ -1,9 +1,9 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Head from 'next/head'
 import Link from 'next/link'
 import clsx from 'clsx'
-import Typewriter from "typewriter-effect";
+import Typewriter from 'typewriter-effect'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
@@ -35,14 +35,14 @@ import { formatDate } from '@/lib/formatDate'
 const onDownloadResume = () => {
   fetch(file).then((response) => {
     response.blob().then((blob) => {
-      let url = window.URL.createObjectURL(blob);
-      let a = document.createElement("a");
-      a.href = url;
-      a.download = "testFile.docx";
-      a.click();
-    });
-  });
-};
+      let url = window.URL.createObjectURL(blob)
+      let a = document.createElement('a')
+      a.href = url
+      a.download = 'testFile.docx'
+      a.click()
+    })
+  })
+}
 
 function MailIcon(props) {
   return (
@@ -192,7 +192,7 @@ function Resume() {
       end: '2019',
     },
     {
-      company: 'RL Canning',
+      company: 'RL Canning (Honeywell)',
       title: 'Automation Programmer & Desktop Specialist',
       logo: logoRlcanning,
       start: '2017',
@@ -240,7 +240,11 @@ function Resume() {
           </li>
         ))}
       </ol>
-      <Button href="https://1drv.ms/w/s!AtN3Vou-qYxDq4Qm5DVDGeI-BjimoQ?e=7xzfZI" variant="secondary" className="group mt-6 w-full">
+      <Button
+        href="https://1drv.ms/w/s!AtN3Vou-qYxDq4Qm5DVDGeI-BjimoQ?e=7xzfZI"
+        variant="secondary"
+        className="group mt-6 w-full"
+      >
         Download CV
         <ArrowDownIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
       </Button>
@@ -257,14 +261,14 @@ function Photos() {
         {[image1, image2, image3, image4, image5].map((image, imageIndex) => (
           <motion.div
             initial={{
-              rotateZ: (imageIndex % 2 ? 3 : -3)
+              rotateZ: imageIndex % 2 ? 3 : -3,
             }}
             whileHover={{
               scale: 0.9,
-              rotateZ: (imageIndex % 2 ? 0 : -1)
+              rotateZ: imageIndex % 2 ? 0 : -1,
             }}
             whileTap={{
-              scale: 1.1
+              scale: 1.1,
             }}
             transition={{
               type: 'spring',
@@ -291,37 +295,36 @@ function Photos() {
 
 const TextVariants = {
   offscreen: {
-    y: "100%",
+    y: '100%',
     opacity: 0,
-    position: 'absolute'
+    position: 'absolute',
   },
   onscreen: {
     y: 0,
     opacity: 1,
-    position: 'relative'
+    position: 'relative',
   },
   exit: {
     opacity: 0,
     display: 'none',
-    position: 'absolute'
-  }
-};
+    position: 'absolute',
+  },
+}
 
 export default function Home({ articles }) {
-
-  const texts = ["Engineer", "Designer", "Founder"];
-  const [currentWord, setCurrentWord] = useState(-1);
+  const texts = ['Engineer', 'Designer', 'Founder']
+  const [currentWord, setCurrentWord] = useState(-1)
 
   useEffect(() => {
-    let i = 0;
+    let i = 0
     const interval = setInterval(() => {
-      if (i === texts.length) clearInterval(interval);
-      else setCurrentWord(i);
-      i++;
-    }, 2100 + texts[i].length * 1.1);
+      if (i === texts.length) clearInterval(interval)
+      else setCurrentWord(i)
+      i++
+    }, 2100 + texts[i].length * 1.1)
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <>
@@ -337,22 +340,22 @@ export default function Home({ articles }) {
       <Container className="mt-9">
         <div className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]">
           <svg
-              className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
-              viewBox="0 0 1155 678"
+            className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
+            viewBox="0 0 1155 678"
           >
             <path
-                fill="url(#9b2541ea-d39d-499b-bd42-aeea3e93f5ff)"
-                fillOpacity=".3"
-                d="M317.219 518.975L203.852 678 0 438.341l317.219 80.634 204.172-286.402c1.307 132.337 45.083 346.658 209.733 145.248C936.936 126.058 882.053-94.234 1031.02 41.331c119.18 108.451 130.68 295.337 121.53 375.223L855 299l21.173 362.054-558.954-142.079z"
+              fill="url(#9b2541ea-d39d-499b-bd42-aeea3e93f5ff)"
+              fillOpacity=".3"
+              d="M317.219 518.975L203.852 678 0 438.341l317.219 80.634 204.172-286.402c1.307 132.337 45.083 346.658 209.733 145.248C936.936 126.058 882.053-94.234 1031.02 41.331c119.18 108.451 130.68 295.337 121.53 375.223L855 299l21.173 362.054-558.954-142.079z"
             />
             <defs>
               <linearGradient
-                  id="9b2541ea-d39d-499b-bd42-aeea3e93f5ff"
-                  x1="1155.49"
-                  x2="-78.208"
-                  y1=".177"
-                  y2="474.645"
-                  gradientUnits="userSpaceOnUse"
+                id="9b2541ea-d39d-499b-bd42-aeea3e93f5ff"
+                x1="1155.49"
+                x2="-78.208"
+                y1=".177"
+                y2="474.645"
+                gradientUnits="userSpaceOnUse"
               >
                 <stop stopColor="#9089FC" />
                 <stop offset={1} stopColor="#FF80B5" />
@@ -361,36 +364,49 @@ export default function Home({ articles }) {
           </svg>
         </div>
         <div className="max-w-2xl">
-          <div style={{ fontFamily: 'Layer, sans-serif' }} className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl py-3">
-            Software {<span className='text-teal-500'>
-            <Typewriter
-                options={{
-                  loop: true
-                }}
-                onInit={(typewriter)=> {
-                  typewriter
-                      .typeString("<span class='bg-gradient-to-r from-teal-600  to-lime-300 inline-block text-transparent bg-clip-text'>Engineer</span>")
+          <div
+            style={{ fontFamily: 'Layer, sans-serif' }}
+            className="py-3 text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl"
+          >
+            Software{' '}
+            {
+              <span className="text-teal-500">
+                <Typewriter
+                  options={{
+                    loop: true,
+                  }}
+                  onInit={(typewriter) => {
+                    typewriter
+                      .typeString(
+                        "<span class='bg-gradient-to-r from-teal-600  to-lime-300 inline-block text-transparent bg-clip-text'>Engineer</span>"
+                      )
                       .pauseFor(1000)
                       .deleteAll()
-                      .typeString("<span class='bg-gradient-to-r from-teal-600 to-orange-400 inline-block text-transparent bg-clip-text'>Designer</span>")
+                      .typeString(
+                        "<span class='bg-gradient-to-r from-teal-600 to-orange-400 inline-block text-transparent bg-clip-text'>Designer</span>"
+                      )
                       .pauseFor(1000)
                       .deleteAll()
-                      .typeString("<span class='bg-gradient-to-r from-red-600 to-yellow-400 inline-block text-transparent bg-clip-text'>Founder</span>")
+                      .typeString(
+                        "<span class='bg-gradient-to-r from-red-600 to-yellow-400 inline-block text-transparent bg-clip-text'>Founder</span>"
+                      )
                       .pauseFor(3000)
-                      .start();
-                }}
-            />
-          </span>} & amateur artist.
+                      .start()
+                  }}
+                />
+              </span>
+            }{' '}
+            & amateur artist.
           </div>
 
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-            Hi! I’m Alec, a senior software engineer and entrepreneur based in Phoenix
-            Arizona. I’m the founder and CEO of MiPi, where we develop
-            technologies that empower people to explore free speech, privacy, and social interaction on their
-            own terms.
+            Hi! I’m Alec, a senior software engineer and entrepreneur based in
+            Phoenix Arizona. I’m the founder and CEO of MiPi, where we develop
+            technologies that empower people to explore free speech, privacy,
+            and social engagement on their own terms.
           </p>
           <div className="mt-6 flex gap-6">
-            <SocialLink
+            {/*<SocialLink
               href="https://twitter.com"
               aria-label="Follow on Twitter"
               icon={TwitterIcon}
@@ -399,7 +415,7 @@ export default function Home({ articles }) {
               href="https://instagram.com"
               aria-label="Follow on Instagram"
               icon={InstagramIcon}
-            />
+            />*/}
             <SocialLink
               href="https://github.com/HeavenlyEntity"
               aria-label="Follow on GitHub"
@@ -413,7 +429,7 @@ export default function Home({ articles }) {
           </div>
         </div>
       </Container>
-      <Photos/>
+      <Photos />
       <Container className="mt-24 md:mt-28">
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <div className="flex flex-col gap-16">
