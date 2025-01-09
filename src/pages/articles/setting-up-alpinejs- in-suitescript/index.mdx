@@ -1,0 +1,193 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+import Image from 'next/image'
+
+export const meta = {
+  author: 'Alec Mingione',
+  date: '2024-12-18',
+  title: 'Introducing Alipne.js for NetSuite SuiteScript',
+  description:
+    'Lets get fancy with some cool Alpine.js reactivity in NetSuite SuiteScript client side usage without having to use the CDN 🚀',
+}
+
+export default (props) => <ArticleLayout meta={meta} {...props} />
+
+# How to Use Alpine.js in NetSuite SuiteScript Client Scripts 🏔️
+
+> 💡 Alpine.js provides reactive and declarative features to NetSuite client scripts without the complexity of larger frameworks like Vue or React.
+
+## 1. Setting Up Alpine.js 🛠️
+
+### 1.1 Download Alpine.js
+1. Download Alpine.js from the official repository (https://github.com/alpinejs/alpine)
+2. Create a new directory in your SuiteApp: `FileCabinet/SuiteApps/[your_app_id]/packages/@alpinejs/`
+3. Place the minified version of Alpine.js (alpine3.min.js) in this directory
+
+> ⚠️ Always use the minified version in production for better performance
+
+### 1.2 Configure AMD Config
+Create or update your `amdClientConfig.json` to include Alpine.js:
+
+```json
+{
+  "paths": {
+    "alpinejs": "../../packages/@alpinejs/alpine3.min.js"
+  },
+  "shim": {
+    "alpinejs": {
+      "exports": "Alpine"
+    }
+  }
+}
+```
+
+> 🔑 The shim configuration is crucial for proper AMD module loading in NetSuite
+
+## 2. Using Alpine.js in Client Scripts 📝
+
+### 2.1 Basic Setup
+In your client script, include Alpine.js as a dependency:
+
+```javascript
+/**
+ * @NApiVersion 2.1
+ * @NScriptType ClientScript
+ * @NModuleScope SameAccount
+ * @NAmdConfig ./amdClientConfig.json
+ */
+define([
+  'N/runtime',
+  'alpinejs'
+], function(runtime, Alpine) {
+  // Your code here
+});
+```
+
+> 🎯 Make sure to include @NAmdConfig annotation pointing to your AMD configuration file
+
+### 2.2 Initialize Alpine.js
+Initialize Alpine.js in your pageInit function:
+
+```javascript
+function pageInit(scriptContext) {
+  // Initialize Alpine store
+  Alpine.store('myStore', {
+    items: {},
+    addItem(id, value) {
+      this.items[id] = value;
+    },
+    getItem(id) {
+      return this.items[id] || null;
+    }
+  });
+
+  // Start Alpine
+  Alpine.start();
+}
+```
+
+> ⚡ Always initialize Alpine.store before calling Alpine.start()
+
+## 3. Practical Example 💡
+Here's a practical example based on the item management script:
+
+```javascript
+function pageInit(scriptContext) {
+  // Initialize Alpine store for removed items tracking
+  Alpine.store('removedItems', {
+    items: {},
+    markAsRemoved(id) {
+      this.items[id] = true;
+    },
+    isRemoved(id) {
+      return this.items[id] || false;
+    }
+  });
+
+  Alpine.start();
+}
+
+function createDialogWithAlpine(items) {
+  const tableRows = items.map(item => `
+    <tr x-data="{ removed: $store.removedItems.isRemoved('${item.id}') }">
+      <td>${item.name}</td>
+      <td>
+        <button 
+          :disabled="removed"
+          @click="$store.removedItems.markAsRemoved('${item.id}')"
+          x-text="removed ? 'Removed' : 'Remove'">
+        </button>
+      </td>
+      <td>
+        <span x-show="removed">✅</span>
+        <span x-show="!removed">❌</span>
+      </td>
+    </tr>
+  `).join('');
+
+  return {
+    title: 'Items Management',
+    message: `
+      <div x-data>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Action</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+      </div>
+    `
+  };
+}
+```
+
+> 🎨 This example demonstrates reactive UI updates without page refreshes
+
+## 4. Real-world Implementation Reference 🌟
+For a complete implementation example, refer to the ng_cses_cs_item.js file:
+
+```javascript:backend/src/FileCabinet/SuiteApps/com.newgennow.cseventservices/scripts/Client/ng_cses_cs_item.js
+    Alpine.store("removedItems", {
+      items: {},
+      markAsRemoved(id) {
+        this.items[id] = true;
+      },
+      isRemoved(id) {
+        return this.items[id] || false;
+      },
+    });
+
+    Alpine.start();
+```
+
+> 💪 Using Alpine.store provides a centralized state management solution
+
+## 5. Best Practices 🎯
+
+1. Always initialize Alpine stores in pageInit
+2. Use x-data for component-level state
+3. Use Alpine.store for global state management
+4. Clean up stores when dialogs close
+5. Use Alpine's reactive system for UI updates
+6. Leverage NetSuite's N/dialog module with Alpine templates
+
+> 🏆 Following these practices ensures maintainable and performant code
+
+## 6. Troubleshooting 🔧
+
+1. Ensure Alpine.js is properly loaded by checking the browser console
+2. Verify AMD configuration paths are correct
+3. Check that Alpine.start() is called after store initialization
+4. Use browser dev tools to debug Alpine.js reactive updates
+5. Verify file permissions in NetSuite for Alpine.js access
+
+> 🚨 Most issues can be caught early using browser developer tools
+
+Remember to test thoroughly in NetSuite's sandbox environment before deploying to production.
+
+> 🔒 Always follow NetSuite's security best practices when implementing client-side functionality
