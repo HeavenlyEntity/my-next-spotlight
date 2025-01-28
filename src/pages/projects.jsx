@@ -173,6 +173,7 @@ const getStatusHoverEffect = (status) => {
 }
 
 const StatusIndicator = React.memo(({ status }) => {
+  StatusIndicator.displayName = 'StatusIndicator';
   const statusConfig = {
     live: {
       color: '#00ff9d',
@@ -273,6 +274,7 @@ function LinkIcon(props) {
 }
 
 const TypewriterText = React.memo(({ text, isVisible }) => {
+  TypewriterText.displayName = 'TypewriterText';
   const [displayedText, setDisplayedText] = useState('');
   const [index, setIndex] = useState(0);
 

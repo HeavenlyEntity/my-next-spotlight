@@ -173,11 +173,11 @@ export default function About() {
                 few kids got allowed to take. Excited, I learned about HTML,
                 CSS, and JS along with how it works on the computer itself going
                 down to assembly code. I had built a Facebook clone single page
-                showcasing myself, my future career, and why. My first real challenge, it wasn't perfect
+                showcasing myself, my future career, and why. My first real challenge, it wasn&apos;t perfect
                 but, once I figured it out I was hooked on the challenge of creating something from nothing.
               </p>
               <p>
-                Today, I’m the founder of MiPi, where I am empowering creatives with control over their work. Prioritizing
+                Today, I&apos;m the founder of MiPi, where I am empowering creatives with control over their work. Prioritizing
                 privacy, encryption, free speech, and blockchain technology to
                 provide the people at home so that the next generation of kids
                 can really <em>understand</em> privacy from their hands defining
