@@ -41,11 +41,10 @@ export default function Uses() {
       >
         <div className="space-y-20">
           <ToolsSection title="Workstation">
-            <Tool title="MSI M7 ACK, 128GB RAM">
-              Its time to get more portable I know. The laptop is a bit behind with the amount of load I put through it for testing, debugging, and rendering models.
-              I would much prefer to have a Macbook to be able to cross plat build for mobile. Loving art I gotta have all the cores ready to paint the canvas in every medium.
+            <Tool title="Macbook Pro 16&apos; Max, 64GB RAM">
+              The best laptop for the job. I use this for everything from coding, to video editing, to rendering models to training mini AI models.
             </Tool>
-            <Tool title="LG 144hz LED 39 Ultra-Wide">
+            <Tool title="Samsung Odessey Neo G9">
               The best display for multi-tasking, video editing, designing, and all else you can split for your processes that&#39;s
               bigger than 27”. When you’re working to create masterpieces, every
               pixel you can get counts.
@@ -96,7 +95,7 @@ export default function Uses() {
               Stashpad, it’s still easy for me to keep all of that stuff
               discoverable by topic even though all of my writing happens in bucket.
             </Tool>
-            <Tool title="SavvyCal">
+            <Tool title="TidyCal">
               Great tool for scheduling meetings while protecting my calendar
               and making sure I still have lots of time for deep work during the
               week.

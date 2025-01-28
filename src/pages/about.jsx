@@ -147,9 +147,9 @@ export default function About() {
                   delay: 1,
                 }}
               >
-                future
+                the future
               </motion.span>{' '}
-              to technology.
+              in technology.
             </motion.h1>
             <div
               style={{ fontSize: 18 }}
@@ -165,8 +165,7 @@ export default function About() {
                 The only thing I loved more than computers as a kid was cars,
                 art, and taking things apart. At 13 I began building computers
                 for the time trying to create the biggest and baddest gaming PC.
-                My first build was an ASUS with 4GBs of DDR2 RAM. A caveman that
-                thing is these days.
+                My first build was an ASUS with 4GBs of DDR2 RAM. A caveman now a days!
               </p>
               <p>
                 Taking classes and becoming more aware with the advancements in
@@ -174,16 +173,15 @@ export default function About() {
                 few kids got allowed to take. Excited, I learned about HTML,
                 CSS, and JS along with how it works on the computer itself going
                 down to assembly code. I had built a Facebook clone single page
-                showcasing myself, my future career, and why. It was so hard,
-                but once I figured it out I wanted it to be the best thing in
-                the class.
+                showcasing myself, my future career, and why. My first real challenge, it wasn't perfect
+                but, once I figured it out I was hooked on the challenge of creating something from nothing.
               </p>
               <p>
-                Today, I’m the founder of MiPi, where we’re working on citizen
+                Today, I’m the founder of MiPi, where I am empowering creatives with control over their work. Prioritizing
                 privacy, encryption, free speech, and blockchain technology to
-                empower the people at home so that the next generation of kids
+                provide the people at home so that the next generation of kids
                 can really <em>understand</em> privacy from their hands defining
-                true freedom and controlled exposure.
+                true freedom and control over their creations.
               </p>
             </div>
           </div>
