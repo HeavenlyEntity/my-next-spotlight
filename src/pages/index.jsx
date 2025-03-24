@@ -14,11 +14,11 @@ import {
   GitHubIcon,
   LinkedInIcon,
 } from '@/components/SocialIcons'
-import image1 from '@/images/photos/image-1.jpg'
-import image2 from '@/images/photos/image-2.jpg'
-import image3 from '@/images/photos/image-3.jpg'
-import image4 from '@/images/photos/image-4.jpg'
-import image5 from '@/images/photos/image-5.jpg'
+import image1 from '@/images/photos/kingdom-kode-port.webp'
+import image2 from '@/images/photos/MiPi-example.webp'
+import image3 from '@/images/photos/furious-froth-site.webp'
+import image4 from '@/images/photos/booking-calendar.webp'
+import image5 from '@/images/photos/gsc-portal.webp'
 import logoAirbnb from '@/images/logos/airbnb.svg'
 import logoFacebook from '@/images/logos/facebook.svg'
 import logoPlanetaria from '@/images/logos/planetaria.svg'
