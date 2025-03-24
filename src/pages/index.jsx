@@ -241,7 +241,7 @@ function Resume() {
         ))}
       </ol>
       <Button
-        href="https://1drv.ms/w/s!AtN3Vou-qYxDq4hu0en_k1VvL2YXhg?e=uqY4hF"
+        href="https://1drv.ms/w/s!AtN3Vou-qYxDq4Qmgz2PYo_NRLkFtA?e=N5oWuH"
         variant="secondary"
         className="group mt-6 w-full"
       >
