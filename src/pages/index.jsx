@@ -32,6 +32,7 @@ import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
 
+
 const onDownloadResume = () => {
   fetch(file).then((response) => {
     response.blob().then((blob) => {
@@ -417,26 +418,21 @@ export default function Home({ articles }) {
           >
             Software{' '}
             {
-              <span className="text-teal-500">
+              <span className={`font-layer text-teal-500 font-bold`}>
                 <Typewriter
+                  style={{ fontFamily: 'Layer, sans-serif' }} 
                   options={{
                     loop: true,
                   }}
                   onInit={(typewriter) => {
                     typewriter
-                      .typeString(
-                        "<span class='bg-gradient-to-r from-teal-600  to-lime-300 inline-block text-transparent bg-clip-text'>Engineer</span>"
-                      )
+                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-gradient-to-r from-teal-600  to-lime-300 inline-block text-transparent bg-clip-text font-bold'>Engineer</span>`)
                       .pauseFor(1000)
                       .deleteAll()
-                      .typeString(
-                        "<span class='bg-gradient-to-r from-teal-600 to-orange-400 inline-block text-transparent bg-clip-text'>Designer</span>"
-                      )
+                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-gradient-to-r from-teal-600 to-orange-400 inline-block text-transparent bg-clip-text font-bold'>Designer</span>`)
                       .pauseFor(1000)
                       .deleteAll()
-                      .typeString(
-                        "<span class='bg-gradient-to-r from-red-600 to-yellow-400 inline-block text-transparent bg-clip-text'>Founder</span>"
-                      )
+                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-gradient-to-r from-red-600 to-yellow-400 inline-block text-transparent bg-clip-text font-bold'>Founder</span>`)
                       .pauseFor(3000)
                       .start()
                   }}

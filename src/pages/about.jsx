@@ -97,6 +97,7 @@ export default function About() {
             >
               I’m{' '}
               <motion.span
+                style={{ fontFamily: 'Layer' }}
                 initial={{
                   opacity: 0,
                   scale: 0,
@@ -114,6 +115,7 @@ export default function About() {
               </motion.span>
               . I live in{' '}
               <motion.span
+                style={{ fontFamily: 'Layer' }}
                 initial={{
                   opacity: 0,
                   scale: 0,
@@ -132,6 +134,7 @@ export default function About() {
               </motion.span>
               , where I create the&nbsp;
               <motion.span
+                style={{ fontFamily: 'Layer' }}
                 initial={{
                   opacity: 0,
                   scale: 0,
