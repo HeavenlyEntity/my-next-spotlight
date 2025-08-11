@@ -13,7 +13,7 @@ export default function Contact() {
           content="Have a question or proposal? Use the form to get in touch."
         />
       </Head>
-      <Script src="https://cdn.deftform.com/embed.js" />
+      <Script strategy="afterInteractive" src="https://cdn.deftform.com/embed.js" />
 
       <SimpleLayout
         title="Get in touch"
