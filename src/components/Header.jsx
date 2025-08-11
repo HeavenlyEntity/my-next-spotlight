@@ -5,8 +5,11 @@ import { Popover, Transition } from '@headlessui/react'
 import clsx from 'clsx'
 
 import { Container } from '@/components/Container'
+import { Inter } from 'next/font/google'
 import avatarImage from '@/images/avatar.png'
 import { Fragment, useEffect, useRef } from 'react'
+
+const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'], display: 'swap' })
 
 function CloseIcon(props) {
   return (
@@ -72,7 +75,7 @@ function MoonIcon(props) {
 function MobileNavItem({ href, children }) {
   return (
     <li>
-      <Popover.Button as={Link} href={href} className="block py-2">
+      <Popover.Button as={Link} href={href} className={`block py-2 ${inter.className}`}>
         {children}
       </Popover.Button>
     </li>
@@ -142,10 +145,10 @@ function NavItem({ href, children }) {
   return (
     <li>
       <Link
-        style={{ fontFamily: 'Inter' }}
         href={href}
         className={clsx(
-           ' relative block px-3 py-2 transition',
+          inter.className,
+          'relative block px-3 py-2 transition',
           isActive
             ? 'text-teal-500 dark:text-teal-400'
             : 'hover:text-teal-500 dark:hover:text-teal-400'
