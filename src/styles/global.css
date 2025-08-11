@@ -1,38 +1,41 @@
 @font-face {
     font-family: 'Vector';
-    src: url('../components/asset/Vector/Vector-Bold.ttf');
-    src: url('../components/asset/Vector/Vector-Heavy.ttf');
-    src: url('../components/asset/Vector/Vector-Light.ttf');
-    src: url('../components/asset/Vector/Vector-Regular.ttf');
-    src: url('../components/asset/Vector/Vector-Thin.ttf');
+    src: url('/fonts/Vector/Vector-Bold.ttf');
+    src: url('/fonts/Vector/Vector-Heavy.ttf');
+    src: url('/fonts/Vector/Vector-Light.ttf');
+    src: url('/fonts/Vector/Vector-Regular.ttf');
+    src: url('/fonts/Vector/Vector-Thin.ttf');
     font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Layer';
-    src: url('../components/asset/Layer/Layer.ttf');
+    src: url('/fonts/Layer/Layer.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
+    font-display: swap;
 }
+
+.font-layer { font-family: 'Layer', sans-serif; }
 
 @font-face {
     font-family: 'Linone';
-    src: url('../components/asset/Linone/Linone.ttf');
+    src: url('/fonts/Linone/Linone.ttf');
     font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Resfire';
-    src: url('../components/asset/Resfire/Resfire.ttf');
+    src: url('/fonts/Resfire/Resfire.ttf');
     font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Dropaso';
-    src: url('../components/asset/Dropaso/Dropaso.otf');
+    src: url('/fonts/Dropaso/Dropaso.otf');
     font-weight: 400;
     font-style: normal;
 }
