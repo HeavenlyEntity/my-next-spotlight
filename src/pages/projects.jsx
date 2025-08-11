@@ -1,7 +1,10 @@
 import Image from 'next/image'
 import Head from 'next/head'
-import { motion, AnimatePresence } from 'framer-motion'
-import React, { useEffect, useState, useCallback } from 'react'
+import Link from 'next/link'
+import { motion, AnimatePresence } from 'motion/react'
+import { ArrowUpRight, MousePointer2 } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
+import { GlowCard } from '@/components/ui/spotlight-card'
 import { debounce } from 'lodash'
 
 import { Card } from '@/components/Card'
@@ -17,6 +20,7 @@ import logoWindstone from '@/images/logos/Windstone icon-1.png'
 import logoMipi from '@/images/logos/mipi-lander-int-icon.svg'
 import authjsLogo from '@/images/logos/authjs.png'
 import logoConvensionSuite from '@/images/logos/ConventionSuite.png'
+import logoKingdomKode from '@/images/photos/kingdom-kode-logo.svg'
 
 const projects = [
   {
@@ -63,6 +67,15 @@ const projects = [
     logo: logoConvensionSuite,
     status: 'live',
     whatHappened: 'Successfully launched and partnered with the largest general service contract companies in the world.',
+  },
+  {
+    name: 'Kingdom Kode',
+    description:
+      'Affordable, top-tier AI solutions, software, website, and design services that solve problems right the first time—empowering businesses to thrive in a competitive digital landscape.',
+    link: { href: 'https://kingdomkode.com', label: 'kingdomkode.com' },
+    logo: logoKingdomKode,
+    status: 'live',
+    whatHappened: 'Launching creative, AI-powered solutions for growing brands and teams.',
   },
   {
     name: 'Furious Froth Coffee®',
@@ -296,22 +309,100 @@ const TypewriterText = React.memo(({ text, isVisible }) => {
 
 export default function Projects() {
   const [activeProject, setActiveProject] = useState(null);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
+  const hoverTimerRef = useRef(null)
+  const HOVER_REVEAL_DELAY_MS = 300
+  const [hoveringProject, setHoveringProject] = useState(null)
+
+  const getGlowColorFromProject = (projectName) => {
+    const mapping = {
+      'M i P i': 'purple',
+      Windstone: 'blue',
+      'Auth.js - NetSuite Provider': 'green',
+      'PortalGen™': 'orange',
+      'ConvensionSuite - GSC™': 'blue',
+      'Furious Froth Coffee®': 'orange',
+      Chamoji: 'orange',
+      VRSA: 'red',
+      'VB Remote Sat': 'purple',
+      'Kingdom Kode': 'purple',
+    }
+    return mapping[projectName] || 'blue'
+  }
+
+  const revealGradientClass = (projectName) => {
+    const color = getGlowColorFromProject(projectName)
+    const mapping = {
+      purple: 'from-fuchsia-500/15 via-purple-500/10 to-indigo-500/15',
+      green: 'from-emerald-500/15 via-teal-500/10 to-lime-500/15',
+      blue: 'from-sky-500/15 via-blue-500/10 to-cyan-500/15',
+      orange: 'from-orange-500/15 via-amber-500/10 to-yellow-500/15',
+      red: 'from-rose-500/15 via-red-500/10 to-orange-500/15',
+    }
+    return mapping[color] || mapping.blue
+  }
+
 
   const handleMouseEnter = (name) => {
-    setActiveProject(name);
+    setHoveringProject(name)
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current)
+    hoverTimerRef.current = setTimeout(() => {
+      setActiveProject(name)
+    }, HOVER_REVEAL_DELAY_MS)
   };
 
   const handleMouseLeave = () => {
-    setActiveProject(null);
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current)
+      hoverTimerRef.current = null
+    }
+    setActiveProject(null)
+    setHoveringProject(null)
   };
 
-  const handleTouchStart = (name) => {
-    const timeout = setTimeout(() => {
-      setActiveProject(name);
-    }, 500); // Long press duration
+  const handleClickCard = (name) => {
+    setActiveProject((prev) => (prev === name ? null : name))
+  }
 
-    return () => clearTimeout(timeout);
-  };
+  const TeaserChip = ({ projectName, active }) => (
+    <motion.div
+      initial={false}
+      animate={{ opacity: active ? 0 : 1, y: active ? 6 : 0, scale: active ? 0.98 : 1 }}
+      transition={{ duration: 0.25 }}
+      className="flex w-full justify-end"
+    >
+      <div className="relative overflow-hidden rounded-full ring-1 ring-white/10 shadow-sm backdrop-blur-sm">
+        <div className={`absolute inset-0 bg-gradient-to-r ${revealGradientClass(projectName)} opacity-70`} />
+        <div className="relative z-10 flex items-center gap-2 px-3 py-1 text-xs font-medium text-zinc-900 dark:text-zinc-50">
+          {hoveringProject !== projectName && (
+            <motion.span
+              initial={{ scale: 0.95, opacity: 0.9 }}
+              animate={{ scale: [0.96, 1, 0.96], opacity: [0.8, 1, 0.8] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="inline-flex items-center"
+            >
+              <MousePointer2 className="h-3.5 w-3.5" />
+            </motion.span>
+          )}
+          {hoveringProject === projectName && !active && (
+            <div className="flex items-center gap-1">
+              <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity }}>•</motion.span>
+              <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}>•</motion.span>
+              <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }}>•</motion.span>
+            </div>
+          )}
+          <span className="whitespace-nowrap">What happened</span>
+        </div>
+      </div>
+    </motion.div>
+  )
+
+  useEffect(() => {
+    // cleanup hover timer on unmount
+    return () => {
+      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     const cards = document.getElementsByClassName('card-container');
@@ -347,25 +438,62 @@ export default function Projects() {
         title="Things I've made trying to put my dent in the universe."
         intro="I've worked on tons of little projects over the years but these are the ones that I'm most proud of. Many of them are open-source, so if you see something that piques your interest, check out the code and contribute if you have ideas for how it can be improved."
       >
+        <div className="mb-6 flex items-center justify-end gap-2">
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`rounded-md px-3 py-1.5 text-sm transition ${
+              viewMode === 'grid'
+                ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                : 'border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+            }`}
+            aria-pressed={viewMode === 'grid'}
+          >
+            Grid
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`rounded-md px-3 py-1.5 text-sm transition ${
+              viewMode === 'list'
+                ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                : 'border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+            }`}
+            aria-pressed={viewMode === 'list'}
+          >
+            List
+          </button>
+        </div>
         <motion.ul
           variants={container}
           initial="hidden"
           animate="show"
           role="list"
-          className="grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3"
+          className={`grid gap-x-12 gap-y-16 ${
+            viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
+          }`}
         >
           {projects.map((project) => (
             <motion.li
               key={project.name}
               variants={projectVariant}
-              whileHover={getStatusHoverEffect(project.status)}
               className="relative card-container"
               onMouseEnter={() => handleMouseEnter(project.name)}
               onMouseLeave={handleMouseLeave}
-              onTouchStart={() => handleTouchStart(project.name)}
               onTouchEnd={handleMouseLeave}
             >
               <StatusIndicator status={project.status} />
+              <GlowCard
+                className={viewMode === 'list' ? 'w-full' : 'w-full'}
+                customSize
+                glowColor={getGlowColorFromProject(project.name)}
+                onMouseEnter={() => handleMouseEnter(project.name)}
+                onMouseLeave={handleMouseLeave}
+                onClick={() => handleClickCard(project.name)}
+              >
+              <motion.div
+                initial={false}
+                animate={activeProject === project.name ? getStatusHoverEffect(project.status) : {}}
+                className="rounded-2xl"
+              >
               <Card as="div">
                 <motion.div 
                   className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0"
@@ -390,7 +518,12 @@ export default function Projects() {
                 <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
                   <Card.Link href={project.link.href}>{project.name}</Card.Link>
                 </h2>
-                <Card.Description>{project.description}</Card.Description>
+                <Card.Description>
+                  <span className="relative inline-block">
+                    <span className="relative z-10">{project.description}</span>
+                    <span className={`absolute -inset-1 -z-0 rounded-md blur-md bg-gradient-to-r ${revealGradientClass(project.name)} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                  </span>
+                </Card.Description>
                 <AnimatePresence mode="wait">
                   {activeProject === project.name && project?.whatHappened && (
                     <motion.div
@@ -398,21 +531,46 @@ export default function Projects() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.3 }}
-                      className="relative z-30 mt-4 text-sm text-zinc-600 dark:text-zinc-400"
+                      className={`relative z-30 mt-4 text-sm text-zinc-700 dark:text-zinc-200 rounded-lg ring-1 ring-white/10 bg-gradient-to-r ${revealGradientClass(project.name)} p-3 backdrop-blur-sm`}
                       style={{ 
                         backgroundColor: 'inherit',
                         backdropFilter: 'blur(8px)'
                       }}
                     >
-                      <b>What Happened:</b> <TypewriterText text={project.whatHappened} isVisible={activeProject === project.name} />
+                      <motion.div
+                        initial="hidden"
+                        animate="show"
+                        variants={{
+                          hidden: {},
+                          show: { transition: { staggerChildren: 0.025 } },
+                        }}
+                        className="leading-relaxed"
+                      >
+                        <b className="mr-1">What Happened:</b>
+                        {project.whatHappened.split(/\s+/).map((w, i) => (
+                          <motion.span
+                            key={i}
+                            variants={{ hidden: { opacity: 0, y: 4 }, show: { opacity: 1, y: 0 } }}
+                            className="inline-block mr-1"
+                          >
+                            {w}
+                          </motion.span>
+                        ))}
+                      </motion.div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-                <p className="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
-                  <LinkIcon className="h-6 w-6 flex-none" />
-                  <span className="ml-2">{project.link.label}</span>
-                </p>
               </Card>
+              </motion.div>
+              {/* Footer action bar, compact spacing */}
+              <div className="mt-4 gap-3 flex items-center justify-between">
+              <TeaserChip projectName={project.name} active={activeProject === project.name} />
+                <Link href={project.link.href} onClick={(e)=>e.stopPropagation()} className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3 py-1.5 text-sm transition hover:bg-zinc-800 dark:hover:bg-zinc-200">
+                  Visit
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              </div>
+              </GlowCard>
             </motion.li>
           ))}
         </motion.ul>

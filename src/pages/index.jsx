@@ -103,6 +103,29 @@ function ArrowDownIcon(props) {
   )
 }
 
+function BookIcon(props) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path
+        d="M6.75 4.75h7.5a3 3 0 0 1 3 3v10.5a.75.75 0 0 1-1.118.664c-1.176-.662-2.71-1.164-4.382-1.164H6.75a3 3 0 0 1-3-3V7.75a3 3 0 0 1 3-3Z"
+        className="fill-zinc-100 stroke-zinc-400 dark:fill-zinc-100/10 dark:stroke-zinc-500"
+      />
+      <path
+        d="M16.5 4.75v12.75M6.75 8.25h6"
+        className="stroke-zinc-400 dark:stroke-zinc-500"
+      />
+    </svg>
+  )
+}
+
 function Article({ article }) {
   return (
     <Card as="article">
@@ -152,6 +175,30 @@ function Newsletter() {
         </Button>
       </div>
     </form>
+  )
+}
+
+function ArticlesHeader() {
+  return (
+  <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
+      <h2 className="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+        <BookIcon className="h-6 w-6 flex-none" />
+        <span className="ml-3">Articles</span>
+      </h2>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Things I&apos;ve written below, check out my blog!
+      </p>
+    <ArticlesPointer />
+
+    </div>
+  )
+}
+
+function ArticlesPointer() {
+  return (
+    <div className="flex justify-center items-center flex-col w-full pt-2">
+      <ArrowDownIcon className="h-8 w-8 stroke-zinc-400 dark:stroke-zinc-500 animate-bounce" />
+    </div>
   )
 }
 
@@ -432,17 +479,19 @@ export default function Home({ articles }) {
       <Photos />
       <Container className="mt-24 md:mt-28">
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
+          <div className="space-y-10 lg:pr-16 xl:pr-24">
+            <Newsletter />
+            <Resume />
+          </div>
           <div className="flex flex-col gap-16">
             {/*<div style={{ fontFamily: 'Layer, sans-serif' }} className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl py-3">*/}
             {/*  Articles Coming Soon!*/}
             {/*</div>*/}
+            <ArticlesHeader />
+            
             {articles.map((article) => (
               <Article key={article.slug} article={article} />
             ))}
-          </div>
-          <div className="space-y-10 lg:pl-16 xl:pl-24">
-            <Newsletter />
-            <Resume />
           </div>
         </div>
       </Container>
