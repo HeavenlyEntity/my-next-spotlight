@@ -8,7 +8,6 @@ import Script from 'next/script'
 
 import '@/styles/tailwind.css'
 import '@/styles/global.css'
-import '@/styles/deftform.css'
 import 'focus-visible'
 
 // 2. Define your toolbar configuration
