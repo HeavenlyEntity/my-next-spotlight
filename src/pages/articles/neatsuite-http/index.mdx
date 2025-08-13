@@ -1,0 +1,110 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const meta = {
+  author: 'Alec Mingione',
+  date: '2025-08-13',
+  title: 'Introducing neatsuite/http — a TypeScript‑first NetSuite HTTP client',
+  description:
+    'OAuth 1.0a signing, smart retries, and a clean DX for calling NetSuite REST (SuiteTalk) and RESTlets from Node.js or SuiteScript.',
+}
+
+export default (props) => <ArticleLayout meta={meta} {...props} />
+
+# neatsuite/http
+
+> A minimal, TypeScript‑first HTTP client tailored for NetSuite. It handles OAuth 1.0a signing, sane defaults, and reliability features so you can focus on your business logic.
+
+- **Repo**: [heavenlyentity/neatsuite](https://github.com/heavenlyentity/neatsuite)
+- **Package**: `@neatsuite/http`
+
+## Why another client?
+
+Interacting with NetSuite often means dealing with OAuth 1.0a, request throttling, and verbose request setup. `neatsuite/http` gives you:
+
+- Strong TypeScript types and helpful intellisense
+- Built‑in OAuth 1.0a signing
+- Automatic retry with backoff for transient errors
+- Simple, predictable API surface (`get`, `post`, `put`, `delete`)
+- First‑class ergonomics for SuiteTalk REST and RESTlets
+
+## Install
+
+```bash
+npm install @neatsuite/http
+# or
+pnpm add @neatsuite/http
+# or
+yarn add @neatsuite/http
+```
+
+## Quick start (Node.js)
+
+```ts
+import { createClient } from '@neatsuite/http'
+
+const ns = createClient({
+  accountId: process.env.NETSUITE_ACCOUNT_ID!,
+  consumerKey: process.env.NETSUITE_CONSUMER_KEY!,
+  consumerSecret: process.env.NETSUITE_CONSUMER_SECRET!,
+  tokenId: process.env.NETSUITE_TOKEN_ID!,
+  tokenSecret: process.env.NETSUITE_TOKEN_SECRET!,
+  realm: process.env.NETSUITE_REALM, // optional; some accounts require this
+})
+
+// Example: SuiteTalk REST record fetch
+const item = await ns.get(`/services/rest/record/v1/inventoryItem/123`)
+console.log(item)
+
+// Example: call a RESTlet
+await ns.post(`/app/site/hosting/restlet.nl?script=123&deploy=1`, { foo: 'bar' })
+```
+
+## Usage (SuiteScript 2.x/2.1)
+
+If you bundle the UMD build for client or server scripts, you can import it via AMD just like any other dependency.
+
+```javascript
+/**
+ * @NApiVersion 2.1
+ * @NScriptType UserEventScript
+ * @NModuleScope SameAccount
+ * @NAmdConfig ./amdConfig.json
+ */
+define(['N/runtime', '@neatsuite/http'], function (runtime, neatsuiteHttp) {
+  function beforeLoad(ctx) {
+    const ns = neatsuiteHttp.createClient({
+      accountId: runtime.accountId,
+      consumerKey: '...',
+      consumerSecret: '...',
+      tokenId: '...',
+      tokenSecret: '...'
+    })
+
+    // Call a RESTlet
+    ns.post('/app/site/hosting/restlet.nl?script=123&deploy=1', { hello: 'world' })
+  }
+
+  return { beforeLoad }
+})
+```
+
+> Tip: In your AMD config, map the package name to the bundled file path if needed.
+
+## Features at a glance
+
+- OAuth 1.0a request signing with minimal setup
+- Automatic retries with exponential backoff
+- Request/response interceptors for logging and instrumentation
+- Typed helpers for common NetSuite patterns
+
+## Roadmap
+
+- Built‑in pagination helpers for SuiteTalk list endpoints
+- First‑class search helpers
+- Retries tuned per NetSuite error code
+
+## Get involved
+
+Have ideas or found an edge case? Open an issue or PR in the repo: [heavenlyentity/neatsuite](https://github.com/heavenlyentity/neatsuite)
+
+
