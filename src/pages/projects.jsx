@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
 import { ArrowUpRight, MousePointer2 } from 'lucide-react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { GlowCard } from '@/components/ui/spotlight-card'
 import { debounce } from 'lodash'
 
@@ -49,6 +49,15 @@ const projects = [
     logo: authjsLogo,
     status: 'live',
     whatHappened: 'Successfully merged into Auth.js and ready to be released into the new version 5!',
+  },
+  {
+    name: '@neatsuite/http',
+    description:
+      'TypeScript-first NetSuite HTTP client with OAuth 1.0a signing, smart retries, and a clean DX for SuiteTalk REST and RESTlets.',
+    link: { href: 'https://github.com/heavenlyentity/neatsuite', label: 'github.com' },
+    logo: logoCosmos,
+    status: 'live',
+    whatHappened: 'Released as part of the NeatSuite monorepo; actively maintained and adopted in projects.',
   },
   {
     name: 'PortalGen™',
@@ -364,6 +373,16 @@ export default function Projects() {
     setActiveProject((prev) => (prev === name ? null : name))
   }
 
+  const projectsWithValidity = useMemo(() => {
+    return projects.map((p) => {
+      const href = p.link?.href
+      const isValidLink = !!href && typeof href === 'string' && href !== '#' && (
+        href.startsWith('http://') || href.startsWith('https://') || href.startsWith('/')
+      )
+      return { ...p, isValidLink }
+    })
+  }, [])
+
   const TeaserChip = ({ projectName, active }) => (
     <motion.div
       initial={false}
@@ -471,7 +490,7 @@ export default function Projects() {
             viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
           }`}
         >
-          {projects.map((project) => (
+          {projectsWithValidity.map((project) => (
             <motion.li
               key={project.name}
               variants={projectVariant}
@@ -565,10 +584,14 @@ export default function Projects() {
               {/* Footer action bar, compact spacing */}
               <div className="mt-4 gap-3 flex items-center justify-between">
               <TeaserChip projectName={project.name} active={activeProject === project.name} />
-                <Link href={project.link.href} onClick={(e)=>e.stopPropagation()} className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3 py-1.5 text-sm transition hover:bg-zinc-800 dark:hover:bg-zinc-200">
-                  Visit
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
+                {project.isValidLink ? (
+                  <Link href={project.link.href} onClick={(e)=>e.stopPropagation()} className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3 py-1.5 text-sm transition hover:bg-zinc-800 dark:hover:bg-zinc-200">
+                    Visit
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-zinc-500 dark:text-zinc-400">{project.link?.label || 'Visit'}</span>
+                )}
               </div>
               </GlowCard>
             </motion.li>
