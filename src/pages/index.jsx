@@ -5,6 +5,7 @@ import Link from 'next/link'
 import clsx from 'clsx'
 import Typewriter from 'typewriter-effect'
 import { motion } from 'framer-motion'
+import dynamic from 'next/dynamic'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Container } from '@/components/Container'
@@ -32,6 +33,7 @@ import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
 
+const OrbitingSkills = dynamic(() => import('@/components/ui/orbiting-skills'), { ssr: false })
 
 const onDownloadResume = () => {
   fetch(file).then((response) => {
@@ -411,7 +413,8 @@ export default function Home({ articles }) {
             </defs>
           </svg>
         </div>
-        <div className="max-w-2xl">
+        <div className="relative flex">
+          <div className="relative z-10 max-w-2xl">
           <div
             style={{ fontFamily: 'Layer, sans-serif' }}
             className="py-3 text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl"
@@ -442,7 +445,7 @@ export default function Home({ articles }) {
             & amateur artist.
           </div>
 
-          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
+          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400 text-shadow-contrast">
             Hi! I’m Alec, a senior software engineer and entrepreneur based in
             Phoenix Arizona. I’m the founder and CEO of MiPi, where we develop
             technologies that empower people to explore free speech, privacy,
@@ -469,6 +472,10 @@ export default function Home({ articles }) {
               aria-label="Follow on LinkedIn"
               icon={LinkedInIcon}
             />
+          </div>
+          </div>
+          <div className="pointer-events-none absolute bottom-0 w-full inset-0 z-0">
+            <OrbitingSkills showBackdrop={false} />
           </div>
         </div>
       </Container>
