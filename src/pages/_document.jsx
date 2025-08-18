@@ -52,7 +52,7 @@ export default function Document() {
           href={`${process.env.NEXT_PUBLIC_SITE_URL}/rss/feed.json`}
         />
         <meta http-equiv="imagetoolbar" content="no" />
-      
+        <meta name='impact-site-verification' value='f77f8902-5007-4ccb-8dc0-d58a1ceb6915' />
 
       </Head>
       <body className="flex h-full flex-col bg-zinc-50 dark:bg-black">

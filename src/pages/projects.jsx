@@ -154,39 +154,39 @@ const projectVariant = {
 
 const getStatusHoverEffect = (status) => {
   const baseEffect = {
-    scale: 1.02,
-    transition: { duration: 0.2 }
+    scale: 1.01, // Reduced from 1.02 to minimize scaling
+    transition: { duration: 0.15, ease: "easeOut" } // Faster, smoother transition
   }
 
   const effects = {
     live: {
       ...baseEffect,
-      backgroundColor: "rgba(0, 255, 157, 0.03)",
-      boxShadow: "0 0 25px rgba(0, 255, 157, 0.2)",
+      backgroundColor: "rgba(0, 255, 157, 0.02)", // Reduced opacity
+      boxShadow: "0 0 20px rgba(0, 255, 157, 0.15)", // Softer glow
       borderRadius: "1rem",
     },
     development: {
       ...baseEffect,
-      backgroundColor: "rgba(255, 0, 242, 0.03)",
-      boxShadow: "0 0 25px rgba(255, 0, 242, 0.2)",
+      backgroundColor: "rgba(255, 0, 242, 0.02)",
+      boxShadow: "0 0 20px rgba(255, 0, 242, 0.15)",
       borderRadius: "1rem",
     },
     archived: {
       ...baseEffect,
-      backgroundColor: "rgba(136, 136, 136, 0.03)",
-      boxShadow: "0 0 25px rgba(136, 136, 136, 0.2)",
+      backgroundColor: "rgba(136, 136, 136, 0.02)",
+      boxShadow: "0 0 20px rgba(136, 136, 136, 0.15)",
       borderRadius: "1rem",
     },
     sold: {
       ...baseEffect,
-      backgroundColor: "rgba(255, 174, 0, 0.03)",
-      boxShadow: "0 0 25px rgba(255, 174, 0, 0.2)",
+      backgroundColor: "rgba(255, 174, 0, 0.02)",
+      boxShadow: "0 0 20px rgba(255, 174, 0, 0.15)",
       borderRadius: "1rem",
     },
     internal: {
       ...baseEffect,
-      backgroundColor: "rgba(255, 174, 0, 0.03)",
-      boxShadow: "0 0 25px rgba(255, 174, 0, 0.2)",
+      backgroundColor: "rgba(255, 174, 0, 0.02)",
+      boxShadow: "0 0 20px rgba(255, 174, 0, 0.15)",
       borderRadius: "1rem",
     }
   }
@@ -386,18 +386,29 @@ export default function Projects() {
   const TeaserChip = ({ projectName, active }) => (
     <motion.div
       initial={false}
-      animate={{ opacity: active ? 0 : 1, y: active ? 6 : 0, scale: active ? 0.98 : 1 }}
-      transition={{ duration: 0.25 }}
+      animate={{ 
+        opacity: active ? 0 : 1, 
+        y: active ? 6 : 0, 
+        scale: active ? 0.96 : 1 // Slightly reduced scale change
+      }}
+      transition={{ duration: 0.2, ease: "easeOut" }} // Faster transition
       className="flex w-full justify-end"
     >
-      <div className="relative overflow-hidden rounded-full ring-1 ring-white/10 shadow-sm backdrop-blur-sm">
-        <div className={`absolute inset-0 bg-gradient-to-r ${revealGradientClass(projectName)} opacity-70`} />
+      <div className="relative overflow-hidden rounded-full ring-1 ring-white/10 shadow-sm backdrop-blur-sm hover:ring-white/20 transition-all duration-200">
+        <div className={`absolute inset-0 bg-gradient-to-r ${revealGradientClass(projectName)} opacity-50 hover:opacity-70 transition-opacity duration-200`} />
         <div className="relative z-10 flex items-center gap-2 px-3 py-1 text-xs font-medium text-zinc-900 dark:text-zinc-50">
           {hoveringProject !== projectName && (
             <motion.span
               initial={{ scale: 0.95, opacity: 0.9 }}
-              animate={{ scale: [0.96, 1, 0.96], opacity: [0.8, 1, 0.8] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
+              animate={{ 
+                scale: [0.96, 1, 0.96], 
+                opacity: [0.7, 1, 0.7] 
+              }}
+              transition={{ 
+                duration: 2, // Slower, more subtle animation
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
               className="inline-flex items-center"
             >
               <MousePointer2 className="h-3.5 w-3.5" />
@@ -405,9 +416,9 @@ export default function Projects() {
           )}
           {hoveringProject === projectName && !active && (
             <div className="flex items-center gap-1">
-              <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity }}>•</motion.span>
-              <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}>•</motion.span>
-              <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }}>•</motion.span>
+              <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}>•</motion.span>
+              <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 0.8, repeat: Infinity, delay: 0.15, ease: "easeInOut" }}>•</motion.span>
+              <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 0.8, repeat: Infinity, delay: 0.3, ease: "easeInOut" }}>•</motion.span>
             </div>
           )}
           <span className="whitespace-nowrap">What happened</span>
@@ -425,21 +436,35 @@ export default function Projects() {
 
   useEffect(() => {
     const cards = document.getElementsByClassName('card-container');
+    let animationId;
     
-    const handleMouseMove = debounce((e) => {
-      for (const card of cards) {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+    const handleMouseMove = (e) => {
+      // Only update if we're not already scheduled for an update
+      if (!animationId) {
+        animationId = requestAnimationFrame(() => {
+          for (const card of cards) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
 
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+          }
+          animationId = null;
+        });
       }
-    }, 100); // Debounce to reduce frequency
+    };
 
-    document.addEventListener('mousemove', handleMouseMove);
+    // Only add mousemove listener on desktop
+    const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (isDesktop) {
+      document.addEventListener('mousemove', handleMouseMove, { passive: true });
+    }
 
     return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
       document.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
@@ -497,6 +522,7 @@ export default function Projects() {
               className="relative card-container"
               onMouseEnter={() => handleMouseEnter(project.name)}
               onMouseLeave={handleMouseLeave}
+              onTouchStart={() => handleMouseEnter(project.name)} // Better mobile support
               onTouchEnd={handleMouseLeave}
             >
               <StatusIndicator status={project.status} />
@@ -510,19 +536,21 @@ export default function Projects() {
               >
               <motion.div
                 initial={false}
-                animate={activeProject === project.name ? getStatusHoverEffect(project.status) : {}}
+                animate={activeProject === project.name ? getStatusHoverEffect(project.status) : { scale: 1 }}
                 className="rounded-2xl"
+                style={{ transformOrigin: 'center' }} // Ensure scaling from center
               >
               <Card as="div">
                 <motion.div 
                   className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0"
                   whileHover={{
-                    rotate: 360,
-                    scale: 1.1,
+                    rotate: 180, // Reduced rotation for smoother effect
+                    scale: 1.05, // Reduced scale to prevent double scaling
                     transition: { 
-                      duration: 0.5,
+                      duration: 0.3, // Faster animation
                       type: "spring",
-                      stiffness: 200
+                      stiffness: 300,
+                      damping: 20
                     }
                   }}
                 >
@@ -585,12 +613,18 @@ export default function Projects() {
               <div className="mt-4 gap-3 flex items-center justify-between">
               <TeaserChip projectName={project.name} active={activeProject === project.name} />
                 {project.isValidLink ? (
-                  <Link href={project.link.href} onClick={(e)=>e.stopPropagation()} className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3 py-1.5 text-sm transition hover:bg-zinc-800 dark:hover:bg-zinc-200">
-                    Visit
-                    <ArrowUpRight className="h-4 w-4" />
+                  <Link 
+                    href={project.link.href} 
+                    onClick={(e)=>e.stopPropagation()} 
+                    className="group inline-flex items-center gap-1.5 rounded-md bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3 py-1.5 text-sm transition-all duration-200 hover:bg-zinc-800 dark:hover:bg-zinc-200 hover:scale-105 hover:shadow-lg"
+                  >
+                    <span>Visit</span>
+                    <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-zinc-500 dark:text-zinc-400">{project.link?.label || 'Visit'}</span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-zinc-500 dark:text-zinc-400 cursor-not-allowed opacity-60">
+                    {project.link?.label || 'Visit'}
+                  </span>
                 )}
               </div>
               </GlowCard>
