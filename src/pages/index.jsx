@@ -219,13 +219,10 @@ function Resume() {
     },
     {
       company: 'NewGen Business Solutions',
-      title: 'Senior Software Engineer',
+      title: 'Senior Lead Software Engineer',
       logo: logoNewgen,
       start: '2021',
-      end: {
-        label: 'Present',
-        dateTime: new Date().getFullYear(),
-      },
+      end: '2025',
     },
     {
       company: 'Charles Schwab',
