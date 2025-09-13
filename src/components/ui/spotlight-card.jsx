@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 
 const glowColorMap = {
   blue: { base: 220, spread: 200 },
@@ -28,36 +28,29 @@ function GlowCard({
   const cardRef = useRef(null)
   const innerRef = useRef(null)
 
+  const rafIdRef = useRef(null)
+
+  const handlePointerMove = useCallback((e) => {
+    // Only react to hover-capable pointers
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+    if (rafIdRef.current) return
+    const target = cardRef.current
+    if (!target) return
+    const rect = target.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    rafIdRef.current = requestAnimationFrame(() => {
+      target.style.setProperty('--x', x.toFixed(1))
+      target.style.setProperty('--y', y.toFixed(1))
+      target.style.setProperty('--xp', (x / rect.width).toFixed(3))
+      target.style.setProperty('--yp', (y / rect.height).toFixed(3))
+      rafIdRef.current = null
+    })
+  }, [])
+
   useEffect(() => {
-    // Only enable pointer tracking on devices that support hover
-    const supportsHover = window.matchMedia('(hover: hover)').matches;
-    
-    if (!supportsHover) return;
-
-    let animationId;
-    
-    const syncPointer = (e) => {
-      if (!animationId) {
-        animationId = requestAnimationFrame(() => {
-          const { clientX: x, clientY: y } = e
-          if (cardRef.current) {
-            cardRef.current.style.setProperty('--x', x.toFixed(1))
-            cardRef.current.style.setProperty('--xp', (x / window.innerWidth).toFixed(3))
-            cardRef.current.style.setProperty('--y', y.toFixed(1))
-            cardRef.current.style.setProperty('--yp', (y / window.innerHeight).toFixed(3))
-          }
-          animationId = null;
-        });
-      }
-    }
-
-    document.addEventListener('pointermove', syncPointer, { passive: true })
-    
     return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-      }
-      document.removeEventListener('pointermove', syncPointer)
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current)
     }
   }, [])
 
@@ -88,13 +81,13 @@ function GlowCard({
         hsl(var(--hue, 210) calc(var(--saturation, 100) * 1%) calc(var(--lightness, 70) * 1%) / var(--bg-spot-opacity, 0.08)), transparent
       )`,
       backgroundColor: 'var(--backdrop, transparent)',
-      backgroundSize: 'calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)))',
-      backgroundPosition: '50% 50%',
-      backgroundAttachment: 'fixed',
+      backgroundSize: '100% 100%',
+      backgroundPosition: '0 0',
       border: 'var(--border-size) solid var(--backup-border)',
       position: 'relative',
-      touchAction: 'manipulation', // Better touch handling
-      willChange: 'auto', // Let browser decide what to optimize
+      touchAction: 'manipulation',
+      willChange: 'transform, filter',
+      contain: 'layout paint style',
     }
 
     if (width !== undefined) {
@@ -116,10 +109,9 @@ function GlowCard({
       inset: calc(var(--border-size) * -1);
       border: var(--border-size) solid transparent;
       border-radius: calc(var(--radius) * 1px);
-      background-attachment: fixed;
-      background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
+      background-size: 100% 100%;
       background-repeat: no-repeat;
-      background-position: 50% 50%;
+      background-position: 0 0;
       mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
       mask-clip: padding-box, border-box;
       mask-composite: intersect;
@@ -163,9 +155,21 @@ function GlowCard({
     }
   `
 
+  // Inject shared styles once to avoid duplicating <style> for every card
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const STYLE_ID = 'glow-card-shared-styles'
+    const existing = document.getElementById(STYLE_ID)
+    if (!existing) {
+      const el = document.createElement('style')
+      el.id = STYLE_ID
+      el.textContent = beforeAfterStyles
+      document.head.appendChild(el)
+    }
+  }, [])
+
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: beforeAfterStyles }} />
       <div
         ref={cardRef}
         data-glow
@@ -180,9 +184,10 @@ function GlowCard({
           shadow-[0_1rem_2rem_-1rem_black] 
           p-4 
           gap-4 
-          backdrop-blur-[5px]
+          hover:backdrop-blur-sm
           ${className}
         `}
+        onPointerMove={handlePointerMove}
         {...rest}
       >
         <div ref={innerRef} data-glow></div>

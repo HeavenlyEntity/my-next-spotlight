@@ -3,9 +3,8 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'motion/react'
 import { ArrowUpRight, MousePointer2 } from 'lucide-react'
-import React, { useEffect, useRef, useState, useMemo } from 'react'
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 import { GlowCard } from '@/components/ui/spotlight-card'
-import { debounce } from 'lodash'
 
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
@@ -196,6 +195,16 @@ const getStatusHoverEffect = (status) => {
 
 const StatusIndicator = React.memo(({ status }) => {
   StatusIndicator.displayName = 'StatusIndicator';
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+      setPrefersReducedMotion(mq.matches)
+      const onChange = (e) => setPrefersReducedMotion(e.matches)
+      mq.addEventListener?.('change', onChange)
+      return () => mq.removeEventListener?.('change', onChange)
+    }
+  }, [])
   const statusConfig = {
     live: {
       color: '#00ff9d',
@@ -246,16 +255,9 @@ const StatusIndicator = React.memo(({ status }) => {
               backgroundColor: config?.color,
               boxShadow: `0 0 10px ${config?.color}`
             }}
-            initial={{ opacity: 0.5, scale: 1 }}
-            animate={{ 
-              opacity: [0.5, 0],
-              scale: [1, 1.8],
-            }}
-            transition={{ 
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
+            initial={{ opacity: prefersReducedMotion ? 1 : 0.5, scale: 1 }}
+            animate={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: [0.5, 0], scale: [1, 1.8] }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
           />
         )}
         <motion.div
@@ -264,14 +266,8 @@ const StatusIndicator = React.memo(({ status }) => {
             backgroundColor: config?.color,
             boxShadow: `0 0 10px ${config?.color}`
           }}
-          animate={{ 
-            scale: config?.pulseRing ? [1, 1.1, 1] : 1
-          }}
-          transition={{ 
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
+          animate={prefersReducedMotion ? { scale: 1 } : { scale: config?.pulseRing ? [1, 1.1, 1] : 1 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
       <motion.span 
@@ -352,26 +348,26 @@ export default function Projects() {
   }
 
 
-  const handleMouseEnter = (name) => {
+  const handleMouseEnter = useCallback((name) => {
     setHoveringProject(name)
     if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current)
     hoverTimerRef.current = setTimeout(() => {
       setActiveProject(name)
     }, HOVER_REVEAL_DELAY_MS)
-  };
+  }, [])
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current)
       hoverTimerRef.current = null
     }
     setActiveProject(null)
     setHoveringProject(null)
-  };
+  }, [])
 
-  const handleClickCard = (name) => {
+  const handleClickCard = useCallback((name) => {
     setActiveProject((prev) => (prev === name ? null : name))
-  }
+  }, [])
 
   const projectsWithValidity = useMemo(() => {
     return projects.map((p) => {
@@ -383,7 +379,8 @@ export default function Projects() {
     })
   }, [])
 
-  const TeaserChip = ({ projectName, active }) => (
+  const TeaserChip = React.memo(function TeaserChipComponent({ projectName, active }) {
+    return (
     <motion.div
       initial={false}
       animate={{ 
@@ -398,21 +395,9 @@ export default function Projects() {
         <div className={`absolute inset-0 bg-gradient-to-r ${revealGradientClass(projectName)} opacity-50 hover:opacity-70 transition-opacity duration-200`} />
         <div className="relative z-10 flex items-center gap-2 px-3 py-1 text-xs font-medium text-zinc-900 dark:text-zinc-50">
           {hoveringProject !== projectName && (
-            <motion.span
-              initial={{ scale: 0.95, opacity: 0.9 }}
-              animate={{ 
-                scale: [0.96, 1, 0.96], 
-                opacity: [0.7, 1, 0.7] 
-              }}
-              transition={{ 
-                duration: 2, // Slower, more subtle animation
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="inline-flex items-center"
-            >
+            <span className="inline-flex items-center opacity-80">
               <MousePointer2 className="h-3.5 w-3.5" />
-            </motion.span>
+            </span>
           )}
           {hoveringProject === projectName && !active && (
             <div className="flex items-center gap-1">
@@ -425,7 +410,9 @@ export default function Projects() {
         </div>
       </div>
     </motion.div>
-  )
+    )
+  })
+  TeaserChip.displayName = 'TeaserChip'
 
   useEffect(() => {
     // cleanup hover timer on unmount
@@ -433,41 +420,6 @@ export default function Projects() {
       if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current)
     }
   }, [])
-
-  useEffect(() => {
-    const cards = document.getElementsByClassName('card-container');
-    let animationId;
-    
-    const handleMouseMove = (e) => {
-      // Only update if we're not already scheduled for an update
-      if (!animationId) {
-        animationId = requestAnimationFrame(() => {
-          for (const card of cards) {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
-          }
-          animationId = null;
-        });
-      }
-    };
-
-    // Only add mousemove listener on desktop
-    const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    if (isDesktop) {
-      document.addEventListener('mousemove', handleMouseMove, { passive: true });
-    }
-
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-      }
-      document.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
 
   return (
     <>
