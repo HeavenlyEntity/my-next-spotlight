@@ -28,6 +28,7 @@ import logoDotCom from '@/images/logos/Dot_Com_Development.png'
 import logoMipi from '@/images/logos/mipi.svg'
 import logoSchwab from '@/images/logos/charles-schwab.png'
 import logoNewgen from '@/images/logos/newgen.png'
+import logoKingdomKode from '@/images/logos/kingdom-kode-logo.svg'
 import logoStarbucks from '@/images/logos/starbucks.svg'
 import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
@@ -208,6 +209,15 @@ function ArticlesPointer() {
 function Resume() {
   let resume = [
     {
+      company: 'Kingdom Kode',
+      title: 'Co-Founder & CEO',
+      logo: logoKingdomKode,
+      start: '2025',
+      end: {
+        label: 'Present',
+        dateTime: new Date().getFullYear(),
+      },
+    },{
       company: 'MiPi',
       title: 'Founder & CEO',
       logo: logoMipi,

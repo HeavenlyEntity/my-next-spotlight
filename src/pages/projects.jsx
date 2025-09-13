@@ -20,7 +20,7 @@ import logoWindstone from '@/images/logos/Windstone icon-1.png'
 import logoMipi from '@/images/logos/mipi-lander-int-icon.svg'
 import authjsLogo from '@/images/logos/authjs.png'
 import logoConvensionSuite from '@/images/logos/ConventionSuite.png'
-import logoKingdomKode from '@/images/photos/kingdom-kode-logo.svg'
+import logoKingdomKode from '@/images/logos/kingdom-kode-logo.svg'
 
 const projects = [
   {

@@ -149,8 +149,7 @@ export default function About() {
                   duration: 0.5,
                   delay: 1,
                 }}
-              >
-                the future
+              >future
               </motion.span>{' '}
               in technology.
             </motion.h1>
