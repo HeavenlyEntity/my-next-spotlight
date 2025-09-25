@@ -453,10 +453,9 @@ export default function Home({ articles }) {
           </div>
 
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400 text-shadow-contrast">
-            Hi! I’m Alec, a senior software engineer and entrepreneur based in
-            Phoenix Arizona. I’m the founder and CEO of MiPi, where we develop
-            technologies that empower people to explore free speech, privacy,
-            and social engagement on their own terms.
+            Hi! I’m Alec, a software engineer, author, on demand CTO, AI expert, mentor, and entrepreneur based in
+            Phoenix Arizona. I’m the Co-Founder and CEO of Kingdom Kode, where we build AI-powered solutions for businesses and teams to boost their productivity and growth. I also teach AI and coding to kids and adults alike.
+            Lets build something great together!
           </p>
           <div className="mt-6 flex gap-6">
             {/*<SocialLink
