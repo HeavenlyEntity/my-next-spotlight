@@ -33,6 +33,7 @@ import logoStarbucks from '@/images/logos/starbucks.svg'
 import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
+import { GlassButton } from '@/components/ui/glass-button'
 
 const OrbitingSkills = dynamic(() => import('@/components/ui/orbiting-skills'), { ssr: false })
 
@@ -478,6 +479,18 @@ export default function Home({ articles }) {
               aria-label="Follow on LinkedIn"
               icon={LinkedInIcon}
             />
+          </div>
+          <div className="mt-6">
+            <GlassButton
+              size="default"
+              onClick={() => {
+                const contact = document.querySelector('#contact')
+                if (contact) contact.scrollIntoView({ behavior: 'smooth' })
+                else window.location.href = '/contact'
+              }}
+            >
+              Hire Me
+            </GlassButton>
           </div>
           </div>
           <div className="pointer-events-none absolute bottom-0 w-full inset-0 z-0">
