@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Head from 'next/head'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 import { Container } from '@/components/Container'
 import {
@@ -109,7 +109,7 @@ export default function About() {
                 transition={{
                   duration: 0.5,
                 }}
-                className="inline-block bg-gradient-to-r from-teal-600 to-green-400 bg-clip-text text-transparent"
+                className="inline-block bg-linear-to-r from-teal-600 to-green-400 bg-clip-text text-transparent"
               >
                 Alec Mingione
               </motion.span>
@@ -128,7 +128,7 @@ export default function About() {
                   duration: 0.5,
                   delay: 0.5,
                 }}
-                className="inline-block bg-gradient-to-r from-red-600 to-yellow-400 bg-clip-text text-transparent"
+                className="inline-block bg-linear-to-r from-red-600 to-yellow-400 bg-clip-text text-transparent"
               >
                 Phoenix Arizona
               </motion.span>

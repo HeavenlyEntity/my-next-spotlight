@@ -4,9 +4,10 @@ import Head from 'next/head'
 import Link from 'next/link'
 import clsx from 'clsx'
 import Typewriter from 'typewriter-effect'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import dynamic from 'next/dynamic'
 import { Button } from '@/components/Button'
+import { GlassButton } from '@/components/ui/glass-button'
 import { Card } from '@/components/Card'
 import { Container } from '@/components/Container'
 import {
@@ -172,7 +173,7 @@ function Newsletter() {
           placeholder="Email address"
           aria-label="Email address"
           required
-          className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
+          className="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(theme(spacing.2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-hidden focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 sm:text-sm"
         />
         <Button type="submit" className="ml-4 flex-none">
           Join
@@ -436,13 +437,13 @@ export default function Home({ articles }) {
                   }}
                   onInit={(typewriter) => {
                     typewriter
-                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-gradient-to-r from-teal-600  to-lime-300 inline-block text-transparent bg-clip-text font-bold'>Engineer</span>`)
+                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-linear-to-r from-teal-600  to-lime-300 inline-block text-transparent bg-clip-text font-bold'>Engineer</span>`)
                       .pauseFor(1000)
                       .deleteAll()
-                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-gradient-to-r from-teal-600 to-orange-400 inline-block text-transparent bg-clip-text font-bold'>Designer</span>`)
+                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-linear-to-r from-teal-600 to-orange-400 inline-block text-transparent bg-clip-text font-bold'>Designer</span>`)
                       .pauseFor(1000)
                       .deleteAll()
-                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-gradient-to-r from-red-600 to-yellow-400 inline-block text-transparent bg-clip-text font-bold'>Founder</span>`)
+                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-linear-to-r from-red-600 to-yellow-400 inline-block text-transparent bg-clip-text font-bold'>Founder</span>`)
                       .pauseFor(3000)
                       .start()
                   }}
@@ -478,6 +479,18 @@ export default function Home({ articles }) {
               aria-label="Follow on LinkedIn"
               icon={LinkedInIcon}
             />
+          </div>
+          <div className="mt-6">
+            <GlassButton
+              size="lg"
+              onClick={() => {
+                const contact = document.querySelector('#contact')
+                if (contact) contact.scrollIntoView({ behavior: 'smooth' })
+                else window.location.href = '/contact'
+              }}
+            >
+              Hire Me
+            </GlassButton>
           </div>
           </div>
           <div className="pointer-events-none absolute bottom-0 w-full inset-0 z-0">

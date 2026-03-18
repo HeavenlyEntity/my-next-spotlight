@@ -184,7 +184,7 @@ function GlowCard({
           shadow-[0_1rem_2rem_-1rem_black] 
           p-4 
           gap-4 
-          hover:backdrop-blur-sm
+          hover:backdrop-blur-xs
           ${className}
         `}
         onPointerMove={handlePointerMove}

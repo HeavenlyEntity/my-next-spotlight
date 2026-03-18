@@ -250,7 +250,7 @@ const StatusIndicator = React.memo(({ status }) => {
       <div className="relative flex items-center">
         {config?.pulseRing && (
           <motion.div
-            className="absolute inline-flex h-3 w-3 rounded-full dark:bg-opacity-100 bg-opacity-80"
+            className="absolute inline-flex h-3 w-3 rounded-full"
             style={{ 
               backgroundColor: config?.color,
               boxShadow: `0 0 10px ${config?.color}`
@@ -261,7 +261,7 @@ const StatusIndicator = React.memo(({ status }) => {
           />
         )}
         <motion.div
-          className="relative inline-flex h-3 w-3 rounded-full dark:bg-opacity-100 bg-opacity-80"
+          className="relative inline-flex h-3 w-3 rounded-full"
           style={{ 
             backgroundColor: config?.color,
             boxShadow: `0 0 10px ${config?.color}`
@@ -391,8 +391,8 @@ export default function Projects() {
       transition={{ duration: 0.2, ease: "easeOut" }} // Faster transition
       className="flex w-full justify-end"
     >
-      <div className="relative overflow-hidden rounded-full ring-1 ring-white/10 shadow-sm backdrop-blur-sm hover:ring-white/20 transition-all duration-200">
-        <div className={`absolute inset-0 bg-gradient-to-r ${revealGradientClass(projectName)} opacity-50 hover:opacity-70 transition-opacity duration-200`} />
+      <div className="relative overflow-hidden rounded-full ring-1 ring-white/10 shadow-xs backdrop-blur-xs hover:ring-white/20 transition-all duration-200">
+        <div className={`absolute inset-0 bg-linear-to-r ${revealGradientClass(projectName)} opacity-50 hover:opacity-70 transition-opacity duration-200`} />
         <div className="relative z-10 flex items-center gap-2 px-3 py-1 text-xs font-medium text-zinc-900 dark:text-zinc-50">
           {hoveringProject !== projectName && (
             <span className="inline-flex items-center opacity-80">
@@ -494,7 +494,7 @@ export default function Projects() {
               >
               <Card as="div">
                 <motion.div 
-                  className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0"
+                  className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full"
                   whileHover={{
                     rotate: 180, // Reduced rotation for smoother effect
                     scale: 1.05, // Reduced scale to prevent double scaling
@@ -509,7 +509,7 @@ export default function Projects() {
                   <Image
                     src={project.logo}
                     alt=""
-                    className="h-8 w-8 rounded"
+                    className="h-8 w-8 rounded-sm"
                     unoptimized
                     loading="lazy"
                   />
@@ -520,7 +520,7 @@ export default function Projects() {
                 <Card.Description>
                   <span className="relative inline-block">
                     <span className="relative z-10">{project.description}</span>
-                    <span className={`absolute -inset-1 -z-0 rounded-md blur-md bg-gradient-to-r ${revealGradientClass(project.name)} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                    <span className={`absolute -inset-1 -z-0 rounded-md blur-md opacity-0 group-hover:opacity-100 transition-opacity`} />
                   </span>
                 </Card.Description>
                 <AnimatePresence mode="wait">
@@ -530,7 +530,7 @@ export default function Projects() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.3 }}
-                      className={`relative z-30 mt-4 text-sm text-zinc-700 dark:text-zinc-200 rounded-lg ring-1 ring-white/10 bg-gradient-to-r ${revealGradientClass(project.name)} p-3 backdrop-blur-sm`}
+                      className={`relative z-30 mt-4 text-sm text-zinc-700 dark:text-zinc-200 rounded-lg ring-1 ring-white/10 bg-linear-to-r ${revealGradientClass(project.name)} p-3 backdrop-blur-xs`}
                       style={{ 
                         backgroundColor: 'inherit',
                         backdropFilter: 'blur(8px)'

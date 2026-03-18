@@ -10,6 +10,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 
 import '@/styles/tailwind.css'
 import '@/styles/global.css'
+import '@/styles/globals.css'
 import 'focus-visible'
 
 // 2. Define your toolbar configuration

@@ -127,7 +127,7 @@ const OrbitingSkill = memo(({
     zIndex: isHovered ? 20 : 10
   }} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <div className={`
-          relative w-full h-full p-2 bg-gray-800/90 backdrop-blur-sm
+          relative w-full h-full p-2 bg-gray-800/90 backdrop-blur-xs
           rounded-full flex items-center justify-center
           transition-all duration-300 cursor-pointer
           ${isHovered ? 'scale-125 shadow-2xl' : 'shadow-lg hover:shadow-xl'}
@@ -135,7 +135,7 @@ const OrbitingSkill = memo(({
       boxShadow: isHovered ? `0 0 30px ${iconComponents[iconType]?.color}40, 0 0 60px ${iconComponents[iconType]?.color}20` : undefined
     }}>
         <SkillIcon type={iconType} />
-        {isHovered && <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900/95 backdrop-blur-sm rounded text-xs text-white whitespace-nowrap pointer-events-none">
+        {isHovered && <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900/95 backdrop-blur-xs rounded-sm text-xs text-white whitespace-nowrap pointer-events-none">
             {label}
           </div>}
       </div>
@@ -229,7 +229,7 @@ export default function OrbitingSkills({ showBackdrop = true }) {
       <div className="relative justify-self-end align-self-center w-[calc(100vw-40px)] h-[calc(100vw-40px)] md:w-[450px] md:h-[450px] flex items-center justify-center" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
         
         {}
-        <div className="w-20 h-20 bg-gradient-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center z-10 relative shadow-2xl">
+        <div className="w-20 h-20 bg-linear-to-br from-gray-700 to-gray-900 rounded-full flex items-center justify-center z-10 relative shadow-2xl">
           <div className="absolute inset-0 rounded-full bg-cyan-500/30 blur-xl animate-pulse"></div>
           <div className="absolute inset-0 rounded-full bg-purple-500/20 blur-2xl animate-pulse" style={{
           animationDelay: '1s'
