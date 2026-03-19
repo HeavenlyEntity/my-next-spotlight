@@ -1,15 +1,28 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/compat/router'
-import { Popover, PopoverButton, PopoverOverlay, PopoverPanel, Transition, TransitionChild } from '@headlessui/react'
+import {
+  Popover,
+  PopoverButton,
+  PopoverOverlay,
+  PopoverPanel,
+  Transition,
+  TransitionChild,
+} from '@headlessui/react'
 import clsx from 'clsx'
 
 import { Container } from '@/components/Container'
 import { Inter } from 'next/font/google'
 import avatarImage from '@/images/avatar.png'
 import { Fragment, useEffect, useRef } from 'react'
+import PillNav from '@/components/PillNav'
+import amwareLogo from '@/images/logos/Amware Icon.svg'
 
-const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'], display: 'swap' })
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+})
 
 function CloseIcon(props) {
   return (
@@ -75,7 +88,11 @@ function MoonIcon(props) {
 function MobileNavItem({ href, children }) {
   return (
     <li>
-      <PopoverButton as={Link} href={href} className={`block py-2 ${inter.className}`}>
+      <PopoverButton
+        as={Link}
+        href={href}
+        className={`block py-2 ${inter.className}`}
+      >
         {children}
       </PopoverButton>
     </li>
@@ -99,7 +116,7 @@ function MobileNavigation(props) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <PopoverOverlay className="fixed inset-0 z-50 bg-zinc-800/40 backdrop-blur-xs dark:bg-black/80" />
+          <PopoverOverlay className="backdrop-blur-xs fixed inset-0 z-50 bg-zinc-800/40 dark:bg-black/80" />
         </TransitionChild>
         <TransitionChild
           as={Fragment}
@@ -110,9 +127,7 @@ function MobileNavigation(props) {
           leaveFrom="opacity-100 scale-100"
           leaveTo="opacity-0 scale-95"
         >
-          <PopoverPanel
-            className="fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-white p-8 ring-1 ring-zinc-900/5 dark:bg-zinc-900 dark:ring-zinc-800"
-          >
+          <PopoverPanel className="fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-white p-8 ring-1 ring-zinc-900/5 dark:bg-zinc-900 dark:ring-zinc-800">
             <div className="flex flex-row-reverse items-center justify-between">
               <PopoverButton aria-label="Close menu" className="-m-1 p-1">
                 <CloseIcon className="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
@@ -155,7 +170,7 @@ function NavItem({ href, children }) {
       >
         {children}
         {isActive && (
-          <span className="absolute inset-x-1 -bottom-px h-px bg-linear-to-r from-teal-500/0 via-teal-500/40 to-teal-500/0 dark:from-teal-400/0 dark:via-teal-400/40 dark:to-teal-400/0" />
+          <span className="bg-linear-to-r absolute inset-x-1 -bottom-px h-px from-teal-500/0 via-teal-500/40 to-teal-500/0 dark:from-teal-400/0 dark:via-teal-400/40 dark:to-teal-400/0" />
         )}
       </Link>
     </li>
@@ -206,8 +221,8 @@ function ModeToggle() {
       className="group rounded-full bg-white/90 px-3 py-2 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20"
       onClick={toggleMode}
     >
-      <SunIcon className="h-6 w-6 fill-zinc-100 stroke-zinc-500 transition group-hover:fill-zinc-200 group-hover:stroke-zinc-700 dark:hidden [@media(prefers-color-scheme:dark)]:fill-teal-50 [@media(prefers-color-scheme:dark)]:stroke-teal-500 [@media(prefers-color-scheme:dark)]:group-hover:fill-teal-50 [@media(prefers-color-scheme:dark)]:group-hover:stroke-teal-600" />
-      <MoonIcon className="hidden h-6 w-6 fill-zinc-700 stroke-zinc-500 transition dark:block [@media(prefers-color-scheme:dark)]:group-hover:stroke-zinc-400 [@media_not_(prefers-color-scheme:dark)]:fill-teal-400/10 [@media_not_(prefers-color-scheme:dark)]:stroke-teal-500" />
+      <SunIcon className="[@media(prefers-color-scheme:dark)]:fill-teal-50 [@media(prefers-color-scheme:dark)]:stroke-teal-500 [@media(prefers-color-scheme:dark)]:group-hover:fill-teal-50 [@media(prefers-color-scheme:dark)]:group-hover:stroke-teal-600 h-6 w-6 fill-zinc-100 stroke-zinc-500 transition group-hover:fill-zinc-200 group-hover:stroke-zinc-700 dark:hidden" />
+      <MoonIcon className="[@media(prefers-color-scheme:dark)]:group-hover:stroke-zinc-400 [@media_not_(prefers-color-scheme:dark)]:fill-teal-400/10 [@media_not_(prefers-color-scheme:dark)]:stroke-teal-500 hidden h-6 w-6 fill-zinc-700 stroke-zinc-500 transition dark:block" />
     </button>
   )
 }
@@ -253,7 +268,8 @@ function Avatar({ large = false, className, ...props }) {
 }
 
 export function Header() {
-  let isHomePage = useRouter().pathname === '/'
+  let router = useRouter()
+  let isHomePage = router?.pathname === '/'
 
   let headerRef = useRef()
   let avatarRef = useRef()
@@ -413,9 +429,26 @@ export function Header() {
                   </AvatarContainer>
                 )}
               </div>
-              <div className="flex flex-1 justify-end md:justify-center">
-                <MobileNavigation className="pointer-events-auto md:hidden" />
-                <DesktopNavigation className="pointer-events-auto hidden md:block" />
+              <div className="pointer-events-auto flex flex-1 justify-end md:justify-center">
+                <PillNav
+                  logo={amwareLogo.src}
+                  logoAlt="AMWare Logo"
+                  items={[
+                    { label: 'About', href: '/about' },
+                    { label: 'Articles', href: '/articles' },
+                    { label: 'Projects', href: '/projects' },
+                    { label: 'Uses', href: '/uses' },
+                    { label: 'Contact', href: '/contact' },
+                  ]}
+                  activeHref={router.pathname}
+                  className="custom-nav"
+                  ease="power2.easeOut"
+                  baseColor="#000000"
+                  pillColor="#ffffff"
+                  hoveredPillTextColor="#ffffff"
+                  pillTextColor="#000000"
+                  initialLoadAnimation={false}
+                />
               </div>
               <div className="flex justify-end md:flex-1">
                 <div className="pointer-events-auto">

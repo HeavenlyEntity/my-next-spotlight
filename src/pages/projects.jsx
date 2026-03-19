@@ -116,7 +116,7 @@ const projects = [
     status: 'live',
     whatHappened:
       'Successfully launched and partnered with the largest general service contract companies in the world.',
-    activity: [50, 60, 65, 75, 70, 85, 90, 95, 100],
+    activity: [100, 75, 50, 35, 25, 25, 25, 25, 25],
   },
   {
     name: 'M i P i',
@@ -146,7 +146,7 @@ const projects = [
     cover: coverPortalGen,
     status: 'live',
     whatHappened: 'Successfully launched and growing rapidly.',
-    activity: [40, 45, 55, 65, 60, 75, 85, 80, 90],
+    activity: [40, 60, 35, 65, 30, 30, 30, 20, 10],
   },
   {
     name: '@neatsuite/http',
@@ -250,7 +250,7 @@ const projects = [
     status: 'live',
     whatHappened:
       'Successfully launched and trained 100+ users still in use today.',
-    activity: [40, 45, 50, 55, 50, 60, 55, 65, 70],
+    activity: [40, 55, 40, 60, 20, 55, 45, 65, 70],
   },
 ].sort((a, b) => parseDate(b.date) - parseDate(a.date))
 
@@ -416,7 +416,9 @@ export default function Projects() {
           <div className="flex max-w-2xl flex-col gap-8 pt-2 sm:flex-row md:gap-12">
             <div className="flex-1">
               <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                A curated selection of projects highlighting my approach to clean design, thoughtful user experience, and innovative web development.
+                A curated selection of projects highlighting my approach to
+                clean design, thoughtful user experience, and innovative web
+                development.
               </p>
             </div>
             <div className="flex-1">
@@ -424,7 +426,8 @@ export default function Projects() {
                 Visual Identity
               </h3>
               <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                Every project tells a unique story, crafted with precision, performance, and purpose from my perspective as a creator.
+                Every project tells a unique story, crafted with precision,
+                performance, and purpose from my perspective as a creator.
               </p>
             </div>
           </div>
@@ -433,20 +436,22 @@ export default function Projects() {
         <div className="mb-6 flex items-center justify-end gap-2">
           <button
             onClick={() => setViewMode('grid')}
-            className={`rounded-md px-3 py-1.5 text-sm transition ${viewMode === 'grid'
-              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-              : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800'
-              }`}
+            className={`rounded-md px-3 py-1.5 text-sm transition ${
+              viewMode === 'grid'
+                ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800'
+            }`}
             aria-pressed={viewMode === 'grid'}
           >
             Grid
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={`rounded-md px-3 py-1.5 text-sm transition ${viewMode === 'list'
-              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-              : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800'
-              }`}
+            className={`rounded-md px-3 py-1.5 text-sm transition ${
+              viewMode === 'list'
+                ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800'
+            }`}
             aria-pressed={viewMode === 'list'}
           >
             List
@@ -533,7 +538,10 @@ export default function Projects() {
                                   className="mx-auto mb-4 h-12 w-12 rounded-xl shadow-lg"
                                   unoptimized
                                 />
-                                <StatusIndicator status={project.status} viewMode="grid" />
+                                <StatusIndicator
+                                  status={project.status}
+                                  viewMode="grid"
+                                />
                                 <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-zinc-900 dark:text-zinc-100 md:text-base">
                                   {project.whatHappened}
                                 </p>
@@ -541,7 +549,7 @@ export default function Projects() {
                                   <Link
                                     href={project.link.href}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="mt-6 inline-flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-all hover:scale-105 shadow-sm dark:bg-white dark:text-zinc-900"
+                                    className="mt-6 inline-flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-105 dark:bg-white dark:text-zinc-900"
                                   >
                                     Visit Project
                                     <ArrowUpRight className="h-4 w-4" />
@@ -682,7 +690,10 @@ export default function Projects() {
                           />
                         </td>
                         <td className="px-6 py-4">
-                          <StatusIndicator status={project.status} viewMode="list" />
+                          <StatusIndicator
+                            status={project.status}
+                            viewMode="list"
+                          />
                         </td>
                         <td className="px-6 py-4 text-right">
                           {project.isValidLink ? (
