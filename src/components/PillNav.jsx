@@ -16,8 +16,17 @@ const PillNav = ({
   pillTextColor,
   onMobileMenuClick,
   initialLoadAnimation = true,
+  theme = 'light',
 }) => {
-  const resolvedPillTextColor = pillTextColor ?? baseColor
+  const isDark = theme === 'dark'
+  const resolvedBaseColor = isDark ? pillColor : baseColor
+  const resolvedPillColor = isDark ? baseColor : pillColor
+  const resolvedHoveredText = isDark
+    ? pillTextColor ?? baseColor
+    : hoveredPillTextColor
+  const resolvedPillText = isDark
+    ? hoveredPillTextColor
+    : pillTextColor ?? baseColor
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const circleRefs = useRef([])
   const tlRefs = useRef([])
@@ -225,10 +234,10 @@ const PillNav = ({
   const isRouterLink = (href) => href && !isExternalLink(href)
 
   const cssVars = {
-    ['--base']: baseColor,
-    ['--pill-bg']: pillColor,
-    ['--hover-text']: hoveredPillTextColor,
-    ['--pill-text']: resolvedPillTextColor,
+    ['--base']: resolvedBaseColor,
+    ['--pill-bg']: resolvedPillColor,
+    ['--hover-text']: resolvedHoveredText,
+    ['--pill-text']: resolvedPillText,
     ['--nav-h']: '42px',
     ['--logo']: '36px',
     ['--pill-pad-x']: '18px',

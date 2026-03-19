@@ -14,9 +14,9 @@ import clsx from 'clsx'
 import { Container } from '@/components/Container'
 import { Inter } from 'next/font/google'
 import avatarImage from '@/images/avatar.png'
-import { Fragment, useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import PillNav from '@/components/PillNav'
-import amwareLogo from '@/images/logos/Amware Icon.svg'
+import amwareLogo from '@/images/logos/Amware-icon-mono.svg'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -271,6 +271,23 @@ export function Header() {
   let router = useRouter()
   let isHomePage = router?.pathname === '/'
 
+  const [theme, setTheme] = useState('light')
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark')
+    setTheme(isDark ? 'dark' : 'light')
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          const isDarkNow = document.documentElement.classList.contains('dark')
+          setTheme(isDarkNow ? 'dark' : 'light')
+        }
+      })
+    })
+    observer.observe(document.documentElement, { attributes: true })
+    return () => observer.disconnect()
+  }, [])
+
   let headerRef = useRef()
   let avatarRef = useRef()
   let isInitial = useRef(true)
@@ -431,8 +448,10 @@ export function Header() {
               </div>
               <div className="pointer-events-auto flex flex-1 justify-end md:justify-center">
                 <PillNav
+                  theme={theme === 'light' ? 'color' : 'dark'}
                   logo={amwareLogo.src}
                   logoAlt="AMWare Logo"
+                  logoClassName={theme === 'dark' ? '' : 'invert'}
                   items={[
                     { label: 'About', href: '/about' },
                     { label: 'Articles', href: '/articles' },
@@ -443,10 +462,10 @@ export function Header() {
                   activeHref={router.pathname}
                   className="custom-nav"
                   ease="power2.easeOut"
-                  baseColor="#000000"
-                  pillColor="#ffffff"
-                  hoveredPillTextColor="#ffffff"
-                  pillTextColor="#000000"
+                  baseColor={theme === 'dark' ? '#343434' : '#ededed'}
+                  pillColor={theme === 'dark' ? '#000000' : '#fefefe'}
+                  hoveredPillTextColor={theme === 'light' ? '#343434' : '#fff'}
+                  pillTextColor={theme === 'dark' ? '#fefefe' : '#343434'}
                   initialLoadAnimation={false}
                 />
               </div>
