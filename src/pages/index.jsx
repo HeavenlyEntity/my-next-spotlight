@@ -8,6 +8,7 @@ import { motion } from 'motion/react'
 import dynamic from 'next/dynamic'
 import { Button } from '@/components/Button'
 import { GlassButton } from '@/components/ui/glass-button'
+import CurvedLoop from '@/components/CurvedLoop'
 import { Card } from '@/components/Card'
 import { Container } from '@/components/Container'
 import {
@@ -35,7 +36,10 @@ import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
 
-const OrbitingSkills = dynamic(() => import('@/components/ui/orbiting-skills'), { ssr: false })
+const OrbitingSkills = dynamic(
+  () => import('@/components/ui/orbiting-skills'),
+  { ssr: false }
+)
 
 const onDownloadResume = () => {
   fetch(file).then((response) => {
@@ -185,7 +189,7 @@ function Newsletter() {
 
 function ArticlesHeader() {
   return (
-  <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
+    <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
       <h2 className="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
         <BookIcon className="h-6 w-6 flex-none" />
         <span className="ml-3">Articles</span>
@@ -193,16 +197,15 @@ function ArticlesHeader() {
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
         Things I&apos;ve written below, check out my blog!
       </p>
-    <ArticlesPointer />
-
+      <ArticlesPointer />
     </div>
   )
 }
 
 function ArticlesPointer() {
   return (
-    <div className="flex justify-center items-center flex-col w-full pt-2">
-      <ArrowDownIcon className="h-8 w-8 stroke-zinc-400 dark:stroke-zinc-500 animate-bounce" />
+    <div className="flex w-full flex-col items-center justify-center pt-2">
+      <ArrowDownIcon className="h-8 w-8 animate-bounce stroke-zinc-400 dark:stroke-zinc-500" />
     </div>
   )
 }
@@ -218,7 +221,8 @@ function Resume() {
         label: 'Present',
         dateTime: new Date().getFullYear(),
       },
-    },{
+    },
+    {
       company: 'MiPi',
       title: 'Founder & CEO',
       logo: logoMipi,
@@ -282,9 +286,8 @@ function Resume() {
               <dt className="sr-only">Date</dt>
               <dd
                 className="ml-auto text-xs text-zinc-400 dark:text-zinc-500"
-                aria-label={`${role.start.label ?? role.start} until ${
-                  role.end.label ?? role.end
-                }`}
+                aria-label={`${role.start.label ?? role.start} until ${role.end.label ?? role.end
+                  }`}
               >
                 <time dateTime={role.start.dateTime ?? role.start}>
                   {role.start.label ?? role.start}
@@ -423,43 +426,52 @@ export default function Home({ articles }) {
         </div>
         <div className="relative flex">
           <div className="relative z-10 max-w-2xl">
-          <div
-            style={{ fontFamily: 'Layer, sans-serif' }}
-            className="py-3 text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl"
-          >
-            Software{' '}
-            {
-              <span className={`font-layer text-teal-500 font-bold`}>
-                <Typewriter
-                  style={{ fontFamily: 'Layer, sans-serif' }} 
-                  options={{
-                    loop: true,
-                  }}
-                  onInit={(typewriter) => {
-                    typewriter
-                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-linear-to-r from-teal-600  to-lime-300 inline-block text-transparent bg-clip-text font-bold'>Engineer</span>`)
-                      .pauseFor(1000)
-                      .deleteAll()
-                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-linear-to-r from-teal-600 to-orange-400 inline-block text-transparent bg-clip-text font-bold'>Designer</span>`)
-                      .pauseFor(1000)
-                      .deleteAll()
-                      .typeString(`<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-linear-to-r from-red-600 to-yellow-400 inline-block text-transparent bg-clip-text font-bold'>Founder</span>`)
-                      .pauseFor(3000)
-                      .start()
-                  }}
-                />
-              </span>
-            }{' '}
-            & amateur artist.
-          </div>
+            <div
+              style={{ fontFamily: 'Layer, sans-serif' }}
+              className="py-3 text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl"
+            >
+              Software{' '}
+              {
+                <span className={`font-layer font-bold text-teal-500`}>
+                  <Typewriter
+                    style={{ fontFamily: 'Layer, sans-serif' }}
+                    options={{
+                      loop: true,
+                    }}
+                    onInit={(typewriter) => {
+                      typewriter
+                        .typeString(
+                          `<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-linear-to-r from-teal-600  to-lime-300 inline-block text-transparent bg-clip-text font-bold'>Engineer</span>`
+                        )
+                        .pauseFor(1000)
+                        .deleteAll()
+                        .typeString(
+                          `<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-linear-to-r from-teal-600 to-orange-400 inline-block text-transparent bg-clip-text font-bold'>Designer</span>`
+                        )
+                        .pauseFor(1000)
+                        .deleteAll()
+                        .typeString(
+                          `<span style={{ fontFamily: 'Layer, sans-serif' }} class='font-layer bg-linear-to-r from-red-600 to-yellow-400 inline-block text-transparent bg-clip-text font-bold'>Founder</span>`
+                        )
+                        .pauseFor(3000)
+                        .start()
+                    }}
+                  />
+                </span>
+              }{' '}
+              & amateur artist.
+            </div>
 
-          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400 text-shadow-contrast">
-            Hi! I’m Alec, a software engineer, author, on demand CTO, AI expert, mentor, and entrepreneur based in
-            Phoenix Arizona. I’m the Co-Founder and CEO of Kingdom Kode, where we build AI-powered solutions for businesses and teams to boost their productivity and growth. I also teach AI and coding to kids and adults alike.
-            Lets build something great together!
-          </p>
-          <div className="mt-6 flex gap-6">
-            {/*<SocialLink
+            <p className="text-shadow-contrast mt-6 text-base text-zinc-600 dark:text-zinc-400">
+              Hi! I’m Alec, a software engineer, author, on demand CTO, AI
+              expert, mentor, and entrepreneur based in Phoenix Arizona. I’m the
+              Co-Founder and CEO of Kingdom Kode, where we build AI-powered
+              solutions for businesses and teams to boost their productivity and
+              growth. I also teach AI and coding to kids and adults alike. Lets
+              build something great together!
+            </p>
+            <div className="mt-6 flex gap-6 items-center">
+              {/*<SocialLink
               href="https://twitter.com"
               aria-label="Follow on Twitter"
               icon={TwitterIcon}
@@ -469,36 +481,46 @@ export default function Home({ articles }) {
               aria-label="Follow on Instagram"
               icon={InstagramIcon}
             />*/}
-            <SocialLink
-              href="https://github.com/HeavenlyEntity"
-              aria-label="Follow on GitHub"
-              icon={GitHubIcon}
-            />
-            <SocialLink
-              href="https://www.linkedin.com/in/alec-mingione-90bb63aa/"
-              aria-label="Follow on LinkedIn"
-              icon={LinkedInIcon}
-            />
+              <GlassButton
+                size="lg"
+                onClick={() => {
+                  const contact = document.querySelector('#contact')
+                  if (contact) contact.scrollIntoView({ behavior: 'smooth' })
+                  else window.location.href = '/contact'
+                }}
+              >
+                Hire Me
+              </GlassButton>
+              <SocialLink
+                href="https://github.com/HeavenlyEntity"
+                aria-label="Follow on GitHub"
+                icon={GitHubIcon}
+              />
+              <SocialLink
+                href="https://www.linkedin.com/in/alec-mingione-90bb63aa/"
+                aria-label="Follow on LinkedIn"
+                icon={LinkedInIcon}
+              />
+            </div>
           </div>
-          <div className="mt-6">
-            <GlassButton
-              size="lg"
-              onClick={() => {
-                const contact = document.querySelector('#contact')
-                if (contact) contact.scrollIntoView({ behavior: 'smooth' })
-                else window.location.href = '/contact'
-              }}
-            >
-              Hire Me
-            </GlassButton>
-          </div>
-          </div>
-          <div className="pointer-events-none absolute bottom-0 w-full inset-0 z-0">
+          <div className="pointer-events-none absolute inset-0 bottom-0 z-0 w-full absolute !z-0">
             <OrbitingSkills showBackdrop={false} />
           </div>
+
         </div>
+        {/* <div className="pointer-events-auto w-full overflow-hidden relative h-40">
+          <CurvedLoop
+            marqueeText="I Will ✦ Build ✦ YOUR ✦ Prototype ✦ In 10 Days ✦ OR Your Money Back ✦ "
+            speed={2}
+            curveAmount={270}
+            direction="right"
+            interactive
+            className="text-shadow-sm font-bold uppercase tracking-widest text-teal-600 dark:text-neutral-200 z-10 h-full absolute"
+          />
+        </div> */}
       </Container>
       <Photos />
+
       <Container className="mt-24 md:mt-28">
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <div className="space-y-10 lg:pr-16 xl:pr-24">
@@ -510,7 +532,7 @@ export default function Home({ articles }) {
             {/*  Articles Coming Soon!*/}
             {/*</div>*/}
             <ArticlesHeader />
-            
+
             {articles.map((article) => (
               <Article key={article.slug} article={article} />
             ))}
