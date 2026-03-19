@@ -439,14 +439,14 @@ export function Header() {
             style={{ position: 'var(--header-inner-position)' }}
           >
             <div className="relative flex gap-4">
-              <div className="flex flex-1">
+              <div className="flex md:flex-1">
                 {!isHomePage && (
                   <AvatarContainer>
                     <Avatar />
                   </AvatarContainer>
                 )}
               </div>
-              <div className="pointer-events-auto flex flex-1 justify-end md:justify-center">
+              <div className="pointer-events-auto flex flex-1 justify-start md:justify-center">
                 <PillNav
                   theme={theme === 'light' ? 'color' : 'dark'}
                   logo={amwareLogo.src}
@@ -462,10 +462,10 @@ export function Header() {
                   activeHref={router.pathname}
                   className="custom-nav"
                   ease="power2.easeOut"
-                  baseColor={theme === 'dark' ? '#343434' : '#ededed'}
-                  pillColor={theme === 'dark' ? '#000000' : '#fefefe'}
-                  hoveredPillTextColor={theme === 'light' ? '#343434' : '#fff'}
-                  pillTextColor={theme === 'dark' ? '#fefefe' : '#343434'}
+                  baseColor={theme === 'dark' ? '#000' : '#ededed'}
+                  pillColor={theme === 'dark' ? '#252429' : '#fefefe'}
+                  hoveredPillTextColor={theme === 'light' ? '#79c9b8' : '#f4f3f5'}
+                  pillTextColor={theme === 'dark' ? '#3ce8ce' : '#343434'}
                   initialLoadAnimation={false}
                 />
               </div>
