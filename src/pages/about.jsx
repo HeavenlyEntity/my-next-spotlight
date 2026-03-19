@@ -11,7 +11,9 @@ import {
   GitHubIcon,
   LinkedInIcon,
 } from '@/components/SocialIcons'
-import portraitImage from '@/images/portrait.jpg'
+import ProfileCard from '@/components/ProfileCard'
+import portraitImage from '@/images/portrait-bg-removed.png'
+import amwareLogo from '@/images/logos/AMWARE-Crown-Black.svg'
 
 function SocialLink({ className, href, children, icon: Icon }) {
   return (
@@ -51,44 +53,19 @@ export default function About() {
       <Container className="mt-16 sm:mt-32">
         <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-12">
           <div className="lg:pl-20">
-            <motion.div
-              animate={{
-                rotateZ: 3,
-                filter: 'grayscale(1) contrast(1.1)',
-                transition: {
-                  duration: 1,
-                },
-              }}
-              whileHover={{
-                scale: 0.95,
-                rotateZ: 0,
-                borderRadius: 15,
-                filter: 'grayscale(0) contrast(1)',
-                transition: {
-                  duration: 1,
-                },
-              }}
-              transition={{
-                type: 'spring',
-                delay: 0.5,
-                transition: {
-                  ease: 'linear',
-                  duration: 1,
-                },
-              }}
-              className="max-w-xs px-2.5 lg:max-w-none"
-            >
-              <Image
-                src={portraitImage}
-                alt=""
-                style={{
-                  pointerEvents: 'none',
-                }}
-                sizes="(min-width: 1024px) 32rem, 20rem"
-                oncontextmenu="return false;"
-                className="aspect-rect rounded-2xl bg-zinc-100 object-cover shadow-md dark:bg-zinc-800"
+            <div className="max-w-xs px-2.5 lg:max-w-none mx-auto lg:mx-0 lg:w-[325px]">
+              <ProfileCard
+                avatarUrl={portraitImage.src}
+                name="Alec Mingione"
+                title="Founder & Engineer"
+                handle="AmwareDotDev"
+                status="Engineering the Future"
+                iconUrl={amwareLogo.src}
+                behindGlowEnabled
+                behindGlowColor="rgba(125, 190, 255, 0.67)"
+                showUserInfo={false}
               />
-            </motion.div>
+            </div>
           </div>
           <div className="lg:order-first lg:row-span-2 ">
             <motion.h1
@@ -189,10 +166,10 @@ export default function About() {
           </div>
           <div className="lg:pl-20">
             <ul role="list">
-              <SocialLink href="#" icon={TwitterIcon}>
+              <SocialLink href="https://x.com/AmwareDotDev" icon={TwitterIcon}>
                 Follow on Twitter
               </SocialLink>
-              <SocialLink href="#" icon={InstagramIcon} className="mt-4">
+              <SocialLink href="https://www.instagram.com/amware.dev/" icon={InstagramIcon} className="mt-4">
                 Follow on Instagram
               </SocialLink>
               <SocialLink
