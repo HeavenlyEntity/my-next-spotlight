@@ -1,0 +1,29 @@
+# Alec Mingione - Founder & Engineer
+Alec Mingione is an engineer, creator, and the founder of MiPi and AMWare, based in Phoenix, Arizona. This website serves as his personal brand, portfolio, and digital identity.
+
+## About Alec Mingione
+Alec has been programming since he was 8 years old. His work is fueled by a passion for technology, creating the future, and empowering creators to build wealth and communities while prioritizing privacy and encryption. Through AMWare, he provides enterprise-level software, AI solutions, web applications, and design services.
+
+## Key Projects & Portfolio
+- **MiPi**: A creator platform and SaaS empowering artists to build communities and maintain privacy/control over their work.
+- **Kingdom Kode**: Agency providing top-tier AI, software, web, and design solutions.
+- **ConvensionSuite - GSC™**: Enterprise event management system for general service contracts (Next.js & Oracle NetSuite).
+- **PortalGen™**: Customizable system for generating PWAs using Oracle NetSuite backends.
+- **Celestial Studio Salon**: Full-stack SaaS booking system with Stripe integration for a local salon.
+- **@neatsuite/http**: Open-source TypeScript NetSuite HTTP client.
+- **Auth.js NetSuite Provider**: Official NetSuite provider for Auth.js.
+- **Chamoji**: CLI alternative to gitmoji-changelog.
+- **VB Remote Sat**: Desktop support automation tool utilized globally.
+
+## Tech Stack & Expertise
+Alec builds applications utilizing modern, highly performant tools. The core tech stack includes:
+- **Next.js / React** (Full-Stack Applications)
+- **Supabase** (Postgres, Auth, Storage)
+- **Tailwind CSS & Shadcn UI** (Styling & Design Systems)
+
+## Contact & Social Links
+- Email: amware.develop@gmail.com
+- X (Twitter): @AmwareDotDev
+- Instagram: @amware.dev
+- GitHub: HeavenlyEntity
+- LinkedIn: alec-mingione-90bb63aa
