@@ -418,8 +418,8 @@ export default function Home({ articles }) {
                 y2="474.645"
                 gradientUnits="userSpaceOnUse"
               >
-                <stop stopColor="#9089FC" />
-                <stop offset={1} stopColor="#FF80B5" />
+                <stop stopColor="#fce789" />
+                <stop offset={1} stopColor="#33e7c0" />
               </linearGradient>
             </defs>
           </svg>

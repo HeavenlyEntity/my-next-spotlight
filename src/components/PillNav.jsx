@@ -17,6 +17,7 @@ const PillNav = ({
   onMobileMenuClick,
   initialLoadAnimation = true,
   theme = 'light',
+  mobileBottomContent,
 }) => {
   const isDark = theme === 'dark'
   const resolvedBaseColor = isDark ? pillColor : baseColor
@@ -103,7 +104,7 @@ const PillNav = ({
     window.addEventListener('resize', onResize)
 
     if (document.fonts?.ready) {
-      document.fonts.ready.then(layout).catch(() => {})
+      document.fonts.ready.then(layout).catch(() => { })
     }
 
     const menu = mobileMenuRef.current
@@ -247,7 +248,7 @@ const PillNav = ({
   return (
     <div className="relative z-[100] w-full flex-1 md:w-auto">
       <nav
-        className={`box-border flex w-full items-center justify-between px-4 md:w-max md:justify-start md:px-0 ${className}`}
+        className={`box-border flex w-full items-center justify-between px-0 md:w-max md:justify-start md:px-0 ${className}`}
         aria-label="Primary"
         style={cssVars}
       >
@@ -411,11 +412,11 @@ const PillNav = ({
           }}
         >
           <span
-            className="hamburger-line h-0.5 w-4 origin-center rounded transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
+            className="hamburger-line h-0.5 w-4 origin-center rounded invert transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
             style={{ background: 'var(--pill-bg, #fff)' }}
           />
           <span
-            className="hamburger-line h-0.5 w-4 origin-center rounded transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
+            className="hamburger-line h-0.5 w-4 origin-center rounded invert transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
             style={{ background: 'var(--pill-bg, #fff)' }}
           />
         </button>
@@ -455,7 +456,9 @@ const PillNav = ({
                     style={defaultStyle}
                     onMouseEnter={hoverIn}
                     onMouseLeave={hoverOut}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      if (isMobileMenuOpen) toggleMobileMenu()
+                    }}
                   >
                     {item.label}
                   </Link>
@@ -466,7 +469,9 @@ const PillNav = ({
                     style={defaultStyle}
                     onMouseEnter={hoverIn}
                     onMouseLeave={hoverOut}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      if (isMobileMenuOpen) toggleMobileMenu()
+                    }}
                   >
                     {item.label}
                   </a>
@@ -474,6 +479,16 @@ const PillNav = ({
               </li>
             )
           })}
+          {mobileBottomContent && (
+            <li
+              className="mt-1 w-full"
+              onClick={() => {
+                if (isMobileMenuOpen) toggleMobileMenu()
+              }}
+            >
+              {mobileBottomContent}
+            </li>
+          )}
         </ul>
       </div>
     </div>
