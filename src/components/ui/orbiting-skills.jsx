@@ -238,7 +238,7 @@ export default function OrbitingSkills({ showBackdrop = true }) {
           <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <defs>
               <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#fad22e" />
+                <stop offset="0%" stopColor="#f4edcf" />
                 <stop offset="100%" stopColor="#39a898" />
               </linearGradient>
             </defs>
