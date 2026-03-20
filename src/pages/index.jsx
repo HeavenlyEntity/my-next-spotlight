@@ -398,6 +398,7 @@ export default function Home({ articles }) {
           content="I’m Alec, a software designer and entrepreneur based in Phoenix Arizona. I’m the founder and CEO of MiPi, where we develop technologies that empower regular people to explore freedom of speech on their own terms."
         />
       </Head>
+
       <Container className="mt-9">
         <div className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]">
           <svg
@@ -425,6 +426,9 @@ export default function Home({ articles }) {
           </svg>
         </div>
         <div className="relative flex">
+          <div className="pointer-events-none absolute inset-0 left-0 sm:left-[30%] md:left-[60%] lg:left-[55%] !top-[-56px] sm:bottom-[10%] z-0 h-0 w-full md:w-[50%] scale-[0.5] sm:scale-[0.5] md:scale-[0.65] lg:scale-[1]">
+            <OrbitingSkills showBackdrop={false} />
+          </div>
           <div className="relative z-10 max-w-2xl">
             <div
               style={{ fontFamily: 'Layer, sans-serif' }}
@@ -462,6 +466,8 @@ export default function Home({ articles }) {
               & amateur artist.
             </div>
 
+
+
             <p className="text-shadow-contrast mt-6 text-base text-zinc-600 dark:text-zinc-400">
               Hi! I’m Alec, a software engineer, author, on demand CTO, AI
               expert, mentor, and entrepreneur based in Phoenix Arizona. I’m the
@@ -470,6 +476,8 @@ export default function Home({ articles }) {
               growth. I also teach AI and coding to kids and adults alike. Lets
               build something great together!
             </p>
+
+
             <div className="mt-6 flex gap-6 items-center">
               {/*<SocialLink
               href="https://twitter.com"
@@ -503,9 +511,7 @@ export default function Home({ articles }) {
               />
             </div>
           </div>
-          <div className="pointer-events-none absolute inset-0 bottom-0 z-0 w-full absolute !z-0">
-            <OrbitingSkills showBackdrop={false} />
-          </div>
+
 
         </div>
         {/* <div className="pointer-events-auto w-full overflow-hidden relative h-40">
