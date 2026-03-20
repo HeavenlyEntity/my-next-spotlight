@@ -426,7 +426,7 @@ export default function Home({ articles }) {
           </svg>
         </div>
         <div className="relative flex">
-          <div className="pointer-events-none absolute inset-0 left-0 sm:left-[30%] md:left-[60%] lg:left-[55%] !top-[-56px] sm:bottom-[10%] z-0 h-0 w-full md:w-[50%] scale-[0.5] sm:scale-[0.5] md:scale-[0.65] lg:scale-[1]">
+          <div className="pointer-events-none absolute inset-0 left-0 sm:left-[30%] md:left-[60%] lg:left-[55%] !top-[-56px] sm:bottom-[10%] z-0 h-0 w-full md:w-[50%] scale-[0.5] sm:scale-[0.5] md:scale-[0.65] lg:scale-[1] md:!z-2">
             <OrbitingSkills showBackdrop={false} />
           </div>
           <div className="relative z-10 max-w-2xl">
