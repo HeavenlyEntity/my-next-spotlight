@@ -53,7 +53,7 @@ export default function About() {
       <Container className="mt-16 sm:mt-32">
         <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-12">
           <div className="lg:pl-20">
-            <div className="max-w-xs px-2.5 lg:max-w-none mx-auto lg:mx-0 lg:w-[325px]">
+            <div className="mx-auto max-w-xs px-2.5 lg:mx-0 lg:w-[325px] lg:max-w-none">
               <ProfileCard
                 avatarUrl={portraitImage.src}
                 name="Alec Mingione"
@@ -86,7 +86,7 @@ export default function About() {
                 transition={{
                   duration: 0.5,
                 }}
-                className="inline-block bg-linear-to-r from-teal-600 to-green-400 bg-clip-text text-transparent"
+                className="bg-linear-to-r inline-block from-teal-600 to-green-400 bg-clip-text text-transparent"
               >
                 Alec Mingione
               </motion.span>
@@ -105,7 +105,7 @@ export default function About() {
                   duration: 0.5,
                   delay: 0.5,
                 }}
-                className="inline-block bg-linear-to-r from-red-600 to-yellow-400 bg-clip-text text-transparent"
+                className="bg-linear-to-r inline-block from-red-600 to-yellow-400 bg-clip-text text-transparent"
               >
                 Phoenix Arizona
               </motion.span>
@@ -126,7 +126,8 @@ export default function About() {
                   duration: 0.5,
                   delay: 1,
                 }}
-              >future
+              >
+                future
               </motion.span>{' '}
               in technology.
             </motion.h1>
@@ -144,23 +145,39 @@ export default function About() {
                 The only thing I loved more than computers as a kid was cars,
                 art, and taking things apart. At 13 I began building computers
                 for the time trying to create the biggest and baddest gaming PC.
-                My first build was an ASUS with 4GBs of DDR2 RAM. A caveman now a days!
+                My first build was an ASUS with 4GBs of DDR2 RAM. A caveman now
+                a days!
               </p>
               <p>
-                Taking classes and becoming more aware with the advancements in
-                technology. At 15 I had been taking a computer class that only a
-                few kids got allowed to take. Excited, I learned about HTML,
-                CSS, and JS along with how it works on the computer itself going
-                down to assembly code. I had built a Facebook clone single page
-                showcasing myself, my future career, and why. My first real challenge, it wasn&apos;t perfect
-                but, once I figured it out I was hooked on the challenge of creating something from nothing.
+                That curiosity turned into a career. I started as an automation
+                programmer at Honeywell, writing the scripts that kept
+                industrial systems humming. From there I moved into web
+                engineering&mdash;cutting my teeth as a junior developer, then
+                joining Charles Schwab as a Software Engineer where I shipped
+                production code for one of the largest brokerages in the world.
+                Every role deepened the same instinct I had as a kid: figure out
+                how the machine works, then make it work better.
               </p>
               <p>
-                Today, I&apos;m the founder of MiPi, where I am empowering creatives with control over their work. Prioritizing
-                privacy, encryption, free speech, and blockchain technology to
-                provide the people at home so that the next generation of kids
-                can really <em>understand</em> privacy from their hands defining
-                true freedom and control over their creations.
+                At NewGen Business Solutions I stepped into a Senior Lead role
+                and the work shifted from writing features to designing the
+                systems they lived in. I owned architecture decisions, set
+                technical direction for the team, and mentored engineers through
+                complex builds. It was the first time I realized the hardest
+                problems weren&apos;t in the code&mdash;they were in the gap
+                between what the business needed and what the technology could
+                deliver.
+              </p>
+              <p>
+                That realization led me to pursue an MBA, which I completed in
+                February 2026&mdash;pitching to real investors, stress-testing
+                business models, and learning to speak the language of growth
+                alongside the language of code. Today I&apos;m the founder of
+                MiPi and Co-Founder of Kingdom Kode, and I serve as an on-demand
+                CTO for teams that need someone who can whiteboard architecture
+                in the morning and present unit economics in the afternoon. If
+                you&apos;re looking for someone who bridges the boardroom and
+                the codebase, that&apos;s exactly the gap I was built to close.
               </p>
             </div>
           </div>
@@ -169,7 +186,11 @@ export default function About() {
               <SocialLink href="https://x.com/AmwareDotDev" icon={TwitterIcon}>
                 Follow on Twitter
               </SocialLink>
-              <SocialLink href="https://www.instagram.com/amware.dev/" icon={InstagramIcon} className="mt-4">
+              <SocialLink
+                href="https://www.instagram.com/amware.dev/"
+                icon={InstagramIcon}
+                className="mt-4"
+              >
                 Follow on Instagram
               </SocialLink>
               <SocialLink
