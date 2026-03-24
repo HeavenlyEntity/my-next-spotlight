@@ -17,7 +17,7 @@ import logoChamoji from '@/images/logos/chamoji_logo-ico.png'
 import logoWindstone from '@/images/logos/Windstone icon-1.png'
 import logoMipi from '@/images/logos/mipi-lander-int-icon.svg'
 import authjsLogo from '@/images/logos/authjs.png'
-import logoConvensionSuite from '@/images/logos/ConventionSuite.png'
+import logoConventionSuite from '@/images/logos/ConventionSuite.png'
 import logoKingdomKode from '@/images/logos/kingdom-kode-logo.svg'
 import logoCelestial from '@/images/logos/dark-celestial-square.svg'
 
@@ -54,7 +54,7 @@ import coverWindstone from '@/images/projects/windstone-cover.png'
 import coverAuthjs from '@/images/projects/authjs-cover.png'
 import coverNeatsuite from '@/images/projects/neatsuite-cover.png'
 import coverPortalGen from '@/images/projects/portalgen-cover.png'
-import coverConventionSuite from '@/images/projects/conventionsuite-cover.png'
+import coverConventionSuite from '@/images/projects/conventionsuite-cover-v4.png'
 import coverKingdomKode from '@/images/projects/kingdomkode-cover.png'
 import coverFuriousFroth from '@/images/projects/furiousfroth-cover.png'
 import coverChamoji from '@/images/projects/chamoji-cover.png'
@@ -105,13 +105,13 @@ const projects = [
     activity: [20, 30, 25, 40, 50, 45, 60, 75, 80],
   },
   {
-    name: 'ConvensionSuite - GSC™',
+    name: 'ConventionSuite - GSC™',
     tags: ['Enterprise SaaS'],
     date: '09/30/24',
     description:
       'Enterprise event management system for general service contracts and exhibitor orders, built on Next.js and Oracle NetSuite.\n- Built at NewGen',
     link: { href: 'https://conventionsuite.com', label: 'conventionsuite.com' },
-    logo: logoConvensionSuite,
+    logo: logoConventionSuite,
     cover: coverConventionSuite,
     status: 'live',
     whatHappened:
@@ -513,7 +513,7 @@ export default function Projects() {
                         <Image
                           src={project.cover}
                           alt={project.name}
-                          className="w-full !object-cover transition duration-500 group-hover:scale-105"
+                          className="object-cover! w-full transition duration-500 group-hover:scale-105"
                         />
                       )}
 

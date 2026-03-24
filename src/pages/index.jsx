@@ -464,7 +464,7 @@ export default function Home({ articles }) {
                   />
                 </span>
               }{' '}
-              & amateur artist.
+              & artist.
             </div>
 
             <p className="text-shadow-contrast mt-6 text-base text-zinc-600 dark:text-zinc-400">
