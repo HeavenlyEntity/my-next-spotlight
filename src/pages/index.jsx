@@ -286,8 +286,9 @@ function Resume() {
               <dt className="sr-only">Date</dt>
               <dd
                 className="ml-auto text-xs text-zinc-400 dark:text-zinc-500"
-                aria-label={`${role.start.label ?? role.start} until ${role.end.label ?? role.end
-                  }`}
+                aria-label={`${role.start.label ?? role.start} until ${
+                  role.end.label ?? role.end
+                }`}
               >
                 <time dateTime={role.start.dateTime ?? role.start}>
                   {role.start.label ?? role.start}
@@ -391,11 +392,11 @@ export default function Home({ articles }) {
     <>
       <Head>
         <title>
-          Alec Mingione - Software engineer, founder, and amateur photographer
+          Alec Mingione - Fractional CTO, Software Engineer & Founder
         </title>
         <meta
           name="description"
-          content="I’m Alec, a software designer and entrepreneur based in Phoenix Arizona. I’m the founder and CEO of MiPi, where we develop technologies that empower regular people to explore freedom of speech on their own terms."
+          content="I'm Alec Mingione, a fractional CTO and software engineer based in Phoenix, Arizona. I bridge the gap between business strategy and technical execution — from whiteboard architecture to investor-ready unit economics."
         />
       </Head>
 
@@ -426,7 +427,7 @@ export default function Home({ articles }) {
           </svg>
         </div>
         <div className="relative flex">
-          <div className="pointer-events-none absolute inset-0 left-0 sm:left-[30%] md:left-[60%] lg:left-[55%] !top-[-56px] sm:bottom-[10%] z-0 h-0 w-full md:w-[50%] scale-[0.5] sm:scale-[0.5] md:scale-[0.65] lg:scale-[1] md:!z-2">
+          <div className="md:!z-2 pointer-events-none absolute inset-0 left-0 !top-[-56px] z-0 h-0 w-full scale-[0.5] sm:left-[30%] sm:bottom-[10%] sm:scale-[0.5] md:left-[60%] md:w-[50%] md:scale-[0.65] lg:left-[55%] lg:scale-[1]">
             <OrbitingSkills showBackdrop={false} />
           </div>
           <div className="relative z-10 max-w-2xl">
@@ -466,19 +467,16 @@ export default function Home({ articles }) {
               & amateur artist.
             </div>
 
-
-
             <p className="text-shadow-contrast mt-6 text-base text-zinc-600 dark:text-zinc-400">
-              Hi! I’m Alec, a software engineer, author, on demand CTO, AI
-              expert, mentor, and entrepreneur based in Phoenix Arizona. I’m the
+              Hi! I’m Alec, a software engineer, fractional CTO, AI expert,
+              mentor, and entrepreneur based in Phoenix, Arizona. I’m the
               Co-Founder and CEO of Kingdom Kode, where we build AI-powered
               solutions for businesses and teams to boost their productivity and
-              growth. I also teach AI and coding to kids and adults alike. Lets
+              growth. I also teach AI and coding to kids and adults alike. Let’s
               build something great together!
             </p>
 
-
-            <div className="mt-6 flex gap-6 items-center">
+            <div className="mt-6 flex items-center gap-6">
               {/*<SocialLink
               href="https://twitter.com"
               aria-label="Follow on Twitter"
@@ -511,8 +509,6 @@ export default function Home({ articles }) {
               />
             </div>
           </div>
-
-
         </div>
         {/* <div className="pointer-events-auto w-full overflow-hidden relative h-40">
           <CurvedLoop

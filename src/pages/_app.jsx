@@ -3,8 +3,6 @@ import { initToolbar } from '@21st-extension/toolbar';
 
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import Head from 'next/head'
-import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
