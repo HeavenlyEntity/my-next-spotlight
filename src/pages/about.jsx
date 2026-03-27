@@ -53,7 +53,7 @@ export default function About() {
       <Container className="mt-16 sm:mt-32">
         <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-12">
           <div className="lg:pl-20">
-            <div className="mx-auto max-w-xs px-2.5 lg:mx-0 lg:w-[325px] lg:max-w-none">
+            <div className="max-w-68 mx-auto flex justify-center px-2.5 sm:max-w-xs sm:justify-self-center lg:mx-0 lg:w-[325px] lg:max-w-none">
               <ProfileCard
                 avatarUrl={portraitImage.src}
                 name="Alec Mingione"
@@ -64,6 +64,10 @@ export default function About() {
                 behindGlowEnabled
                 behindGlowColor="rgba(125, 190, 255, 0.67)"
                 showUserInfo={false}
+                cardHeightMobile="62svh"
+                cardMaxHeightMobile="460px"
+                cardHeightDesktop="80svh"
+                cardMaxHeightDesktop="650px"
               />
             </div>
           </div>
