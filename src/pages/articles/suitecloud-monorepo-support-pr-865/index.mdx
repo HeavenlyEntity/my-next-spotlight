@@ -1,0 +1,188 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const meta = {
+  title:
+    "SuiteCloud Monorepo Support: 15 Months to Merge an OSS PR to Oracle's NetSuite SDK",
+  description:
+    "How I added pnpm, Yarn, and Lerna monorepo support to Oracle's NetSuite SuiteCloud Jest configuration — and what 15 months of code review taught me about shipping open source.",
+  slug: 'suitecloud-monorepo-support-pr-865',
+  date: '2026-03-10',
+  author: 'Alec Mingione',
+  tags: [
+    'netsuite',
+    'suitecloud',
+    'monorepo',
+    'jest',
+    'pnpm',
+    'yarn-workspaces',
+    'lerna',
+    'open-source',
+    'career',
+  ],
+  keywords: [
+    'SuiteCloud monorepo',
+    'NetSuite SuiteCloud SDK',
+    'SuiteCloud Jest configuration',
+    'SuiteCloud pnpm workspaces',
+    'SuiteCloud Yarn workspaces',
+    'SuiteCloud Lerna',
+    'SuiteApp Jest setup',
+    'NetSuite testing monorepo',
+  ],
+  canonical: '/articles/suitecloud-monorepo-support-pr-865',
+  og_image: '/images/blog/suitecloud-monorepo-support-og.png',
+  og_image_alt:
+    'Oracle NetSuite SuiteCloud SDK PR #865 — workspace and monorepo support',
+  reading_time: 6,
+}
+
+export default (props) => <ArticleLayout meta={meta} {...props} />
+
+# SuiteCloud Monorepo Support: 15 Months to Merge an OSS PR to Oracle's NetSuite SDK
+
+> **TL;DR** — Oracle's [NetSuite SuiteCloud SDK](https://github.com/oracle/netsuite-suitecloud-sdk) now supports **pnpm, Yarn, npm workspaces, and Lerna monorepos** out of the box. [PR #865](https://github.com/oracle/netsuite-suitecloud-sdk/pull/865) — opened December 20, 2024, merged March 9, 2026 — adds automatic workspace detection and smart `rootDir` resolution to the SuiteCloud Jest configuration. The change is fully backward compatible: single-repo users see no difference, monorepo users get sane defaults with zero configuration.
+
+This post covers what the PR does, why monorepo support matters for SuiteApp teams, and what nearly fifteen months of code review taught me about shipping open source contributions to a major enterprise SDK.
+
+---
+
+## Why SuiteCloud Needed Monorepo Support
+
+NetSuite is everywhere in mid-market and enterprise. Every accounting team, every ops team, every revenue ops integration eventually touches it. **SuiteCloud is the SDK Oracle ships for extending NetSuite** with custom scripts, integrations, and SuiteApps.
+
+But until this PR landed, the official tooling assumed a single-repo world.
+
+The moment your team adopted a monorepo — because you wanted to share TypeScript types with your frontend, or because you had three SuiteApps depending on the same internal library — you were on your own. The symptoms were familiar to anyone who'd tried it:
+
+- **Jest got confused** about where the project actually lived.
+- **`rootDir` resolution broke** because the SDK assumed `process.cwd()` was the package root.
+- **Tests picked up files from sibling packages**, polluting coverage and slowing CI.
+- Teams patched it locally with brittle config overrides. Others gave up and forked the SDK.
+
+This was a real productivity tax on every team running SuiteApp tests inside a pnpm workspace, a Yarn/npm workspaces setup, or a Lerna repo.
+
+## What PR #865 Adds to the SuiteCloud Jest Configuration
+
+[The pull request](https://github.com/oracle/netsuite-suitecloud-sdk/pull/865) makes three changes to the SuiteCloud Jest configuration.
+
+### 1. Automatic workspace detection
+
+The SDK now walks up the directory tree (up to five levels) looking for monorepo configuration files. It detects:
+
+- **pnpm workspaces** (`pnpm-workspace.yaml`)
+- **Yarn workspaces and npm workspaces** (`workspaces` field in `package.json`)
+- **Lerna repositories** (`lerna.json`)
+
+No flag. No config. It just works.
+
+### 2. Smart `rootDir` resolution
+
+`rootDir` is the most common source of pain in Jest monorepo setups. It now resolves in this order:
+
+1. The auto-detected workspace root, if a workspace is found.
+2. The `rootDir` you explicitly pass in, if you provide one.
+3. The existing default behavior, if neither exists.
+
+This third fallback is what makes the change non-breaking. Existing single-repo users don't have a workspace config in their tree, so the SDK falls back to the same logic it always used.
+
+### 3. Test scoping with Jest's `roots`
+
+Tests are now scoped to the current workspace package using Jest's `roots` configuration. Running `pnpm --filter @yourorg/suiteapp-a test` runs only that package's tests — instead of accidentally globbing the entire repo.
+
+```javascript
+const config = build({
+  projectFolder: 'src',
+  projectType: ProjectType.SUITEAPP,
+  // rootDir is now optional in monorepos
+  customStubs: [],
+})
+```
+
+That's the entire config. If you're in a monorepo, you can drop your `rootDir` override entirely.
+
+## Who Should Upgrade
+
+You'll benefit from this change if you:
+
+- Run **multiple SuiteApps in one repository** using pnpm, Yarn, npm workspaces, or Lerna.
+- **Share TypeScript types or libraries** between SuiteCloud projects and other packages.
+- Need **scoped test execution** in monorepo CI pipelines (Turborepo, Nx, changesets, and similar).
+- Have local Jest config overrides patching the SuiteCloud defaults — you can probably delete them now.
+
+Single-repo SuiteApp teams don't need to do anything. The upgrade is fully backward compatible.
+
+---
+
+## 15 Months to Merge: What the Wait Taught Me
+
+I opened the PR the Friday before Christmas, 2024. It merged March 9, 2026.
+
+There were stretches where I was sure it was dead.
+
+The first real review didn't land until well into the new year. Then months of silence. I left a few polite nudges — _"What is the status on this PR review?"_ — feeling the dread every open source contributor knows: the worry that you've spent a weekend (or three) building something that's going to rot in a review queue forever.
+
+But it kept moving, slowly. Reviewers asked for changes. I fixed them. Other contributors raised related issues. We iterated. The maintainers were generous when they engaged — they were just stretched thin, like every Oracle-scale OSS team is.
+
+On March 9, 2026, it merged.
+
+### Four lessons I keep coming back to
+
+**1. Ship anyway.** The version of me who would've waited for the "right time" to contribute to a major SDK never would've shipped this. The version who said _"this scratches my own itch — let me just put it up"_ did. Most engineers I mentor are stuck on step one. Don't be one of them.
+
+**2. Patience is a technical skill.** Code is the easy part. Communicating across review cycles, holding the line on a design decision without being a jerk, picking your battles when a reviewer suggests something you disagree with — that's the actual work. It's also the part that compounds in a career.
+
+**3. Your PRs are your portfolio.** Long after this blog post is buried, that merge commit will sit on my GitHub with my name attached to an Oracle repository. Recruiters don't really read résumés anymore. They look at what you've actually built and where it lives.
+
+**4. The work outlasts the wait.** Fifteen months felt long. The contribution is going to outlive that wait by years — cloned by build pipelines I'll never see, running in test suites for engineers I'll never meet. That's the trade. Slow merge, long impact.
+
+---
+
+## How to Land Your First Major Open Source Contribution
+
+If you're sitting on a PR right now — or thinking about opening one to a major SDK — push it up. Make it small. Make it non-breaking. Make the maintainer's job easy:
+
+- **One change, clearly described.** No drive-by refactors.
+- **Backward compatible by default.** Feature flags, opt-in detection, graceful fallbacks.
+- **Tests that explain themselves.** A reviewer should understand intent from the test names alone.
+- **A PR description that tells the reviewer _why_ before _what_.** Lead with the problem, not the diff.
+
+Then wait. Nudge politely every few weeks. Don't take silence personally.
+
+And while you wait — **ship the next thing.**
+
+---
+
+## Frequently Asked Questions
+
+### Does Oracle's NetSuite SuiteCloud SDK support monorepos?
+
+Yes. As of PR #865, merged March 9, 2026, the SuiteCloud SDK supports pnpm workspaces, Yarn workspaces, npm workspaces, and Lerna monorepos out of the box. Workspace detection is automatic — no configuration flag is required.
+
+### How do I configure SuiteCloud Jest for a pnpm workspace?
+
+You don't need to. The updated SuiteCloud Jest configuration walks up to five directory levels looking for `pnpm-workspace.yaml`. If it finds one, it sets `rootDir` to the workspace root and scopes test execution to the current package using Jest's `roots` field.
+
+### Is the SuiteCloud monorepo change backward compatible?
+
+Yes. If no workspace configuration is found in the directory tree, the SDK falls back to its existing single-repo behavior. Single-repo SuiteApp teams do not need to make any changes to upgrade.
+
+### Does this work with Yarn workspaces, npm workspaces, and Lerna?
+
+Yes. Workspace detection covers `pnpm-workspace.yaml`, the `workspaces` field in `package.json` (used by both Yarn and npm workspaces), and `lerna.json`. The first match wins.
+
+### Where can I read the full pull request?
+
+The full discussion, code diff, and review history live at [PR #865 on GitHub](https://github.com/oracle/netsuite-suitecloud-sdk/pull/865).
+
+---
+
+## Related Links
+
+- [Pull Request #865 — oracle/netsuite-suitecloud-sdk](https://github.com/oracle/netsuite-suitecloud-sdk/pull/865)
+- [Oracle NetSuite SuiteCloud SDK on GitHub](https://github.com/oracle/netsuite-suitecloud-sdk)
+- [Jest configuration reference](https://jestjs.io/docs/configuration)
+- [pnpm workspaces documentation](https://pnpm.io/workspaces)
+
+---
+
+_Building something in NetSuite, SuiteCloud, or a monorepo and want a sounding board? I'm Alec Mingione — software engineer and the contributor on PR #865. My DMs are open._

@@ -25,6 +25,27 @@ export function ArticleLayout({
   previousPathname,
 }) {
   let router = useRouter()
+  let siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
+  let resolveUrl = (url) => {
+    if (!url) {
+      return undefined
+    }
+
+    if (/^https?:\/\//.test(url)) {
+      return url
+    }
+
+    if (url.startsWith('/') && siteUrl) {
+      return `${siteUrl}${url}`
+    }
+
+    return undefined
+  }
+  let canonicalUrl = resolveUrl(meta.canonical)
+  let keywords = Array.isArray(meta.keywords)
+    ? meta.keywords.join(', ')
+    : meta.keywords
+  let ogImage = resolveUrl(meta.og_image)
 
   if (isRssFeed) {
     return children
@@ -35,6 +56,33 @@ export function ArticleLayout({
       <Head>
         <title>{`${meta.title} - Alec Mingione`}</title>
         <meta name="description" content={meta.description} />
+        {meta.author && <meta name="author" content={meta.author} />}
+        {keywords && <meta name="keywords" content={keywords} />}
+        {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={meta.title} />
+        <meta property="og:description" content={meta.description} />
+        {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+        {ogImage && <meta property="og:image" content={ogImage} />}
+        {ogImage && meta.og_image_alt && (
+          <meta property="og:image:alt" content={meta.og_image_alt} />
+        )}
+        {meta.date && (
+          <meta property="article:published_time" content={meta.date} />
+        )}
+        {meta.author && (
+          <meta property="article:author" content={meta.author} />
+        )}
+        {meta.tags?.map((tag) => (
+          <meta key={tag} property="article:tag" content={tag} />
+        ))}
+        <meta
+          name="twitter:card"
+          content={ogImage ? 'summary_large_image' : 'summary'}
+        />
+        <meta name="twitter:title" content={meta.title} />
+        <meta name="twitter:description" content={meta.description} />
+        {ogImage && <meta name="twitter:image" content={ogImage} />}
       </Head>
       <Container className="mt-16 overflow-x-auto lg:mt-32">
         <div className="relative">
