@@ -1,8 +1,9 @@
 import nextMDX from '@next/mdx'
+import { withPayload } from '@payloadcms/next/withPayload'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ['js', 'jsx', 'mdx'],
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
   reactStrictMode: true,
   experimental: {
     scrollRestoration: true,
@@ -17,4 +18,4 @@ const withMDX = nextMDX({
   },
 })
 
-export default withMDX(nextConfig)
+export default withPayload(withMDX(nextConfig))
