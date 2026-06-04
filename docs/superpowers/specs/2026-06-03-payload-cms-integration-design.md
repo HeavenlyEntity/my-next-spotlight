@@ -75,7 +75,7 @@ Fields mirror the existing MDX `meta` so the model is a faithful superset:
 | `publishedDate` | date (required) | maps to `meta.date` |
 | `author` | text | default "Alec Mingione" |
 | `description` | textarea | |
-| `keywords` | text (comma-separated string) | mirrors `meta.keywords` storage exactly |
+| `keywords` | array of text (`keyword` per row) | managed in the CMS for SEO ranking; seed splits MDX `meta.keywords` into rows |
 | `canonical` | text | |
 | `ogImage` | relationship → Media | maps to `meta.og_image`; seed leaves it empty since MDX uses string paths |
 | `content` | richText (Lexical) | empty for seeded MDX-backed entries |
@@ -105,7 +105,7 @@ Payload /api  ──►  ContactSubmissions  ──►  Supabase Postgres
   client redirects to existing /thank-you page
 ```
 
-- `contact.jsx` is the **single intentional front-facing change**: the Deftform iframe is replaced with a native React form rebuilt to match the current container styling (`rounded-3xl ring-1 ring-zinc-200 dark:ring-zinc-700`, same `SimpleLayout` title/intro). Fields: name, email, subject, message.
+- `contact.jsx` is the **single intentional front-facing change**: the Deftform iframe is replaced with a native React form. The form is built using the **`frontend-design` skill** during implementation, matching the current container styling (`rounded-3xl ring-1 ring-zinc-200 dark:ring-zinc-700`, same `SimpleLayout` title/intro). Fields: name, email, subject, message.
 - On submit the form creates a ContactSubmissions document via Payload's REST API, then redirects to `/thank-you` (unchanged page).
 - The `afterChange` hook (in `ContactSubmissions.ts`) runs on create and calls the `resend.ts` helper twice: one owner-notification email and one submitter thank-you email. Failures are caught/logged and do not block the write.
 - `src/lib/resend.ts` wraps the Resend SDK with `RESEND_API_KEY` and a verified `from` address.
@@ -131,7 +131,7 @@ New env vars (added to `.env.example`, real values in `.env.local`):
 | `S3_ACCESS_KEY_ID` | Supabase storage access key |
 | `S3_SECRET_ACCESS_KEY` | Supabase storage secret |
 | `RESEND_API_KEY` | Resend API key |
-| `RESEND_FROM` | Verified sender address |
+| `RESEND_FROM` | Verified sender address on the `amware.dev` domain (already verified) |
 | `CONTACT_NOTIFY_TO` | Owner address to receive submission notices |
 
 Existing `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_DEFORM_API_KEY`, `REACTBITS_LICENSE_KEY` remain.
