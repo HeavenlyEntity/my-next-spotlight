@@ -10,6 +10,10 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Articles } from './collections/Articles'
 import { Projects } from './collections/Projects'
+import { Products } from './collections/Products'
+import { Courses } from './collections/Courses'
+import { Lessons } from './collections/Lessons'
+import { Services } from './collections/Services'
 import { ContactSubmissions } from './collections/ContactSubmissions'
 
 const filename = fileURLToPath(import.meta.url)
@@ -19,7 +23,17 @@ export default buildConfig({
   admin: {
     user: Users.slug,
   },
-  collections: [Users, Media, Articles, Projects, ContactSubmissions],
+  collections: [
+    Users,
+    Media,
+    Articles,
+    Projects,
+    Products,
+    Courses,
+    Lessons,
+    Services,
+    ContactSubmissions,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
