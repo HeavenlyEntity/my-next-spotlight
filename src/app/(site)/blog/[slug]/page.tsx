@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
 import { RichText } from '@/components/site/RichText'
+import { formatDate } from '@/lib/formatDate'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 
 export const revalidate = 60
@@ -13,7 +14,7 @@ async function getPost(slug: string) {
       and: [
         { slug: { equals: slug } },
         { status: { equals: 'published' } },
-        { mdxSlug: { exists: false } },
+        { or: [{ mdxSlug: { exists: false } }, { mdxSlug: { equals: '' } }] },
       ],
     },
     depth: 1,
@@ -29,7 +30,7 @@ export async function generateStaticParams() {
     where: {
       and: [
         { status: { equals: 'published' } },
-        { mdxSlug: { exists: false } },
+        { or: [{ mdxSlug: { exists: false } }, { mdxSlug: { equals: '' } }] },
       ],
     },
     depth: 0,
@@ -64,11 +65,7 @@ export default async function BlogPostPage({
         <header>
           <p className="text-sm text-zinc-400 dark:text-zinc-500">
             {post.publishedDate
-              ? new Date(post.publishedDate).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })
+              ? formatDate(String(post.publishedDate).slice(0, 10))
               : ''}
           </p>
           <h1 className="mt-2 text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">

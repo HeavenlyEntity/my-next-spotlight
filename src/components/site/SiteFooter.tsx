@@ -1,16 +1,12 @@
 import Link from 'next/link'
 import { Container } from '@/components/Container'
 
-// Container is a JS component; sub-properties (.Outer/.Inner) are not visible to TS.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const { Outer: ContainerOuter, Inner: ContainerInner } = Container as any
-
 export function SiteFooter() {
   return (
     <footer className="mt-32">
-      <ContainerOuter>
+      <Container.Outer>
         <div className="border-t border-zinc-100 pb-16 pt-10 dark:border-zinc-700/40">
-          <ContainerInner>
+          <Container.Inner>
             <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
               <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm font-medium text-zinc-800 dark:text-zinc-200">
                 <Link
@@ -49,9 +45,9 @@ export function SiteFooter() {
                 reserved.
               </p>
             </div>
-          </ContainerInner>
+          </Container.Inner>
         </div>
-      </ContainerOuter>
+      </Container.Outer>
     </footer>
   )
 }

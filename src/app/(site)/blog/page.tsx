@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Container } from '@/components/Container'
+import { formatDate } from '@/lib/formatDate'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 
 export const revalidate = 60
@@ -9,15 +10,6 @@ export const metadata = {
   description: 'Writing published from the CMS.',
 }
 
-function formatDate(value?: string | null) {
-  if (!value) return ''
-  return new Date(value).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
-
 export default async function BlogPage() {
   const payload = await getPayloadClient()
   const { docs } = await payload.find({
@@ -25,7 +17,7 @@ export default async function BlogPage() {
     where: {
       and: [
         { status: { equals: 'published' } },
-        { mdxSlug: { exists: false } },
+        { or: [{ mdxSlug: { exists: false } }, { mdxSlug: { equals: '' } }] },
       ],
     },
     sort: '-publishedDate',
@@ -55,7 +47,9 @@ export default async function BlogPage() {
           {docs.map((post) => (
             <li key={post.id}>
               <p className="text-sm text-zinc-400 dark:text-zinc-500">
-                {formatDate(post.publishedDate)}
+                {post.publishedDate
+                  ? formatDate(String(post.publishedDate).slice(0, 10))
+                  : ''}
               </p>
               <h2 className="mt-1 text-base font-semibold text-zinc-900 dark:text-zinc-100">
                 <Link href={`/blog/${post.slug}`}>{post.title}</Link>

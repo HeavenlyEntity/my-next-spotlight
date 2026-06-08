@@ -15,7 +15,7 @@ export default async function CoursesPage() {
     collection: 'courses',
     where: { status: { equals: 'published' } },
     sort: 'order',
-    depth: 1,
+    depth: 0,
     limit: 100,
   })
 

@@ -15,8 +15,6 @@ import amwareLogo from '@/images/logos/Amware-icon-mono.svg'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PillNav = PillNavJS as React.ComponentType<any>
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ContainerAny = Container as React.ComponentType<any>
 
 const navItems = [
   { label: 'Products', href: '/products' },
@@ -46,7 +44,7 @@ export function SiteHeader() {
 
   return (
     <header className="relative z-50 pt-6">
-      <ContainerAny>
+      <Container>
         <div className="relative flex gap-4">
           <div className="flex flex-1">
             <Link
@@ -86,7 +84,7 @@ export function SiteHeader() {
             <SiteModeToggle />
           </div>
         </div>
-      </ContainerAny>
+      </Container>
     </header>
   )
 }

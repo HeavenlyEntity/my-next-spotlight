@@ -15,7 +15,7 @@ export default async function ServicesPage() {
     collection: 'services',
     where: { status: { equals: 'published' } },
     sort: 'order',
-    depth: 1,
+    depth: 0,
     limit: 100,
   })
 

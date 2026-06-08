@@ -5,6 +5,16 @@ import { getPayloadClient } from '@/lib/getPayloadClient'
 
 export const revalidate = 60
 
+function safeHref(u?: string | null) {
+  if (!u) return null
+  try {
+    const url = new URL(u, 'https://placeholder.local')
+    return url.protocol === 'http:' || url.protocol === 'https:' ? u : null
+  } catch {
+    return null
+  }
+}
+
 async function getProduct(slug: string) {
   const payload = await getPayloadClient()
   const { docs } = await payload.find({
@@ -87,14 +97,19 @@ export default async function ProductPage({
           </ul>
         )}
 
-        {product.demoUrl && (
-          <a
-            href={product.demoUrl}
-            className="mt-10 inline-flex rounded-md bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-100 transition hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
-          >
-            View demo
-          </a>
-        )}
+        {(() => {
+          const demoHref = safeHref(product.demoUrl)
+          return demoHref ? (
+            <a
+              href={demoHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-10 inline-flex rounded-md bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-100 transition hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
+            >
+              View demo
+            </a>
+          ) : null
+        })()}
       </article>
     </Container>
   )
