@@ -23,7 +23,7 @@ const navItems = [
   { label: 'Courses', href: '/courses' },
   { label: 'Services', href: '/services' },
   { label: 'Blog', href: '/blog' },
-  { label: 'Site', href: '/' },
+  { label: 'Home', href: '/' },
 ]
 
 export function SiteHeader() {
@@ -37,7 +37,10 @@ export function SiteHeader() {
       )
     read()
     const observer = new MutationObserver(read)
-    observer.observe(document.documentElement, { attributes: true })
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
     return () => observer.disconnect()
   }, [])
 
