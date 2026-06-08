@@ -23,6 +23,7 @@ export const Articles: CollectionConfig = {
     },
     { name: 'canonical', type: 'text' },
     { name: 'ogImage', type: 'upload', relationTo: 'media' },
+    { name: 'coverImage', type: 'upload', relationTo: 'media' },
     { name: 'content', type: 'richText' },
     {
       name: 'mdxSlug',
