@@ -7,7 +7,10 @@ export const Articles: CollectionConfig = {
     defaultColumns: ['title', 'slug', 'status', 'publishedDate'],
   },
   access: {
-    read: () => true,
+    read: ({ req: { user } }) => {
+      if (user) return true
+      return { status: { equals: 'published' } }
+    },
   },
   fields: [
     { name: 'title', type: 'text', required: true },

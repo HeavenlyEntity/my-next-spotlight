@@ -24,7 +24,10 @@ if (!globalForPayload._payloadClient) {
 export async function getPayloadClient(): Promise<Payload> {
   if (cache.client) return cache.client
   if (!cache.promise) {
-    cache.promise = getPayload({ config })
+    cache.promise = getPayload({ config }).catch((err) => {
+      cache.promise = null
+      throw err
+    })
   }
   cache.client = await cache.promise
   return cache.client

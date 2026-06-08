@@ -7,7 +7,10 @@ export const Courses: CollectionConfig = {
     defaultColumns: ['title', 'level', 'status', 'order'],
   },
   access: {
-    read: () => true,
+    read: ({ req: { user } }) => {
+      if (user) return true
+      return { status: { equals: 'published' } }
+    },
   },
   fields: [
     { name: 'title', type: 'text', required: true },

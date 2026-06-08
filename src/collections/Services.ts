@@ -7,7 +7,10 @@ export const Services: CollectionConfig = {
     defaultColumns: ['name', 'status', 'order'],
   },
   access: {
-    read: () => true,
+    read: ({ req: { user } }) => {
+      if (user) return true
+      return { status: { equals: 'published' } }
+    },
   },
   fields: [
     { name: 'name', type: 'text', required: true },

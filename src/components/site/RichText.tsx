@@ -1,5 +1,7 @@
 import { RichText as LexicalRichText } from '@payloadcms/richtext-lexical/react'
 
+import { cn } from '@/lib/utils'
+
 // Derive the data type from the component itself — robust against version drift,
 // no fragile subpath type import.
 type Props = {
@@ -11,9 +13,7 @@ export function RichText({ data, className }: Props) {
   if (!data) return null
   return (
     <div
-      className={`prose prose-zinc dark:prose-invert max-w-none ${
-        className ?? ''
-      }`}
+      className={cn('prose prose-zinc dark:prose-invert max-w-none', className)}
     >
       <LexicalRichText data={data} />
     </div>
