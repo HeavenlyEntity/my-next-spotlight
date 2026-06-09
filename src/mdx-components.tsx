@@ -7,5 +7,5 @@ type MDXComponents = Record<string, ComponentType<Record<string, unknown>>>
 const components: MDXComponents = {}
 
 export function useMDXComponents(inherited: MDXComponents = {}): MDXComponents {
-  return { ...inherited, ...components }
+  return { ...components, ...inherited }
 }

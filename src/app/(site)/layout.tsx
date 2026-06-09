@@ -25,16 +25,18 @@ const navCode = JetBrains_Mono({
   display: 'swap',
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
 
 export const metadata: Metadata = {
   title: { default: 'Alec Mingione', template: '%s - Alec Mingione' },
-  alternates: {
-    types: {
-      'application/rss+xml': `${siteUrl}/rss/feed.xml`,
-      'application/feed+json': `${siteUrl}/rss/feed.json`,
+  ...(siteUrl && {
+    alternates: {
+      types: {
+        'application/rss+xml': `${siteUrl}/rss/feed.xml`,
+        'application/feed+json': `${siteUrl}/rss/feed.json`,
+      },
     },
-  },
+  }),
   other: { 'impact-site-verification': 'f77f8902-5007-4ccb-8dc0-d58a1ceb6915' },
 }
 
@@ -51,8 +53,8 @@ const modeScript = `
     if (isDarkMode === isSystemDarkMode) { delete window.localStorage.isDarkMode }
   }
   function disableTransitionsTemporarily() {
-    document.documentElement.classList.add('[&_*]:!transition-none')
-    window.setTimeout(() => { document.documentElement.classList.remove('[&_*]:!transition-none') }, 0)
+    document.documentElement.classList.add('[&_*]:transition-none!')
+    window.setTimeout(() => { document.documentElement.classList.remove('[&_*]:transition-none!') }, 0)
   }
   function updateModeWithoutTransitions() { disableTransitionsTemporarily(); updateMode() }
 `
