@@ -1,11 +1,8 @@
-// @ts-nocheck
-import type { Metadata } from 'next'
-
 import { Card } from '@/components/Card'
 import { Section } from '@/components/Section'
 import { SimpleLayout } from '@/components/SimpleLayout'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Speaking',
   description:
     "I've spoken at events all around the world and been interviewed for many podcasts.",

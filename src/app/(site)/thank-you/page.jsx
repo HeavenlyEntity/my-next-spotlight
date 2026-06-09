@@ -1,9 +1,6 @@
-// @ts-nocheck
-import type { Metadata } from 'next'
-
 import { SimpleLayout } from '@/components/SimpleLayout'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: { absolute: "You're subscribed - Alec Mingione" },
   description: 'Thanks for subscribing to my newsletter.',
 }
