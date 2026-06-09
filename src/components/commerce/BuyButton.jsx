@@ -1,8 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useFormStatus } from 'react-dom'
 import { createCheckout } from '@/lib/commerce/checkout'
 import { Button } from '@/components/Button'
+
+function SubmitButton({ label }) {
+  const { pending } = useFormStatus()
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      className="disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {pending ? 'Redirecting…' : label}
+    </Button>
+  )
+}
 
 export function BuyButton({
   itemType,
@@ -10,13 +23,8 @@ export function BuyButton({
   isBoilerplate = false,
   label = 'Buy now',
 }) {
-  const [submitting, setSubmitting] = useState(false)
   return (
-    <form
-      action={createCheckout}
-      onSubmit={() => setSubmitting(true)}
-      className="mt-8"
-    >
+    <form action={createCheckout} className="mt-8">
       <input type="hidden" name="itemType" value={itemType} />
       <input type="hidden" name="slug" value={slug} />
       {isBoilerplate && (
@@ -33,13 +41,7 @@ export function BuyButton({
           />
         </label>
       )}
-      <Button
-        type="submit"
-        disabled={submitting}
-        className="disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {submitting ? 'Redirecting…' : label}
-      </Button>
+      <SubmitButton label={label} />
     </form>
   )
 }

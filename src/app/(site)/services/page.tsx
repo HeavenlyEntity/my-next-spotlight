@@ -61,7 +61,11 @@ export default async function ServicesPage() {
                 <BuyButton
                   itemType="service"
                   slug={service.slug}
-                  label="Purchase"
+                  label={
+                    typeof service.startingPrice === 'number'
+                      ? `Purchase — USD ${service.startingPrice.toFixed(2)}`
+                      : 'Purchase'
+                  }
                 />
               ) : (
                 <Link

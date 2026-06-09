@@ -19,7 +19,9 @@ export async function createCheckout(formData: FormData): Promise<void> {
   const slug = String(formData.get('slug') || '')
   const githubUsername = String(formData.get('githubUsername') || '').trim()
 
-  const collection = COLLECTION[itemType]
+  const collection = Object.prototype.hasOwnProperty.call(COLLECTION, itemType)
+    ? COLLECTION[itemType]
+    : undefined
   if (!collection || !slug) throw new Error('Invalid checkout request')
 
   const payload = await getPayloadClient()
@@ -34,7 +36,16 @@ export async function createCheckout(formData: FormData): Promise<void> {
     throw new Error('This item is not available for purchase yet')
   }
 
-  const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || ''
+  if (
+    itemType === 'product' &&
+    item.type === 'boilerplate' &&
+    !githubUsername
+  ) {
+    throw new Error('A GitHub username is required for this purchase')
+  }
+
+  const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
+  if (!site) throw new Error('NEXT_PUBLIC_SITE_URL is not configured')
   const { checkoutUrl } = await createCheckoutSession({
     productId: item.creemProductId,
     requestId: crypto.randomUUID(),
