@@ -40,18 +40,6 @@ const OrbitingSkills = dynamic(
   { ssr: false }
 )
 
-const onDownloadResume = () => {
-  fetch(file).then((response) => {
-    response.blob().then((blob) => {
-      let url = window.URL.createObjectURL(blob)
-      let a = document.createElement('a')
-      a.href = url
-      a.download = 'testFile.docx'
-      a.click()
-    })
-  })
-}
-
 function MailIcon(props) {
   return (
     <svg
