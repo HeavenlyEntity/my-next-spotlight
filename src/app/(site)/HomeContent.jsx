@@ -1,6 +1,7 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import Head from 'next/head'
 import Link from 'next/link'
 import clsx from 'clsx'
 import Typewriter from 'typewriter-effect'
@@ -32,8 +33,6 @@ import logoSchwab from '@/images/logos/charles-schwab.png'
 import logoNewgen from '@/images/logos/newgen.png'
 import logoKingdomKode from '@/images/logos/kingdom-kode-logo.svg'
 import logoStarbucks from '@/images/logos/starbucks.svg'
-import { generateRssFeed } from '@/lib/generateRssFeed'
-import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
 
 const OrbitingSkills = dynamic(
@@ -373,7 +372,7 @@ const TextVariants = {
   },
 }
 
-export default function Home({ articles }) {
+export default function HomeContent({ articles }) {
   const texts = ['Engineer', 'Designer', 'Founder']
   const [currentWord, setCurrentWord] = useState(-1)
 
@@ -390,16 +389,6 @@ export default function Home({ articles }) {
 
   return (
     <>
-      <Head>
-        <title>
-          Alec Mingione - Fractional CTO, Software Engineer & Founder
-        </title>
-        <meta
-          name="description"
-          content="I'm Alec Mingione, a fractional CTO and software engineer based in Phoenix, Arizona. I bridge the gap between business strategy and technical execution — from whiteboard architecture to investor-ready unit economics."
-        />
-      </Head>
-
       <Container className="mt-9">
         <div className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]">
           <svg
@@ -468,11 +457,11 @@ export default function Home({ articles }) {
             </div>
 
             <p className="text-shadow-contrast mt-6 text-base text-zinc-600 dark:text-zinc-400">
-              Hi! I’m Alec, a software engineer, fractional CTO, AI expert,
-              mentor, and entrepreneur based in Phoenix, Arizona. I’m the
+              Hi! I'm Alec, a software engineer, fractional CTO, AI expert,
+              mentor, and entrepreneur based in Phoenix, Arizona. I'm the
               Co-Founder and CEO of Kingdom Kode, where we build AI-powered
               solutions for businesses and teams to boost their productivity and
-              growth. I also teach AI and coding to kids and adults alike. Let’s
+              growth. I also teach AI and coding to kids and adults alike. Let's
               build something great together!
             </p>
 
@@ -543,18 +532,4 @@ export default function Home({ articles }) {
       </Container>
     </>
   )
-}
-
-export async function getStaticProps() {
-  if (process.env.NODE_ENV === 'production') {
-    await generateRssFeed()
-  }
-
-  return {
-    props: {
-      articles: (await getAllArticles())
-        .slice(0, 4)
-        .map(({ component, ...meta }) => meta),
-    },
-  }
 }
