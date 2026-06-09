@@ -15,6 +15,7 @@ import { Courses } from './collections/Courses'
 import { Lessons } from './collections/Lessons'
 import { Services } from './collections/Services'
 import { ContactSubmissions } from './collections/ContactSubmissions'
+import { Purchases } from './collections/Purchases'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -33,6 +34,7 @@ export default buildConfig({
     Lessons,
     Services,
     ContactSubmissions,
+    Purchases,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

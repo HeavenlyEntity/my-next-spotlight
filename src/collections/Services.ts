@@ -19,6 +19,14 @@ export const Services: CollectionConfig = {
     { name: 'description', type: 'richText' },
     { name: 'icon', type: 'upload', relationTo: 'media' },
     { name: 'startingPrice', type: 'number' },
+    {
+      name: 'creemProductId',
+      type: 'text',
+      admin: {
+        description:
+          'Creem prod_… id for a fixed-price package. Absence ⇒ "Request a quote".',
+      },
+    },
     { name: 'order', type: 'number', defaultValue: 0 },
     {
       name: 'status',

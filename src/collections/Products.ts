@@ -62,6 +62,24 @@ export const Products: CollectionConfig = {
       },
     },
     { name: 'demoUrl', type: 'text' },
+    {
+      name: 'creemProductId',
+      type: 'text',
+      admin: {
+        description: 'Creem prod_… id. Absence ⇒ not purchasable.',
+      },
+    },
+    {
+      name: 'downloadFile',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'Deliverable for digital downloads.' },
+    },
+    {
+      name: 'downloadUrl',
+      type: 'text',
+      admin: { description: 'Alternative external deliverable URL.' },
+    },
     { name: 'featured', type: 'checkbox', defaultValue: false },
     { name: 'order', type: 'number', defaultValue: 0 },
     {

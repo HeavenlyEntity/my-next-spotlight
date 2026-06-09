@@ -28,6 +28,11 @@ export const Courses: CollectionConfig = {
       ],
     },
     { name: 'price', type: 'number' },
+    {
+      name: 'creemProductId',
+      type: 'text',
+      admin: { description: 'Creem prod_… id. Absence ⇒ not purchasable.' },
+    },
     { name: 'featured', type: 'checkbox', defaultValue: false },
     { name: 'order', type: 'number', defaultValue: 0 },
     {
