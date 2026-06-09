@@ -82,7 +82,7 @@ Every page's `next/head` block is replaced by App Router `metadata`/`generateMet
 
 Each route is migrated by **adding its App route and deleting its Pages file in the same step** (App and Pages must never own the same path simultaneously). Order chosen low-risk → high-risk:
 
-1. **Scaffold (no route moves yet):** add `src/mdx-components.tsx`; port `Header.jsx` to App Router and rewrite `(site)/SiteShell` to use it + `Footer`; enrich `(site)/layout.tsx` (theme script, fonts, CSS, Analytics/SpeedInsights/stagewise, RSS links, metadata). The Pages site keeps running on `_app`/`_document` (disjoint paths). *Note: a temporary second Header may coexist — the old `Header.jsx` still serves Pages routes until they're migrated; both are reconciled to one file by porting in place if feasible, else the old one is deleted in the final cleanup.*
+1. **Scaffold (no route moves yet):** add `src/mdx-components.tsx`; create the App-Router-ported `Header` and **import it directly into `(site)/layout.tsx`** (with `Footer`) so it's available across the App Router; enrich `(site)/layout.tsx` (theme script, fonts, CSS, Analytics/SpeedInsights/stagewise, RSS links, metadata). **Confirmed:** the existing `Header.jsx` (on `next/compat/router`) keeps serving the not-yet-migrated **Pages** routes via `_app.jsx` during the transition — a deliberate, temporary two-header window — and is **deleted in the final cleanup** once no Pages route remains. No permanent fork.
 2. **Static content pages:** `about`, `uses`, `speaking`, `thank-you`, `contact` → `app/(site)/<route>/page.tsx` (+ `metadata`), delete each `src/pages/<route>.jsx`.
 3. **Projects:** `app/(site)/projects/page.tsx` as a `'use client'` component (motion/BorderGlow), delete `src/pages/projects.jsx`.
 4. **Articles + RSS:** move MDX to `src/content`, repoint `getAllArticles`, add `articles/[slug]/page.tsx` + `articles/page.tsx`, adapt `ArticleLayout`, add the two RSS route handlers; delete `src/pages/articles/**`.
@@ -103,7 +103,7 @@ Each route is migrated by **adding its App route and deleting its Pages file in 
 - **RSS handler rendering MDX** — `generateRssFeed` renders `<article.component isRssFeed />`; ensure the imported MDX modules still expose that shape from the content dir.
 - **Missed `next/head`** — a page shipped without its `metadata` equivalent loses SEO; the cleanup step greps for any remaining `next/head`.
 - **`getStaticProps` removal** — home + articles index data now fetched in server components; verify identical output and static generation.
-- **`previousPathname` back-button** — replaced by `router.back()`; acceptable behavior change (no SSR-known previous path).
+- **`previousPathname` back-button** — replaced by `router.back()` (`next/navigation`); **confirmed acceptable** (no SSR-known previous path; moot once all routes are server-component App Router).
 
 ## Verification
 
