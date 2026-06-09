@@ -20,11 +20,15 @@ function ArrowLeftIcon(props) {
 }
 
 export function ArticleLayout({ children, meta, isRssFeed = false }) {
-  let router = useRouter()
-
   if (isRssFeed) {
     return children
   }
+
+  return <ArticleLayoutFull meta={meta}>{children}</ArticleLayoutFull>
+}
+
+function ArticleLayoutFull({ children, meta }) {
+  let router = useRouter()
 
   return (
     <Container className="mt-16 overflow-x-auto lg:mt-32">

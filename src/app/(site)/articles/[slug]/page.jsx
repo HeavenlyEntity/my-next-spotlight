@@ -23,7 +23,10 @@ export async function generateMetadata({ params }) {
   if (!loaded) return {}
   const { meta } = loaded
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
-  const canonical = meta.canonical
+  const canonical =
+    meta.canonical && meta.canonical.startsWith('/') && siteUrl
+      ? `${siteUrl}${meta.canonical}`
+      : meta.canonical
   const ogImage =
     meta.og_image && siteUrl && meta.og_image.startsWith('/')
       ? `${siteUrl}${meta.og_image}`
@@ -48,6 +51,7 @@ export async function generateMetadata({ params }) {
       url: canonical,
       images: ogImage ? [{ url: ogImage, alt: meta.og_image_alt }] : undefined,
       publishedTime: meta.date,
+      authors: meta.author ? [meta.author] : undefined,
       tags: meta.tags,
     },
     twitter: {

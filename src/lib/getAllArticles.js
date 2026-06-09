@@ -6,8 +6,8 @@ async function importArticle(articleFilename) {
     `../content/articles/${articleFilename}`
   )
   return {
-    slug: articleFilename.replace(/(\/index)?\.mdx$/, ''),
     ...meta,
+    slug: articleFilename.replace(/(\/index)?\.mdx$/, ''),
     component,
   }
 }
