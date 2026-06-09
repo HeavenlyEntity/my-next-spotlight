@@ -42,15 +42,18 @@ export function createAccessToken(
 
 export function verifyAccessToken(token: string): AccessTokenPayload | null {
   if (!token || !SECRET) return null
-  const [body, sig] = token.split('.')
-  if (!body || !sig) return null
+  const dotIdx = token.indexOf('.')
+  if (dotIdx === -1) return null
+  const body = token.slice(0, dotIdx)
+  const sig = token.slice(dotIdx + 1)
+  if (!body || !sig || sig.includes('.')) return null
   const expected = sign(body)
   const a = Buffer.from(sig)
   const b = Buffer.from(expected)
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null
   let payload: AccessTokenPayload
   try {
-    payload = JSON.parse(Buffer.from(body, 'base64').toString('utf8'))
+    payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
   } catch {
     return null
   }

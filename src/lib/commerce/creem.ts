@@ -1,6 +1,12 @@
 import crypto from 'crypto'
 
-const API_URL = process.env.CREEM_API_URL || 'https://api.creem.io'
+const API_URL = (() => {
+  const u = new URL(process.env.CREEM_API_URL || 'https://api.creem.io')
+  if (u.protocol !== 'https:' && u.protocol !== 'http:') {
+    throw new Error('CREEM_API_URL must be http(s)')
+  }
+  return u.origin
+})()
 const API_KEY = process.env.CREEM_API_KEY || ''
 const WEBHOOK_SECRET = process.env.CREEM_WEBHOOK_SECRET || ''
 
@@ -9,7 +15,7 @@ export type CreateCheckoutArgs = {
   requestId: string
   successUrl: string
   email?: string
-  metadata?: Record<string, string | number | undefined>
+  metadata?: Record<string, string | number>
 }
 
 export async function createCheckoutSession(
@@ -31,7 +37,11 @@ export async function createCheckoutSession(
   })
   if (!res.ok) {
     const detail = await res.text().catch(() => '')
-    throw new Error(`Creem checkout failed (${res.status}): ${detail}`)
+    const safe =
+      process.env.NODE_ENV === 'production' ? '' : detail.slice(0, 200)
+    throw new Error(
+      `Creem checkout failed (${res.status})${safe ? ': ' + safe : ''}`
+    )
   }
   const data = await res.json()
   const checkoutUrl = data.checkout_url || data.checkoutUrl

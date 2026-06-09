@@ -9,6 +9,8 @@ export async function sendAccessLinkEmail(args: {
   itemName: string
   token: string
 }): Promise<void> {
+  if (!SITE)
+    throw new Error('NEXT_PUBLIC_SITE_URL is required to send access links')
   const url = `${SITE}/access/${args.token}`
   await resend.emails.send({
     from: FROM,

@@ -39,6 +39,7 @@ export const Purchases: CollectionConfig = {
     {
       name: 'creemOrderId',
       type: 'text',
+      required: true,
       unique: true,
       index: true,
       admin: { description: 'Idempotency key (Creem order id).' },
@@ -65,12 +66,13 @@ export const Purchases: CollectionConfig = {
       name: 'fulfillmentStatus',
       type: 'select',
       options: [
+        { label: 'Pending', value: 'pending' },
         { label: 'Pending invite', value: 'pending_invite' },
         { label: 'Sent', value: 'sent' },
         { label: 'Failed', value: 'failed' },
         { label: 'Not required', value: 'not_required' },
       ],
-      defaultValue: 'sent',
+      defaultValue: 'pending',
       admin: { position: 'sidebar' },
     },
   ],
