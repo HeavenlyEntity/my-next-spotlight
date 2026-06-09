@@ -1,7 +1,10 @@
 import Link from 'next/link'
 import { Container } from '@/components/Container'
 
-export const metadata = { title: 'Checkout canceled' }
+export const metadata = {
+  title: 'Checkout canceled',
+  robots: { index: false },
+}
 
 export default function CheckoutCancel() {
   return (

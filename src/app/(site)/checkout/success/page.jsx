@@ -1,7 +1,10 @@
 import Link from 'next/link'
 import { Container } from '@/components/Container'
 
-export const metadata = { title: 'Payment received' }
+export const metadata = {
+  title: 'Payment received',
+  robots: { index: false },
+}
 
 export default function CheckoutSuccess() {
   return (

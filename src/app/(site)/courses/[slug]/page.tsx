@@ -59,20 +59,23 @@ export default async function CoursePage({
 
   return (
     <Container className="mt-16 sm:mt-32">
-      <CourseBody course={course} lessons={lessons} />
-      {course.creemProductId ? (
-        <div className="mx-auto max-w-2xl">
-          <BuyButton
-            itemType="course"
-            slug={course.slug}
-            label={
-              typeof course.price === 'number'
-                ? `Enroll — USD ${(course.price as number).toFixed(2)}`
-                : 'Enroll now'
-            }
-          />
-        </div>
-      ) : null}
+      <CourseBody
+        course={course}
+        lessons={lessons}
+        cta={
+          course.creemProductId ? (
+            <BuyButton
+              itemType="course"
+              slug={course.slug}
+              label={
+                typeof course.price === 'number'
+                  ? `Enroll — USD ${(course.price as number).toFixed(2)}`
+                  : 'Enroll now'
+              }
+            />
+          ) : null
+        }
+      />
     </Container>
   )
 }

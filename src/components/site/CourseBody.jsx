@@ -1,8 +1,8 @@
 import { RichText } from '@/components/site/RichText'
 
-export function CourseBody({ course, lessons }) {
+export function CourseBody({ course, lessons, cta }) {
   const groups = []
-  for (const lesson of lessons) {
+  for (const lesson of lessons ?? []) {
     const label = lesson.module || 'Lessons'
     let group = groups.find((g) => g.module === label)
     if (!group) {
@@ -22,6 +22,7 @@ export function CourseBody({ course, lessons }) {
             {course.summary}
           </p>
         )}
+        {cta}
       </header>
       <RichText data={course.description} className="mt-10" />
       {groups.map((group) => (

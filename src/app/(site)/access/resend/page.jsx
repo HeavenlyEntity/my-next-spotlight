@@ -18,6 +18,7 @@ async function resendLink(formData) {
     collection: 'purchases',
     where: { email: { equals: email }, status: { equals: 'paid' } },
     sort: '-createdAt',
+    depth: 0,
     limit: 1,
     overrideAccess: true,
   })

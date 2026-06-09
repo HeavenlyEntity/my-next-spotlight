@@ -34,10 +34,19 @@ export default async function AccessPage({ params }) {
     .findByID({
       collection: 'purchases',
       id: claims.purchaseId,
+      depth: 0,
       overrideAccess: true,
     })
     .catch(() => null)
   if (!purchase || purchase.status !== 'paid') return <InvalidLink />
+  // Token rotation: only the latest issued token is valid.
+  if (claims.jti !== purchase.accessTokenJti) return <InvalidLink />
+  // Cross-check the token's item against what the purchase actually recorded.
+  const storedItemId =
+    purchase.item && typeof purchase.item === 'object'
+      ? purchase.item.value
+      : purchase.item
+  if (String(storedItemId) !== String(claims.itemId)) return <InvalidLink />
 
   const collection =
     claims.itemType === 'product'
@@ -83,6 +92,8 @@ export default async function AccessPage({ params }) {
         {fileUrl ? (
           <a
             href={fileUrl}
+            target="_blank"
+            rel="noreferrer noopener"
             className="mt-8 inline-flex rounded-md bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-100 transition hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
           >
             Download
