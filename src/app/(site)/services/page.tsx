@@ -1,6 +1,8 @@
+import Link from 'next/link'
 import { Container } from '@/components/Container'
 import { RichText } from '@/components/site/RichText'
 import { getPayloadClient } from '@/lib/getPayloadClient'
+import { BuyButton } from '@/components/commerce/BuyButton'
 
 export const revalidate = 60
 
@@ -54,6 +56,20 @@ export default async function ServicesPage() {
                 <p className="mt-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                   From USD {service.startingPrice.toFixed(2)}
                 </p>
+              )}
+              {service.creemProductId ? (
+                <BuyButton
+                  itemType="service"
+                  slug={service.slug}
+                  label="Purchase"
+                />
+              ) : (
+                <Link
+                  href="/contact"
+                  className="mt-4 inline-flex text-sm font-medium text-teal-500"
+                >
+                  Request a quote →
+                </Link>
               )}
             </section>
           ))}

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
 import { RichText } from '@/components/site/RichText'
 import { getPayloadClient } from '@/lib/getPayloadClient'
+import { BuyButton } from '@/components/commerce/BuyButton'
 
 export const revalidate = 60
 
@@ -80,6 +81,17 @@ export default async function CoursePage({
               {course.summary}
             </p>
           )}
+          {course.creemProductId ? (
+            <BuyButton
+              itemType="course"
+              slug={course.slug}
+              label={
+                typeof course.price === 'number'
+                  ? `Enroll — USD ${course.price.toFixed(2)}`
+                  : 'Enroll now'
+              }
+            />
+          ) : null}
         </header>
 
         <RichText data={course.description} className="mt-10" />

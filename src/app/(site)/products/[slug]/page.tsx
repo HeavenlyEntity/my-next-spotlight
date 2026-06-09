@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
 import { RichText } from '@/components/site/RichText'
 import { getPayloadClient } from '@/lib/getPayloadClient'
+import { BuyButton } from '@/components/commerce/BuyButton'
 
 export const revalidate = 60
 
@@ -96,6 +97,21 @@ export default async function ProductPage({
             ))}
           </ul>
         )}
+
+        {product.creemProductId ? (
+          <BuyButton
+            itemType="product"
+            slug={product.slug}
+            isBoilerplate={product.type === 'boilerplate'}
+            label={
+              typeof product.price === 'number'
+                ? `Buy — ${product.currency ?? 'USD'} ${product.price.toFixed(
+                    2
+                  )}`
+                : 'Buy now'
+            }
+          />
+        ) : null}
 
         {(() => {
           const demoHref = safeHref(product.demoUrl)
