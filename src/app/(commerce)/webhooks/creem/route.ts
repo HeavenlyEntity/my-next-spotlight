@@ -76,6 +76,12 @@ export async function POST(req) {
   const isBoilerplate = itemType === 'product' && item?.type === 'boilerplate'
   const itemName = item?.name || item?.title || 'your purchase'
 
+  const productMismatch =
+    item &&
+    item.creemProductId &&
+    creemProductId &&
+    item.creemProductId !== creemProductId
+
   // Create the Purchase first (need its id to sign the access token).
   let purchase
   try {
@@ -110,7 +116,21 @@ export async function POST(req) {
     return new Response('error', { status: 500 }) // genuine error — let Creem retry
   }
 
-  if (isBoilerplate) {
+  if (productMismatch) {
+    console.warn('Webhook: paid product does not match item', {
+      orderId,
+      creemProductId,
+      itemCreemProductId: item.creemProductId,
+    })
+    await payload
+      .update({
+        collection: 'purchases',
+        id: purchase.id,
+        overrideAccess: true,
+        data: { fulfillmentStatus: 'failed' },
+      })
+      .catch(() => {})
+  } else if (isBoilerplate) {
     // Confirmation email is best-effort; the repo invite (Phase B3) is the real
     // fulfillment, so a failed confirmation must NOT flip the order to 'failed'.
     try {

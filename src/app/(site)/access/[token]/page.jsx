@@ -39,8 +39,25 @@ export default async function AccessPage({ params }) {
     })
     .catch(() => null)
   if (!purchase || purchase.status !== 'paid') return <InvalidLink />
-  // Token rotation: only the latest issued token is valid.
-  if (claims.jti !== purchase.accessTokenJti) return <InvalidLink />
+  if (purchase.fulfillmentStatus === 'pending_invite') {
+    return (
+      <Container className="mt-16 sm:mt-32">
+        <div className="mx-auto max-w-2xl">
+          <h1 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100">
+            Repository access on the way
+          </h1>
+          <p className="mt-4 text-zinc-600 dark:text-zinc-400">
+            Your access is delivered via a GitHub repository invitation to the
+            username you provided at checkout. If you haven’t received it,{' '}
+            <Link href="/contact" className="text-teal-500">
+              contact us
+            </Link>
+            .
+          </p>
+        </div>
+      </Container>
+    )
+  }
   // Cross-check the token's item against what the purchase actually recorded.
   const storedItemId =
     purchase.item && typeof purchase.item === 'object'

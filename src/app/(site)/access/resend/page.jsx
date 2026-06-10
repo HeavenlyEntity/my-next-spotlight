@@ -16,7 +16,13 @@ async function resendLink(formData) {
   const payload = await getPayloadClient()
   const { docs } = await payload.find({
     collection: 'purchases',
-    where: { email: { equals: email }, status: { equals: 'paid' } },
+    where: {
+      and: [
+        { email: { equals: email } },
+        { status: { equals: 'paid' } },
+        { fulfillmentStatus: { not_equals: 'pending_invite' } },
+      ],
+    },
     sort: '-createdAt',
     depth: 0,
     limit: 1,
@@ -24,7 +30,7 @@ async function resendLink(formData) {
   })
   const purchase = docs[0]
   if (purchase) {
-    const { token, jti } = createAccessToken({
+    const { token } = createAccessToken({
       purchaseId: purchase.id,
       itemType: purchase.itemType,
       itemId:
@@ -32,17 +38,7 @@ async function resendLink(formData) {
           ? purchase.item.value
           : purchase.item,
     })
-    await payload.update({
-      collection: 'purchases',
-      id: purchase.id,
-      overrideAccess: true,
-      data: { accessTokenJti: jti },
-    })
-    await sendAccessLinkEmail({
-      to: email,
-      itemName: 'your purchase',
-      token,
-    })
+    await sendAccessLinkEmail({ to: email, itemName: 'your purchase', token })
   }
   // Always behaves identically (no account enumeration).
 }

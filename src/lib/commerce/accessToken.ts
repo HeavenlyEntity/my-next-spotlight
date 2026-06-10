@@ -26,6 +26,7 @@ function sign(data: string): string {
 export function createAccessToken(
   input: Omit<AccessTokenPayload, 'jti' | 'exp'> & { ttlMs?: number }
 ): { token: string; jti: string; exp: number } {
+  if (!SECRET) throw new Error('ACCESS_TOKEN_SECRET is not configured')
   const jti = crypto.randomUUID()
   const exp = Date.now() + (input.ttlMs ?? DEFAULT_TTL_MS)
   const payload: AccessTokenPayload = {
