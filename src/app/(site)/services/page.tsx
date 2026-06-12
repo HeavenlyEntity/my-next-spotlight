@@ -1,14 +1,17 @@
-import Link from 'next/link'
 import { Container } from '@/components/Container'
-import { RichText } from '@/components/site/RichText'
 import { getPayloadClient } from '@/lib/getPayloadClient'
-import { BuyButton } from '@/components/commerce/BuyButton'
+import {
+  StoreHero,
+  StoreEmpty,
+  ServiceCard,
+} from '@/components/commerce/storefront'
 
 export const revalidate = 60
 
 export const metadata = {
   title: 'Services',
-  description: 'Services and engagements.',
+  description:
+    'Fractional CTO leadership and focused engineering engagements — scoped, senior, outcome-driven.',
 }
 
 export default async function ServicesPage() {
@@ -23,62 +26,31 @@ export default async function ServicesPage() {
 
   return (
     <Container className="mt-16 sm:mt-32">
-      <header className="max-w-2xl">
-        <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-          Services
-        </h1>
-        <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-          Ways we can work together.
-        </p>
-      </header>
+      <div className="amw">
+        <StoreHero
+          eyebrow="// AMWARE · ENGAGEMENTS"
+          title="Work with the engineer behind the tools."
+          intro="Fractional CTO leadership and focused build engagements — scoped, senior, and pointed at the outcome instead of the hours."
+          meta={
+            <>
+              <span className="amw-chip amw-chip--accent amw-chip--dot">
+                {docs.length} engagements
+              </span>
+              <span className="amw-chip">remote-first</span>
+            </>
+          }
+        />
 
-      {docs.length === 0 ? (
-        <p className="mt-16 text-zinc-500 dark:text-zinc-400">
-          No services listed yet.
-        </p>
-      ) : (
-        <div className="mt-16 grid grid-cols-1 gap-10 sm:grid-cols-2">
-          {docs.map((service) => (
-            <section
-              key={service.id}
-              className="rounded-3xl p-6 ring-1 ring-zinc-200 dark:ring-zinc-700"
-            >
-              <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
-                {service.name}
-              </h2>
-              {service.summary && (
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                  {service.summary}
-                </p>
-              )}
-              <RichText data={service.description} className="mt-4" />
-              {typeof service.startingPrice === 'number' && (
-                <p className="mt-4 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                  From USD {service.startingPrice.toFixed(2)}
-                </p>
-              )}
-              {service.creemProductId ? (
-                <BuyButton
-                  itemType="service"
-                  slug={service.slug}
-                  label={
-                    typeof service.startingPrice === 'number'
-                      ? `Purchase — USD ${service.startingPrice.toFixed(2)}`
-                      : 'Purchase'
-                  }
-                />
-              ) : (
-                <Link
-                  href="/contact"
-                  className="mt-4 inline-flex text-sm font-medium text-teal-500"
-                >
-                  Request a quote →
-                </Link>
-              )}
-            </section>
-          ))}
-        </div>
-      )}
+        {docs.length === 0 ? (
+          <StoreEmpty label="services" />
+        ) : (
+          <ul className="mt-10 grid grid-cols-1 gap-5 sm:mt-12 lg:grid-cols-2">
+            {docs.map((service, i) => (
+              <ServiceCard key={service.id} service={service} index={i} />
+            ))}
+          </ul>
+        )}
+      </div>
     </Container>
   )
 }

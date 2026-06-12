@@ -10,6 +10,7 @@ import { StagewiseInit } from '@/components/StagewiseInit'
 import '@/styles/tailwind.css'
 import '@/styles/global.css'
 import '@/styles/globals.css'
+import '@/styles/storefront.css'
 import 'focus-visible'
 
 const inter = Inter({
