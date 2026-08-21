@@ -20,6 +20,7 @@ import authjsLogo from '@/images/logos/authjs.png'
 import logoConventionSuite from '@/images/logos/ConventionSuite.png'
 import logoKingdomKode from '@/images/logos/kingdom-kode-logo.svg'
 import logoCelestial from '@/images/logos/dark-celestial-square.svg'
+import logoGearz from '@/images/logos/gearz-icon.svg'
 
 const Sparkline = ({ data, color }) => {
   const max = Math.max(...data)
@@ -61,6 +62,7 @@ import coverChamoji from '@/images/projects/chamoji-cover.png'
 import coverVrsa from '@/images/projects/vrsa-cover.png'
 import coverVbRemoteSat from '@/images/projects/vbremotesat-cover.png'
 import coverCelestial from '@/images/projects/celestial-cover.png'
+import coverGearz from '@/images/projects/gearz-cover.webp'
 
 function parseDate(dateStr) {
   const [month, day, year] = dateStr.split('/')
@@ -76,6 +78,20 @@ function getFullYear(dateStr) {
 }
 
 const projects = [
+  {
+    name: 'Gearz',
+    tags: ['SaaS', 'PWA', 'Community'],
+    date: '08/21/26',
+    description:
+      'The home base for car culture — find meets, flex your garage, rep your club. A community platform where enthusiasts discover events, build clubs, and earn their automotive reputation, with integrated event ticketing powered by Stripe Connect.',
+    link: { href: 'https://gears.io', label: 'gears.io' },
+    logo: logoGearz,
+    cover: coverGearz,
+    status: 'development',
+    whatHappened:
+      'Currently in active development as a mobile-first PWA — events, clubs, garages, and Gearhead scores are coming together ahead of launch in the Phoenix metro.',
+    activity: [5, 10, 20, 30, 45, 55, 70, 85, 95],
+  },
   {
     name: 'Celestial Studio Salon',
     tags: ['Full Stack', 'SaaS', 'Booking'],
