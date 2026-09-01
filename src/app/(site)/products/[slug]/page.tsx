@@ -120,14 +120,14 @@ export default async function ProductPage({
 
             {product.description && (
               <section className="mt-12">
-                <p className="amw-eyebrow">// overview</p>
+                <p className="amw-eyebrow">{'// overview'}</p>
                 <RichText data={product.description} className="mt-4" />
               </section>
             )}
 
             {features.length > 0 && (
               <section className="mt-12">
-                <p className="amw-eyebrow">// what&rsquo;s included</p>
+                <p className="amw-eyebrow">{'// what’s included'}</p>
                 <ul className="mt-6 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                   {features.map((f, i) => (
                     <li
@@ -145,7 +145,7 @@ export default async function ProductPage({
           {/* ---- spec / buy rail ---- */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <div className="amw-card amw-ticks p-6">
-              <p className="amw-eyebrow">// datasheet</p>
+              <p className="amw-eyebrow">{'// datasheet'}</p>
               <p className="amw-price mt-3 text-3xl font-bold text-zinc-900 dark:text-zinc-50">
                 {typeof product.price === 'number'
                   ? `$${product.price.toFixed(2)}`

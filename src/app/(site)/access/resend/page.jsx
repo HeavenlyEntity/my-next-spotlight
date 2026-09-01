@@ -51,8 +51,8 @@ export default function ResendPage() {
           Resend your access link
         </h1>
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
-          Enter the email you purchased with. If we find a purchase, we'll email
-          a fresh link.
+          Enter the email you purchased with. If we find a purchase, we&apos;ll
+          email a fresh link.
         </p>
         <form action={resendLink} className="mt-6 flex gap-3">
           <input

@@ -117,7 +117,7 @@ export default async function AccessPage({ params }) {
           </a>
         ) : (
           <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">
-            Your purchase is confirmed. We'll follow up by email with next
+            Your purchase is confirmed. We&apos;ll follow up by email with next
             steps.
           </p>
         )}

@@ -445,12 +445,12 @@ export default function HomeContent({ articles }) {
             </div>
 
             <p className="text-shadow-contrast mt-6 text-base text-zinc-600 dark:text-zinc-400">
-              Hi! I'm Alec, a software engineer, fractional CTO, AI expert,
-              mentor, and entrepreneur based in Phoenix, Arizona. I'm the
+              Hi! I&apos;m Alec, a software engineer, fractional CTO, AI expert,
+              mentor, and entrepreneur based in Phoenix, Arizona. I&apos;m the
               Co-Founder and CEO of Kingdom Kode, where we build AI-powered
               solutions for businesses and teams to boost their productivity and
-              growth. I also teach AI and coding to kids and adults alike. Let's
-              build something great together!
+              growth. I also teach AI and coding to kids and adults alike.
+              Let&apos;s build something great together!
             </p>
 
             <div className="mt-6 flex items-center gap-6">
