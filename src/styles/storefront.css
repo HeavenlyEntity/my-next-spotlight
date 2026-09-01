@@ -1,0 +1,279 @@
+/* =========================================================================
+   AMWARE // engineering-datasheet storefront design language
+   Scoped under .amw so nothing leaks into the rest of the site.
+   Dark-mode aware (the site toggles `.dark` on <html>).
+   ========================================================================= */
+
+.amw {
+  --amw-accent: #0d9488; /* teal-600 — readable on light */
+  --amw-accent-ink: #0f766e;
+  --amw-accent-soft: rgba(13, 148, 136, 0.1);
+  --amw-line: rgba(24, 24, 27, 0.1);
+  --amw-line-strong: rgba(24, 24, 27, 0.16);
+  --amw-grid: rgba(24, 24, 27, 0.045);
+  --amw-card: #ffffff;
+  --amw-card-2: #fafafa;
+  --amw-ink: #18181b;
+  --amw-mut: #71717a;
+  --amw-mono: var(--font-nav-code), ui-monospace, 'SFMono-Regular', monospace;
+}
+
+:where(.dark) .amw {
+  --amw-accent: #3ce8ce;
+  --amw-accent-ink: #5eead4;
+  --amw-accent-soft: rgba(60, 232, 206, 0.12);
+  --amw-line: rgba(255, 255, 255, 0.1);
+  --amw-line-strong: rgba(255, 255, 255, 0.18);
+  --amw-grid: rgba(255, 255, 255, 0.05);
+  --amw-card: #0b0b0f;
+  --amw-card-2: #101015;
+  --amw-ink: #f4f4f5;
+  --amw-mut: #a1a1aa;
+}
+
+/* ---- blueprint grid panel ------------------------------------------------ */
+.amw-grid-bg {
+  background-image: linear-gradient(
+      to right,
+      var(--amw-grid) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, var(--amw-grid) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: center;
+}
+.amw-grid-fade {
+  -webkit-mask-image: radial-gradient(
+    120% 100% at 50% 0%,
+    #000 35%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(120% 100% at 50% 0%, #000 35%, transparent 75%);
+}
+
+/* ---- mono type helpers --------------------------------------------------- */
+.amw-mono {
+  font-family: var(--amw-mono);
+  font-variant-ligatures: none;
+}
+.amw-eyebrow {
+  font-family: var(--amw-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amw-accent);
+}
+.amw-kicker {
+  font-family: var(--amw-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amw-mut);
+}
+
+/* ---- terminal-style chip ------------------------------------------------- */
+.amw-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--amw-mono);
+  font-size: 0.625rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--amw-line);
+  border-radius: 0.4rem;
+  color: var(--amw-mut);
+  background: color-mix(in srgb, var(--amw-card-2) 70%, transparent);
+  white-space: nowrap;
+}
+.amw-chip--accent {
+  color: var(--amw-accent);
+  border-color: color-mix(in srgb, var(--amw-accent) 45%, transparent);
+  background: var(--amw-accent-soft);
+}
+.amw-chip--dot::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: currentColor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
+}
+
+/* ---- datasheet card ------------------------------------------------------ */
+.amw-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--amw-card-2), var(--amw-card) 38%);
+  border: 1px solid var(--amw-line);
+  border-radius: 1rem;
+  overflow: hidden;
+  isolation: isolate;
+  transition: border-color 0.28s ease,
+    transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.28s ease;
+}
+.amw-card:hover {
+  border-color: color-mix(in srgb, var(--amw-accent) 55%, var(--amw-line));
+  transform: translateY(-4px);
+  box-shadow: 0 24px 50px -30px color-mix(in srgb, var(--amw-accent) 70%, transparent);
+}
+/* teal scanline that sweeps the top edge on hover */
+.amw-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--amw-accent),
+    transparent
+  );
+  opacity: 0;
+  transform: translateX(-100%);
+  z-index: 3;
+}
+.amw-card:hover::after {
+  opacity: 0.95;
+  animation: amw-scan 1.05s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes amw-scan {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* corner ticks — datasheet framing (use on a relatively-positioned box) */
+.amw-ticks::before,
+.amw-ticks::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--amw-line-strong);
+  z-index: 2;
+  pointer-events: none;
+}
+.amw-ticks::before {
+  top: 10px;
+  left: 10px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.amw-ticks::after {
+  bottom: 10px;
+  right: 10px;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* ---- staggered reveal ---------------------------------------------------- */
+@keyframes amw-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.amw-reveal {
+  opacity: 0;
+  animation: amw-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* ---- spec rail ----------------------------------------------------------- */
+.amw-spec {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.62rem 0;
+  border-bottom: 1px dashed var(--amw-line);
+  font-family: var(--amw-mono);
+  font-size: 0.75rem;
+}
+.amw-spec dt {
+  color: var(--amw-mut);
+  letter-spacing: 0.05em;
+}
+.amw-spec dd {
+  color: var(--amw-ink);
+  text-align: right;
+  font-weight: 500;
+}
+
+/* ---- price + cursor ------------------------------------------------------ */
+.amw-price {
+  font-family: var(--amw-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.amw-cursor::after {
+  content: '\2588';
+  margin-left: 0.12em;
+  color: var(--amw-accent);
+  animation: amw-blink 1.15s step-end infinite;
+}
+@keyframes amw-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---- checklist (what's included) ----------------------------------------- */
+.amw-check {
+  position: relative;
+  padding-left: 1.4rem;
+}
+.amw-check::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.15rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 0.25rem;
+  background: var(--amw-accent-soft);
+  border: 1px solid color-mix(in srgb, var(--amw-accent) 45%, transparent);
+}
+.amw-check::after {
+  content: '';
+  position: absolute;
+  left: 0.27rem;
+  top: 0.3rem;
+  width: 0.28rem;
+  height: 0.5rem;
+  border: solid var(--amw-accent);
+  border-width: 0 1.6px 1.6px 0;
+  transform: rotate(45deg);
+}
+
+/* ---- accessibility ------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .amw-reveal {
+    animation: none;
+    opacity: 1;
+  }
+  .amw-card:hover {
+    transform: none;
+  }
+  .amw-card:hover::after {
+    animation: none;
+    opacity: 0;
+  }
+  .amw-cursor::after {
+    animation: none;
+  }
+}
