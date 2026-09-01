@@ -10,10 +10,12 @@
     "payload": "payload",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
-    "seed:articles": "tsx --env-file=.env.local scripts/seed-articles.ts"
+    "seed:articles": "tsx --env-file=.env.local scripts/seed-articles.ts",
+    "reset:password": "node scripts/reset-user-password.mjs"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
+    "@creem_io/nextjs": "^0.5.0",
     "@headlessui/react": "^2.2.0",
     "@mapbox/rehype-prism": "^0.8.0",
     "@mdx-js/loader": "^2.1.5",
@@ -23,6 +25,7 @@
     "@payloadcms/next": "^3.85.0",
     "@payloadcms/richtext-lexical": "^3.85.0",
     "@payloadcms/storage-s3": "^3.85.0",
+    "@payloadcms/ui": "^3.85.0",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-slot": "^1.2.3",
@@ -64,6 +67,7 @@
     "@types/react-dom": "^19.2.3",
     "eslint": "8.57.1",
     "eslint-config-next": "~15.4.11",
+    "pg": "^8.21.0",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.11",
     "tailwindcss": "^4.1.0",
