@@ -1,6 +1,11 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY || '')
+let resend: Resend | null = null
+
+function getResend(): Resend {
+  if (!resend) resend = new Resend(process.env.RESEND_API_KEY)
+  return resend
+}
 
 export type ContactSubmission = {
   name: string
@@ -16,7 +21,7 @@ export async function sendContactEmails(
   const notifyTo = process.env.CONTACT_NOTIFY_TO
 
   if (notifyTo) {
-    await resend.emails.send({
+    await getResend().emails.send({
       from,
       to: notifyTo,
       replyTo: submission.email,
@@ -27,7 +32,7 @@ export async function sendContactEmails(
     })
   }
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from,
     to: submission.email,
     subject: 'Thanks for reaching out',
