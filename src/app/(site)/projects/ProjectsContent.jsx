@@ -85,7 +85,7 @@ const projects = [
     date: '08/21/26',
     description:
       'The home base for car culture — find meets, flex your garage, rep your club. A community platform where enthusiasts discover events, build clubs, and earn their automotive reputation, with integrated event ticketing powered by Stripe Connect.',
-    link: { href: 'https://gears.io', label: 'gears.io' },
+    link: { href: 'https://gearz.io', label: 'gearz.io' },
     logo: logoGearz,
     cover: coverGearz,
     status: 'development',
