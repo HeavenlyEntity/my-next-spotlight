@@ -27,8 +27,25 @@ const navCode = JetBrains_Mono({
 })
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
+const canonicalSiteUrl = 'https://www.amware.dev'
+
+function getMetadataBase() {
+  if (!siteUrl) return new URL(canonicalSiteUrl)
+
+  try {
+    const url = new URL(siteUrl)
+    const isLocalProductionUrl =
+      process.env.NODE_ENV === 'production' &&
+      ['localhost', '127.0.0.1'].includes(url.hostname)
+
+    return isLocalProductionUrl ? new URL(canonicalSiteUrl) : url
+  } catch {
+    return new URL(canonicalSiteUrl)
+  }
+}
 
 export const metadata: Metadata = {
+  metadataBase: getMetadataBase(),
   title: { default: 'Alec Mingione', template: '%s - Alec Mingione' },
   ...(siteUrl && {
     alternates: {

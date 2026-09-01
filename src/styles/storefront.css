@@ -31,6 +31,21 @@
   --amw-mut: #a1a1aa;
 }
 
+/* ---- forced-dark terminal panel (home hero) ------------------------------ */
+/* Always renders with the dark token set, regardless of site theme. */
+.amw .amw-panel-dark {
+  --amw-accent: #3ce8ce;
+  --amw-accent-ink: #5eead4;
+  --amw-accent-soft: rgba(60, 232, 206, 0.12);
+  --amw-line: rgba(255, 255, 255, 0.1);
+  --amw-line-strong: rgba(255, 255, 255, 0.18);
+  --amw-grid: rgba(255, 255, 255, 0.05);
+  --amw-card: #0b0b0f;
+  --amw-card-2: #101015;
+  --amw-ink: #f4f4f5;
+  --amw-mut: #a1a1aa;
+}
+
 /* ---- blueprint grid panel ------------------------------------------------ */
 .amw-grid-bg {
   background-image: linear-gradient(
@@ -49,6 +64,61 @@
     transparent 75%
   );
   mask-image: radial-gradient(120% 100% at 50% 0%, #000 35%, transparent 75%);
+}
+
+/* ---- hero contour field -------------------------------------------------- */
+/* The shader occupies the whole panel; the mask lets it surface on the
+   diagonal and the scrim keeps the copy column on clean ground. */
+.amw-hero-field {
+  opacity: 0.8;
+  -webkit-mask-image: linear-gradient(
+    100deg,
+    transparent 6%,
+    rgba(0, 0, 0, 0.4) 40%,
+    #000 78%
+  );
+  mask-image: linear-gradient(
+    100deg,
+    transparent 6%,
+    rgba(0, 0, 0, 0.4) 40%,
+    #000 78%
+  );
+}
+.amw-hero-scrim {
+  background: linear-gradient(
+    to right,
+    #0b0b0f 6%,
+    rgba(11, 11, 15, 0.78) 38%,
+    transparent 72%
+  );
+}
+@media (max-width: 767px) {
+  /* Narrow viewports have no room for a copy column beside a terrain
+     column, so the field surfaces above and below the copy instead. */
+  .amw-hero-field {
+    opacity: 0.75;
+    -webkit-mask-image: linear-gradient(
+      115deg,
+      transparent 2%,
+      rgba(0, 0, 0, 0.55) 35%,
+      #000 72%
+    );
+    mask-image: linear-gradient(
+      115deg,
+      transparent 2%,
+      rgba(0, 0, 0, 0.55) 35%,
+      #000 72%
+    );
+  }
+  .amw-hero-scrim {
+    background: linear-gradient(
+      to bottom,
+      rgba(11, 11, 15, 0.3) 0%,
+      rgba(11, 11, 15, 0.86) 24%,
+      rgba(11, 11, 15, 0.9) 70%,
+      rgba(11, 11, 15, 0.55) 100%
+    );
+  }
 }
 
 /* ---- mono type helpers --------------------------------------------------- */
@@ -96,6 +166,10 @@
 }
 .amw-chip--dot::before {
   content: '';
+  flex: none;
+  /* Uppercase text with line-height 1 optically centres above the line
+     box, so the dot needs a nudge up to sit on the cap midline. */
+  transform: translateY(-0.5px);
   width: 5px;
   height: 5px;
   border-radius: 9999px;

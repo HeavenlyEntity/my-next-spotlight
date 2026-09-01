@@ -307,6 +307,33 @@ export function AppHeader() {
                   logoClassName={theme === 'dark' ? '' : 'invert'}
                   items={[
                     { label: 'About', href: '/about' },
+                    {
+                      label: 'Catalog',
+                      ariaLabel: 'Catalog menu',
+                      submenu: {
+                        title: '// THE CATALOG — TWO WAYS IN',
+                        items: [
+                          {
+                            label: 'Boilerplates & Products',
+                            href: '/products',
+                            kicker: '/products · mode b',
+                            desc: 'Production starter kits and tooling — you build on mine.',
+                          },
+                          {
+                            label: 'Services',
+                            href: '/services',
+                            kicker: '/services · mode a',
+                            desc: 'Fractional CTO and scoped engagements — I build it with you.',
+                          },
+                          {
+                            label: 'Courses',
+                            href: '/courses',
+                            kicker: '/courses · the playbook',
+                            desc: 'The same systems, taught — learn to build it yourself.',
+                          },
+                        ],
+                      },
+                    },
                     { label: 'Articles', href: '/articles' },
                     { label: 'Projects', href: '/projects' },
                     { label: 'Uses', href: '/uses' },
@@ -316,7 +343,7 @@ export function AppHeader() {
                   className="custom-nav"
                   ease="power2.easeOut"
                   baseColor={theme === 'dark' ? '#000' : '#ededed'}
-                  pillColor={theme === 'dark' ? '#252429' : '#fefefe'}
+                  pillColor={theme === 'dark' ? '#0f0e13' : '#fefefe'}
                   hoveredPillTextColor={
                     theme === 'light' ? '#79c9b8' : '#f4f3f5'
                   }
