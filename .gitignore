@@ -33,3 +33,14 @@ yarn-error.log*
 
 # generated files
 /public/rss/
+
+# Brainstorming visual companion
+.superpowers/
+.gstack/
+.design-preview/
+
+# TypeScript incremental
+*.tsbuildinfo
+
+# Local Claude worktrees
+.claude/worktrees/
