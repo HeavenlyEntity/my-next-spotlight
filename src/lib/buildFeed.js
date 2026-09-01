@@ -1,4 +1,4 @@
-import ReactDOMServer from 'react-dom/server'
+import { renderToStaticMarkup } from 'react-dom/server.edge'
 import { Feed } from 'feed'
 
 import { getAllArticles } from './getAllArticles'
@@ -25,9 +25,7 @@ export async function buildFeed() {
 
   for (let article of articles) {
     let url = `${siteUrl}/articles/${article.slug}`
-    let html = ReactDOMServer.renderToStaticMarkup(
-      <article.component isRssFeed />
-    )
+    let html = renderToStaticMarkup(<article.component isRssFeed />)
     feed.addItem({
       title: article.title,
       id: url,
