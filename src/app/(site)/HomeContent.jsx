@@ -121,7 +121,7 @@ function SectionHeader({ index, eyebrow, meta, title, copy }) {
     <div>
       <div className="border-[var(--amw-line)] flex items-baseline justify-between gap-4 border-b border-dashed pb-4">
         <p className="amw-eyebrow">
-          // SEC.{index} — {eyebrow}
+          {'//'} SEC.{index} — {eyebrow}
         </p>
         {meta && <span className="amw-kicker hidden sm:block">{meta}</span>}
       </div>
