@@ -1,25 +1,37 @@
 {
   "version": 1,
   "transcripts": {
-    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/50806697-fefe-46c9-9dee-11678dc09d86/50806697-fefe-46c9-9dee-11678dc09d86.jsonl": {
-      "mtimeMs": 1773875803000,
-      "lastProcessedAt": "2026-03-19T00:30:00.000Z"
-    },
-    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/8b0bcbb6-0e4f-4535-8c80-03eba2664513/8b0bcbb6-0e4f-4535-8c80-03eba2664513.jsonl": {
-      "mtimeMs": 1773876998000,
-      "lastProcessedAt": "2026-03-19T00:30:00.000Z"
-    },
-    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/aeec61cf-9932-4397-9281-f4a9a3243384/aeec61cf-9932-4397-9281-f4a9a3243384.jsonl": {
-      "mtimeMs": 1773880897000,
-      "lastProcessedAt": "2026-03-22T22:30:00.000Z"
-    },
-    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/49bf66ce-f50c-4fc0-add3-53611e9b7f23/49bf66ce-f50c-4fc0-add3-53611e9b7f23.jsonl": {
-      "mtimeMs": 1773895826000,
-      "lastProcessedAt": "2026-03-22T22:30:00.000Z"
+    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/f88e252e-1670-44e0-9c5c-57c1e4180921/f88e252e-1670-44e0-9c5c-57c1e4180921.jsonl": {
+      "mtimeMs": 1774582060877,
+      "lastProcessedAt": "2026-09-01T23:40:18.382Z"
     },
     "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/d7a9d62f-cc3c-470d-ba0f-595a1918da55/d7a9d62f-cc3c-470d-ba0f-595a1918da55.jsonl": {
-      "mtimeMs": 1774227926000,
-      "lastProcessedAt": "2026-03-22T22:30:00.000Z"
+      "mtimeMs": 1774378280750,
+      "lastProcessedAt": "2026-09-01T23:40:18.382Z"
+    },
+    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/1dabef17-a79d-4eb8-8fa8-88a88a254b7f/1dabef17-a79d-4eb8-8fa8-88a88a254b7f.jsonl": {
+      "mtimeMs": 1774385820538,
+      "lastProcessedAt": "2026-09-01T23:40:18.382Z"
+    },
+    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/8b0bcbb6-0e4f-4535-8c80-03eba2664513/8b0bcbb6-0e4f-4535-8c80-03eba2664513.jsonl": {
+      "mtimeMs": 1773876998673,
+      "lastProcessedAt": "2026-09-01T23:40:18.382Z"
+    },
+    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/50806697-fefe-46c9-9dee-11678dc09d86/50806697-fefe-46c9-9dee-11678dc09d86.jsonl": {
+      "mtimeMs": 1773875803738,
+      "lastProcessedAt": "2026-09-01T23:40:18.382Z"
+    },
+    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/49bf66ce-f50c-4fc0-add3-53611e9b7f23/49bf66ce-f50c-4fc0-add3-53611e9b7f23.jsonl": {
+      "mtimeMs": 1773895826383,
+      "lastProcessedAt": "2026-09-01T23:40:18.382Z"
+    },
+    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/aeec61cf-9932-4397-9281-f4a9a3243384/aeec61cf-9932-4397-9281-f4a9a3243384.jsonl": {
+      "mtimeMs": 1774386827732,
+      "lastProcessedAt": "2026-09-01T23:40:18.382Z"
+    },
+    "/Users/mipi-founder/.cursor/projects/Users-mipi-founder-Documents-GitHub-my-next-spotlight/agent-transcripts/edde8560-6a89-4d1c-9148-acd26d14f2b0/edde8560-6a89-4d1c-9148-acd26d14f2b0.jsonl": {
+      "mtimeMs": 1788305874090,
+      "lastProcessedAt": "2026-09-01T23:40:18.382Z"
     }
   }
 }
