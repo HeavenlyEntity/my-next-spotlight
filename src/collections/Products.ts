@@ -1,5 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
+import { slugField } from '@/fields/slug'
+import { creemProductField } from '@/fields/creem'
+
 export const Products: CollectionConfig = {
   slug: 'products',
   admin: {
@@ -14,7 +17,9 @@ export const Products: CollectionConfig = {
   },
   fields: [
     { name: 'name', type: 'text', required: true },
-    { name: 'slug', type: 'text', required: true, unique: true, index: true },
+    ...slugField('name', {
+      slugOverrides: { required: true, unique: true },
+    }),
     {
       name: 'type',
       type: 'select',
@@ -40,6 +45,10 @@ export const Products: CollectionConfig = {
       labels: { singular: 'Tech', plural: 'Tech Stack' },
       fields: [{ name: 'tech', type: 'text', required: true }],
     },
+    creemProductField({
+      currencyField: 'currency',
+      priceLabelField: 'priceLabel',
+    }),
     { name: 'price', type: 'number' },
     { name: 'currency', type: 'text', defaultValue: 'USD' },
     {
@@ -62,13 +71,6 @@ export const Products: CollectionConfig = {
       },
     },
     { name: 'demoUrl', type: 'text' },
-    {
-      name: 'creemProductId',
-      type: 'text',
-      admin: {
-        description: 'Creem prod_… id. Absence ⇒ not purchasable.',
-      },
-    },
     {
       name: 'downloadFile',
       type: 'upload',

@@ -1,5 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
+import { slugField } from '@/fields/slug'
+import { creemProductField } from '@/fields/creem'
+
 export const Courses: CollectionConfig = {
   slug: 'courses',
   admin: {
@@ -14,7 +17,9 @@ export const Courses: CollectionConfig = {
   },
   fields: [
     { name: 'title', type: 'text', required: true },
-    { name: 'slug', type: 'text', required: true, unique: true, index: true },
+    ...slugField('title', {
+      slugOverrides: { required: true, unique: true },
+    }),
     { name: 'summary', type: 'textarea' },
     { name: 'description', type: 'richText' },
     { name: 'coverImage', type: 'upload', relationTo: 'media' },
@@ -27,12 +32,8 @@ export const Courses: CollectionConfig = {
         { label: 'Advanced', value: 'advanced' },
       ],
     },
+    creemProductField(),
     { name: 'price', type: 'number' },
-    {
-      name: 'creemProductId',
-      type: 'text',
-      admin: { description: 'Creem prod_… id. Absence ⇒ not purchasable.' },
-    },
     { name: 'featured', type: 'checkbox', defaultValue: false },
     { name: 'order', type: 'number', defaultValue: 0 },
     {

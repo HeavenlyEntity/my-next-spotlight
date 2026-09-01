@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { slugField } from '@/fields/slug'
+
 export const Articles: CollectionConfig = {
   slug: 'articles',
   admin: {
@@ -14,7 +16,9 @@ export const Articles: CollectionConfig = {
   },
   fields: [
     { name: 'title', type: 'text', required: true },
-    { name: 'slug', type: 'text', required: true, unique: true, index: true },
+    ...slugField('title', {
+      slugOverrides: { required: true, unique: true },
+    }),
     { name: 'publishedDate', type: 'date', required: true },
     { name: 'author', type: 'text', defaultValue: 'Alec Mingione' },
     { name: 'description', type: 'textarea' },

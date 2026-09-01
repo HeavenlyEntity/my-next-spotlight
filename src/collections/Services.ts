@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { slugField } from '@/fields/slug'
+
 export const Services: CollectionConfig = {
   slug: 'services',
   admin: {
@@ -14,7 +16,9 @@ export const Services: CollectionConfig = {
   },
   fields: [
     { name: 'name', type: 'text', required: true },
-    { name: 'slug', type: 'text', required: true, unique: true, index: true },
+    ...slugField('name', {
+      slugOverrides: { required: true, unique: true },
+    }),
     { name: 'summary', type: 'textarea' },
     { name: 'description', type: 'richText' },
     { name: 'icon', type: 'upload', relationTo: 'media' },

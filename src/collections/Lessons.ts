@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { slugField } from '@/fields/slug'
+
 export const Lessons: CollectionConfig = {
   slug: 'lessons',
   admin: {
@@ -14,12 +16,11 @@ export const Lessons: CollectionConfig = {
   },
   fields: [
     { name: 'title', type: 'text', required: true },
-    {
-      name: 'slug',
-      type: 'text',
-      index: true,
-      admin: { description: 'Used as the on-page anchor id.' },
-    },
+    ...slugField('title', {
+      slugOverrides: {
+        admin: { description: 'Used as the on-page anchor id.' },
+      },
+    }),
     {
       name: 'course',
       type: 'relationship',
