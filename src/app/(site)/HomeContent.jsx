@@ -253,76 +253,6 @@ function Hero() {
   )
 }
 
-/* ---- story — origin trace -------------------------------------------------- */
-
-const MILESTONES = [
-  {
-    year: '2017',
-    label: 'RL Canning · Honeywell floors',
-    line: 'Taught machines to do the boring work — first proof that good automation pays for itself.',
-  },
-  {
-    year: '2019',
-    label: 'Charles Schwab',
-    line: 'Learned what production-grade really means when the code moves real money.',
-  },
-  {
-    year: '2021',
-    label: 'NewGen Business Solutions',
-    line: 'Senior lead engineer — owning client systems end to end, deadline after deadline.',
-  },
-  {
-    year: '2022',
-    label: 'Founded MiPi',
-    line: 'First company. Every founder lesson, learned early and firsthand.',
-  },
-  {
-    year: '2025',
-    label: 'Co-founded Kingdom Kode',
-    line: 'AI-powered products for businesses — and teaching kids and adults to build their own.',
-  },
-  {
-    year: 'now',
-    label: 'AMWare',
-    line: 'The playbook, productized: the services and boilerplates you see on this page.',
-  },
-]
-
-function StorySection() {
-  return (
-    <Container className="mt-24 sm:mt-32">
-      <div className="amw">
-        <SectionHeader
-          index="01"
-          eyebrow="ORIGIN TRACE"
-          meta="2017 → present"
-          title="Every tool here was forged on a real deadline."
-          copy="Nothing in this catalog started as a product. It started as a problem — on a factory floor, in a bank’s codebase, or inside my own startups. What survived the deadline became the playbook."
-        />
-        <ol className="mt-10">
-          {MILESTONES.map((m, i) => (
-            <li
-              key={m.year}
-              className="amw-reveal border-[var(--amw-line)] grid grid-cols-[4.5rem_1fr] gap-x-6 border-b border-dashed py-5 sm:grid-cols-[6rem_16rem_1fr]"
-              style={{ '--i': i }}
-            >
-              <span className="amw-mono text-[var(--amw-accent)] text-sm font-medium">
-                {m.year}
-              </span>
-              <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                {m.label}
-              </span>
-              <span className="col-span-2 mt-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 sm:col-span-1 sm:mt-0">
-                {m.line}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </Container>
-  )
-}
-
 /* ---- offerings — the catalog ----------------------------------------------- */
 
 function HomeServiceCard({ service, index = 0 }) {
@@ -438,7 +368,7 @@ function CatalogSection({ products, services, catalogError }) {
     <Container className="mt-24 sm:mt-32">
       <div className="amw">
         <SectionHeader
-          index="02"
+          index="01"
           eyebrow="THE CATALOG"
           meta={
             catalogError
@@ -551,7 +481,7 @@ function ProofSection() {
       <Container>
         <div className="amw">
           <SectionHeader
-            index="03"
+            index="02"
             eyebrow="FIELD EVIDENCE"
             meta="selected work"
             title="Shipped, not staged."
@@ -745,8 +675,6 @@ export default function HomeContent({
           <Hero />
         </div>
       </Container>
-
-      <StorySection />
 
       <CatalogSection
         products={products}
