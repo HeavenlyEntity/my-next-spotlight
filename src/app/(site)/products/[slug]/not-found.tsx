@@ -8,7 +8,7 @@ export default function ProductNotFound() {
         Product not found
       </h1>
       <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-        That product doesn't exist or isn't published yet.{' '}
+        That product doesn&apos;t exist or isn&apos;t published yet.{' '}
         <Link href="/products" className="text-teal-500">
           Back to products
         </Link>

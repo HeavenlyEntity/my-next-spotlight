@@ -65,7 +65,6 @@ export async function POST(req) {
     ? COLLECTION[itemType]
     : null
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let item: any = null
   if (collection) {
     item = await payload

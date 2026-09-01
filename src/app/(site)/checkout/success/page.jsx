@@ -15,7 +15,7 @@ export default function CheckoutSuccess() {
         </h1>
         <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
           Check your email for your access link (or your repository invitation
-          for boilerplates). Didn't get it?{' '}
+          for boilerplates). Didn&apos;t get it?{' '}
           <Link href="/access/resend" className="text-teal-500">
             Resend my access link
           </Link>

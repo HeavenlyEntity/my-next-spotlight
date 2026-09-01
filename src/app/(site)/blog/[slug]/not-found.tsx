@@ -8,7 +8,7 @@ export default function BlogNotFound() {
         Post not found
       </h1>
       <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-        That post doesn't exist or isn't published.{' '}
+        That post doesn&apos;t exist or isn&apos;t published.{' '}
         <Link href="/blog" className="text-teal-500">
           Back to the blog
         </Link>
