@@ -63,7 +63,7 @@ import coverChamoji from '@/images/projects/chamoji-cover.png'
 import coverVrsa from '@/images/projects/vrsa-cover.png'
 import coverVbRemoteSat from '@/images/projects/vbremotesat-cover.png'
 import coverCelestial from '@/images/projects/celestial-cover.png'
-import coverGearz from '@/images/projects/gearz-cover.webp'
+import coverGearz from '@/images/projects/gearz-io-dashboard.webp'
 
 function parseDate(dateStr) {
   const [month, day, year] = dateStr.split('/')
