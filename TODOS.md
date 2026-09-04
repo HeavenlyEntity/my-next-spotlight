@@ -41,6 +41,21 @@
 **Priority:** P2
 **Depends on:** a budget decision. Nothing technical.
 
+### Keep the desk landing a hero, not a menu, with two live tools
+
+**What:** Re-compose `/founders` for two live tools. Today it is a single-tool hero: eyebrow, hook headline, one CTA, the example figure, and a dimmed line of coming tools. The job offer calculator makes it two, and decision D3 also changes its privacy sentence from "No account, nothing stored" to "nothing leaves your browser".
+
+**Why:** that page scored 9/10 in its own design review, and its very first decision was a hero composition rather than a tool menu. Both outside voices had hard-rejected the menu version. The obvious way to add a second tool is a second CTA, and two CTAs is a menu. This entry exists so nobody undoes that decision by accident.
+
+**Pros:** protects a reviewed page from regressing as the desk grows.
+**Cons:** the page is short and the fix may be one line in the registry.
+
+**Context:** the desk landing and its soon-tools line are driven by `src/lib/founders/tools.js`. The original rationale is in the equity calculator plan's design specification, decision 1A: one first-viewport composition, one primary CTA, the `GapFigure` example as the anchor. Whatever replaces it must still answer "what is this desk for" before "which tool do you want".
+
+**Effort:** S
+**Priority:** P2
+**Depends on:** T7 of the job offer calculator plan, which already touches that page for the registry entry and the privacy copy.
+
 ### PDF attachment on the contact form for the printed brief
 
 **What:** A PDF-only file input on `ContactForm.jsx`, stored via the existing Media collection and linked from `ContactSubmissions`.

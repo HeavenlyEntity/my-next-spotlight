@@ -1,11 +1,11 @@
 # Plan: Founders' Desk — Job Offer Calculator (locked)
 
-Reviewed by /plan-eng-review on 2026-09-04
+Reviewed by /plan-eng-review and /plan-design-review on 2026-09-04
 Branch: feat/payload-cms-integration
 Repo: HeavenlyEntity/my-next-spotlight
 Sibling: docs/plans/founders-desk-equity-calculator.md (IMPLEMENTED 2026-09-03)
 Design system: DESIGN.md
-Status: LOCKED — 16 decisions resolved, 17 outside-voice findings folded. Blocked on T0.
+Status: LOCKED — 16 engineering + 12 design decisions resolved, 17 engineering and 2 design outside-voice passes folded. T0 landed 2026-09-04.
 
 ## What this is
 
@@ -15,26 +15,36 @@ The job offer calculator answers the next question: **"so what do I ask for, in 
 
 They are two framings of one engine, not two engines.
 
-## Decisions (D1-D16)
+## Decisions (D1-D16 engineering, DD3-DD12 design)
 
-| #   | Decision                                                                                                                                                                                        | Source                          |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| D1  | Full scope in v1: ask ladder + industry + geography + comparison plot. Scope reduction offered and declined.                                                                                    | Step 0                          |
-| D2  | Company figures refresh via a **script**, with a visible as-of date and a self-warning banner past six months. The as-of is the **retrieval date**, never the page's own "Last updated" string. | Architecture 1 + research       |
-| D3  | Store **persists by default** (sessionStorage) with a clear button. Desk and equity copy change to "nothing leaves your browser".                                                               | Architecture 2                  |
-| D4  | Cash band bucket comes from **`read.classification.class`**, never the raw joining input.                                                                                                       | Architecture 3                  |
-| D5  | The floor's reality check values equity at **zero**. Refined by D10: this is a note, not the floor equation.                                                                                    | Architecture 4                  |
-| D6  | The store **subsumes** `handoff.js` storage. `briefForContact()` survives as pure formatting.                                                                                                   | Code quality 1                  |
-| D7  | The chart is **hand-built on the desk's figure grammar**, not pulled from PaceUI or React Bits.                                                                                                 | Code quality 2                  |
-| D8  | Refresh script gets a **fixture parser test plus live sanity checks** that refuse to write bad data.                                                                                            | Tests 1                         |
-| D9  | Number inputs **commit on blur or Enter**, matching the existing slider convention.                                                                                                             | Performance 1                   |
-| D10 | **Each rung recomputes the equity band at its own cash.** Fixes incoherent pairs and the floor collapse.                                                                                        | Outside voice 2                 |
-| D11 | Plot draws **cash bars plus a scenario-driven equity layer**. Renders for engineer (IC ladder) and CTO (leadership ladder); withheld for CEO.                                                   | Outside voice 10, 11 + research |
-| D12 | **Land the existing work first.** The founders feature is entirely untracked.                                                                                                                   | Outside voice 17                |
-| D13 | **Geography is an input** alongside industry, because it moves cash more.                                                                                                                       | Outside voice 13                |
-| D14 | Cold start asks the **two classification gates** on step 1.                                                                                                                                     | Outside voice 4                 |
-| D15 | Seven mechanical defects folded: field names, shares mode, clear semantics, table shapes, refresh script, storage merge, test paths.                                                            | Outside voice 5,7,9,12,14,15,16 |
-| D16 | Cold start also asks the **responsibility chips**; the gates alone leave non-formation paths pending.                                                                                           | classify.js:58                  |
+| #    | Decision                                                                                                                                                                                                                  | Source                          |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| D1   | Full scope in v1: ask ladder + industry + geography + comparison plot. Scope reduction offered and declined.                                                                                                              | Step 0                          |
+| D2   | Company figures refresh via a **script**, with a visible as-of date and a self-warning banner past six months. The as-of is the **retrieval date**, never the page's own "Last updated" string.                           | Architecture 1 + research       |
+| D3   | Store **persists by default** (sessionStorage) with a clear button. Desk and equity copy change to "nothing leaves your browser".                                                                                         | Architecture 2                  |
+| D4   | Cash band bucket comes from **`read.classification.class`**, never the raw joining input.                                                                                                                                 | Architecture 3                  |
+| D5   | The floor's reality check values equity at **zero**. Refined by D10: this is a note, not the floor equation.                                                                                                              | Architecture 4                  |
+| D6   | The store **subsumes** `handoff.js` storage. `briefForContact()` survives as pure formatting.                                                                                                                             | Code quality 1                  |
+| D7   | The chart is **hand-built on the desk's figure grammar**, not pulled from PaceUI or React Bits.                                                                                                                           | Code quality 2                  |
+| D8   | Refresh script gets a **fixture parser test plus live sanity checks** that refuse to write bad data.                                                                                                                      | Tests 1                         |
+| D9   | Number inputs **commit on blur or Enter**, matching the existing slider convention.                                                                                                                                       | Performance 1                   |
+| D10  | **Each rung recomputes the equity band at its own cash.** Fixes incoherent pairs and the floor collapse.                                                                                                                  | Outside voice 2                 |
+| D11  | Plot draws **cash bars plus a scenario-driven equity layer**. Renders for engineer (IC ladder) and CTO (leadership ladder); withheld for CEO.                                                                             | Outside voice 10, 11 + research |
+| D12  | **Land the existing work first.** The founders feature is entirely untracked.                                                                                                                                             | Outside voice 17                |
+| D13  | **Geography is an input** alongside industry, because it moves cash more.                                                                                                                                                 | Outside voice 13                |
+| D14  | Cold start asks the **two classification gates** on step 1.                                                                                                                                                               | Outside voice 4                 |
+| D15  | Seven mechanical defects folded: field names, shares mode, clear semantics, table shapes, refresh script, storage merge, test paths.                                                                                      | Outside voice 5,7,9,12,14,15,16 |
+| D16  | Cold start also asks the **responsibility chips**; the gates alone leave non-formation paths pending.                                                                                                                     | classify.js:58                  |
+| DD3  | Results order: **verdict first**, ladder as evidence, plot below the fold. Teal off the ceiling rung.                                                                                                                     | Design pass 1                   |
+| DD4  | **One market number**: the researched band's median replaces `MARKET_SALARY`; the old table survives only as a labeled fallback.                                                                                          | Design pass 1                   |
+| DD5  | **Hydration gate** plus a full interaction-states table.                                                                                                                                                                  | Design pass 2                   |
+| DD6  | **"Copy the ask"** is the primary action. Resolves the hard rejection.                                                                                                                                                    | Design pass 3                   |
+| DD7  | The plot leads with **its thesis**, generated from the real ratio.                                                                                                                                                        | Design pass 4                   |
+| DD8  | Confidence renders as a **dotted underline plus an `est.` suffix**.                                                                                                                                                       | Design pass 5                   |
+| DD9  | The wizard becomes **three steps**; industry and location become selects.                                                                                                                                                 | Design pass 6                   |
+| DD10 | Below `md` the plot is a **list**, all eleven rows, **tap not hover** at every breakpoint.                                                                                                                                | Design pass 6                   |
+| DD11 | The user's equity is **annualised** and labeled per vesting year.                                                                                                                                                         | Design pass 7                   |
+| DD12 | Twelve folded: geo key bug, test 29 contradiction, missing test rows, steps enumerated, pre-seed default, arrival prompt, rung names, none-of-these, scenario placement, current-offer marker, one plot component, print. | Design pass 7                   |
 
 ## The relationship between the two tools
 
@@ -129,7 +139,7 @@ const INITIAL = {
   joining: 'fractional_conversion',
   stage: 'preseed',
   industry: 'saas',
-  geo: 'us_national',
+  geo: 'remote_national',
   responsibilities: [],
   fullTimeOnSigning: null,
   finalTechnicalSay: null, // D14, D16
@@ -381,6 +391,93 @@ Market reference line: senior engineer $312,000 (Levels.fyi 2025 pay report).
 
 **The correction:** the "Last updated" string on a Levels.fyi page is a **render artifact**. Every page fetched on 2026-09-04 printed "Last updated: September 4, 2026", which is the page-generation date, not a data vintage. Levels.fyi publishes neither the submission window nor the per-level sample size. So the refresh script must stamp `AS_OF` with its own **retrieval date** and the label must read "rolling, retrieved <date>". A script that trusted the page's own string would stamp today's date forever and the staleness banner would never fire, which is the exact silent-decay failure D2 exists to prevent. The sanity gate (D8) must assert that `AS_OF` is the retrieval date and not a parsed value.
 
+## Design specification (locked by /plan-design-review, 2026-09-04)
+
+Twelve decisions. Where this section and the wireframes disagree, this section wins.
+
+### Screen order (DD3)
+
+The user asked one question, so the page answers it once, at size, before defending it.
+
+```
+1  VERDICT      kicker: Senior engineer · Series A · AI · Bay Area · converting
+                Layer h1, text-5xl md:text-6xl tabular: "Ask for $255,000 and 0.75%."
+                one headline variant beneath, keyed to where their offer sits
+2  LADDER       three rows, one connected table. Target dominant by SCALE and WEIGHT,
+                never by accent fill. Their current offer as a marker with the delta.
+3  TRADE        one line: more cash lowers the equity you can defend, at this rate
+4  FLOOR NOTE   attached to the floor row, not floating after the trade line
+5  ACTIONS      primary "Copy the ask" · secondary "Edit answers" · print
+6  PLOT         below the fold, its thesis sentence first, scenario control above it
+7  SOURCES      one disclosure: methodology, geography, confidence, as-of
+```
+
+**Six headline variants**, keyed to `offer.position`, each asserted by a test: no offer entered; below the floor; between floor and target; between target and ceiling; above the ceiling; Series B or later where the trade rate is poor.
+
+**Rung labels are for humans** (DD12.7): **Open with** / **Aim for** / **Minimum the market supports**. `ceiling`, `target`, `floor` stay internal field names.
+
+**The teal budget** (DESIGN.md allows selected controls, the primary CTA, figure bands): the user's own bar, the selected segmented control, the CTA. Nothing else. The market reference line is `--amw-line-strong` dashed. The target rung earns its emphasis from scale and weight, which is what "scale and whitespace carry hierarchy" means.
+
+**Rungs are rows in one connected ladder, never three cards.** DESIGN.md: cards earn their existence.
+
+### Interaction states (DD5)
+
+| Feature             | Loading                                           | Empty                                              | Error                                                        | Partial                                                                   |
+| ------------------- | ------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| Ladder              | pre-hydration skeleton, fixed geometry, em-dashes | no offer: rungs render, no marker, no delta        | band row missing: "band unavailable" note, other rungs stand | derived rungs carry `est.`                                                |
+| Verdict             | skeleton line at final height                     | "Answer three questions and this becomes a number" | falls back to default-input ladder                           | —                                                                         |
+| Plot                | static import, never spins. Say so.               | no offer: company rows render, no user bar         | scenario missing: falls back to acquisition                  | CEO seat: withheld with one explanatory sentence                          |
+| Staleness           | —                                                 | —                                                  | —                                                            | past 6 months: mono kicker, zinc-500, warning glyph, no new colour        |
+| Store               | gate on `hasHydrated()`                           | cleared: back to step 1 empty                      | malformed JSON: reset to INITIAL                             | arrived from equity: acknowledgement line + the two market selects inline |
+| Shares mode         | —                                                 | —                                                  | —                                                            | count without fully diluted: "needs a fully diluted count"                |
+| Industry / geo 1.00 | —                                                 | —                                                  | —                                                            | says so in words rather than rendering silently                           |
+
+**The pre-hydration frame is the critical one.** `persist` hydrates after mount, so the server paints `INITIAL` (CTO, pre-seed). Without a gate, a Series A engineer watches a CTO's pre-seed numbers **count up** and then jump. Gate on `hasHydrated()`, render a fixed-geometry skeleton, and suppress `CountUp` on the first real paint: those values arrived, they did not change.
+
+**The store's default must not be a missing row.** `INITIAL` is CTO × pre-seed and Kruze publishes no CTO pre-seed figure. Interpolate that row and label it, or default the store to seed. Decide at T1.
+
+### Wizard (DD9) — three steps, one job each
+
+| Step | Job                            | Controls                                                       |
+| ---- | ------------------------------ | -------------------------------------------------------------- |
+| 1    | What are you being hired to be | seat (segmented), joining, the two gates, responsibility chips |
+| 2    | Where is this company          | stage (segmented), industry (select), location (select)        |
+| 3    | What did they offer            | offer mode and value, salary, vesting                          |
+
+Industry and location are **selects, not chip rows**: nine 44px targets for two multipliers that default to 1.00 is not a good trade. Responsibility chips need an explicit **"None of these"**, because `[]` cannot mean both "unanswered" and "none".
+
+**Arriving prefilled from the equity read**, the store has no industry and no location, so the ladder would compute at neutral multipliers on the very path meant to be smooth. The ladder renders immediately with a persistent line above it: _"Computed for SaaS, US national."_ and the two selects inline, recomputing in place.
+
+### The plot (DD7, DD10, DD11)
+
+**Thesis first, bars second.** A required sentence above the chart, generated from the real ratio: big tech is flat because those shares vest regardless; your bar moves because your outcome is unwritten. On the leadership ladder it names the gap directly rather than letting the reader discover it.
+
+**Annualise the user's equity** (DD11). Company figures are per year; a scenario value is the whole grant. `annual modeled equity = (scenario value − strike cost) ÷ vesting years`, labeled **"modeled equity per vesting year"**, with the full scenario total in the expanded row. Never label a combined bar "total compensation" without its time basis.
+
+**Below `md`, a list, not a chart.** Two lines per company: name, level and total on top; a full-width segmented bar beneath with the breakdown always visible. The user's row pins to the top. All eleven rows; the list may be tall. No horizontal scroll, no rotated labels.
+
+**Tap replaces hover at every breakpoint.** Each row is a button with `aria-expanded` that opens an inline breakdown, the pattern `ShowTheMath` already uses. Hover may preview the same panel on pointer devices; detail is never hover-only. That fixes touch, keyboard and print in one move.
+
+**Segment names**: guaranteed cash · reported annual equity · modeled scenario equity. Badges become short text (**Public**, **Tender**, **Options**), not single letters four blocks from their legend. Bonus is never folded silently into guaranteed cash.
+
+**Scenario control sits above the chart**, in the section header, where `results-screen.jsx` already puts the exit-path toggle. The $0 card is the most useful thing the chart shows; it cannot live below the fold of the chart it drives.
+
+**One component, fully data-driven.** IC and leadership ladders differ in domain, row count and exclusions. The domain is computed from the data, never hardcoded, and the ladder is chosen inside `company-comp.js`. A seat prop would grow a branch per row.
+
+### Provenance (DD8)
+
+Sourced numbers keep the desk's dotted underline. Derived numbers add a mono **`est.`** suffix, and the sources disclosure names which rows are derived and from what spread. This matters because on most paths **two of the three rungs are derived**: every executive p25 and p75 is interpolated, and so are three of four engineer stage rows.
+
+### The artifact (DD6)
+
+**"Copy the ask"** is the primary action, beside the target numbers. It copies the cash figure, the equity figure, one line each on why they are defensible with the source, and the as-of date. It reuses `briefForContact()`'s formatting discipline and `BriefActions`' clipboard fallback. Print stays as the long-form brief and includes the plot as the expanded list variant, `break-inside: avoid`.
+
+Without this the page ends in a report rather than a reply, which is what triggered the hard rejection.
+
+### Motion budget
+
+Three, matching the sibling: the verdict number counts up on arrival (suppressed on the first hydrated paint); step transitions; the user's bar moves when the scenario changes. The eleven company bars mount at rest. Everything off under reduced motion.
+
 ## Failure modes
 
 | Codepath                     | Realistic production failure                        | Test | Error handling                    | User sees                             |
@@ -420,16 +517,26 @@ No critical gaps: every failure above has a test, error handling, and a visible 
 | 18  | `clear()` removes the key; a re-read returns defaults (D15 #9)              | node    |
 | 19  | Refresh parser against a saved fixture (D8)                                 | node    |
 | 20  | Refresh sanity gate refuses to write on a parse miss (D8)                   | node    |
+| 20b | Refresh stamps AS_OF from retrieval, never from the page's own string       | node    |
 | 21  | Cold start: two steps, gates and chips present, then the ladder             | jsdom   |
 | 22  | Cold start reaches a non-pending classification (D16)                       | jsdom   |
 | 23  | Prefilled arrival: ladder on mount, no wizard                               | jsdom   |
 | 24  | "Clear my answers" empties both tools and returns to step 1                 | jsdom   |
 | 25  | Number inputs commit on blur, not per keystroke (D9)                        | jsdom   |
-| 26  | Plot: hover reveals the breakdown; every bar reachable by keyboard          | jsdom   |
+| 26  | Plot: tap/click expands a row's breakdown; keyboard reaches every row       | jsdom   |
 | 27  | Plot: scenario change moves only the user's bar                             | jsdom   |
 | 28  | Plot: data older than six months renders the staleness banner (D2)          | jsdom   |
-| 29  | Plot withheld for CTO and CEO seats with an explanation (D11)               | jsdom   |
+| 29  | Plot renders the leadership ladder for CTO, the IC ladder for engineer      | jsdom   |
+| 29b | Plot withheld for the CEO seat with an explanation                          | jsdom   |
+| 29c | Netflix renders with its own mark, not as a zero-stock stacked bar          | jsdom   |
+| 29d | Director-rung rows carry the low-confidence marker                          | jsdom   |
 | 30  | Reduced motion: rungs and bars mount at rest                                | jsdom   |
+| 30b | Below `md` the plot renders as a list, never a squeezed chart               | jsdom   |
+| 30c | Pre-hydration frame shows the skeleton, never default numbers               | jsdom   |
+| 30d | Count-up is suppressed on the first post-hydration paint                    | jsdom   |
+| 30e | Every INITIAL store key resolves in its own lookup table                    | node    |
+| 30f | Derived rungs render the `est.` suffix; sourced rungs do not                | jsdom   |
+| 30g | Copy the ask puts cash, equity, reasons and the as-of date on the clipboard | jsdom   |
 | 31  | Print: ladder, citations and as-of line survive                             | jsdom   |
 | 32  | **REGRESSION** contact prefill still fills every line via the store         | node    |
 | 33  | **REGRESSION** plain /contact/offer-review visit stays empty                | jsdom   |
@@ -490,14 +597,15 @@ Launch A, B and C in parallel worktrees. **Conflict flag:** lanes A and B both w
 
 Synthesized from this review's findings. Each derives from a specific finding.
 
-- [ ] **T0 (P1, human: ~1h / CC: ~15min)** — repo — Land the existing founders work in gitmoji-grouped commits before anything new starts
+- [x] **T0 (P1, human: ~1h / CC: ~15min)** — repo — DONE 2026-09-04, eight commits — Land the existing founders work in gitmoji-grouped commits before anything new starts
   - Surfaced by: Outside voice 17 — `git ls-files src/components/founders src/lib/founders` returns zero files
   - Files: the whole working tree
   - Verify: `git status` clean; `pnpm test` green on the committed tree
-- [ ] **T1 (P1, human: ~1.5 days / CC: ~1h)** — engine data — Encode `SALARY_BANDS[role][bucket][stage]`, `INDUSTRY[key][role]`, `GEO[key]` with per-row provenance
+- [ ] **T1 (P1, human: ~2 days / CC: ~1.5h)** — engine data — Encode `SALARY_BANDS[role][bucket][stage]`, `INDUSTRY[key][role]`, `GEO[key]` with per-row provenance, and make the band's median the engine's single market number (DD4)
   - Surfaced by: Outside voice 12 — declared shapes cannot express D4 or the seniority curves
   - Files: `src/lib/founders/equity/salary-bands.js`
-  - Verify: test 13
+  - Verify: tests 13, 30e; the equity calculator's existing tests re-verified after the market number changes
+  - Note: resolve CTO x pre-seed, which is both the store default and a missing row
 - [ ] **T2 (P1, human: ~1 day / CC: ~40min)** — data pipeline — Company comp file plus the refresh script, fixture test and sanity gate
   - Surfaced by: Architecture 1, Tests 1, Outside voice 14
   - Files: `src/lib/founders/equity/company-comp.js`, `scripts/refresh-company-comp.mjs`
@@ -510,15 +618,21 @@ Synthesized from this review's findings. Each derives from a specific finding.
   - Surfaced by: Code quality 1, Outside voice 5, 7, 9, 15
   - Files: `src/lib/founders/offer-store.js`, `handoff.js`, `ContactForm.jsx`, `handoff.test.js`
   - Verify: tests 15, 17, 18, 32, 33
-- [ ] **T5 (P1, human: ~2 days / CC: ~1.5h)** — UI — Two-step wizard with gates and chips, ladder, blur-commit inputs
-  - Surfaced by: Outside voice 4, classify.js:58, Performance 1
+- [ ] **T5 (P1, human: ~3 days / CC: ~2h)** — UI — Three-step wizard, verdict, ladder, hydration gate
+  - Surfaced by: Design passes 1, 2, 6 — no stated hierarchy, no states, eight controls on one step
   - Files: `src/app/(site)/founders/job-offer/`, `src/components/founders/ladder/`
-  - Verify: tests 21-25, 30, 31
-- [ ] **T6 (P1, human: ~1.5 days / CC: ~1h)** — UI — Market plot on the desk's figure grammar, scenario layer, badges, staleness banner
-  - Surfaced by: Code quality 2, Outside voice 10, 11
-  - Files: `src/components/founders/market-plot.jsx`
-  - Note: carries two ladders, IC for engineer and leadership for CTO, plus the Netflix special case and thin-n markers
-  - Verify: tests 26-29d
+  - Includes: verdict at display scale with six headline variants; ladder as rows with the current-offer marker; three steps; industry and location as selects; "None of these" chip; `hasHydrated()` gate with a fixed-geometry skeleton; count-up suppressed on first paint; blur-commit inputs
+  - Verify: tests 21-25, 30, 30c, 30d, 30f, 31
+- [ ] **T6 (P1, human: ~2.5 days / CC: ~1.5h)** — UI — Market plot: thesis, annualised equity, mobile list, tap disclosure
+  - Surfaced by: Design passes 4, 6, 7 — demoralising with no thesis, no mobile design, mismatched time bases
+  - Files: `src/components/founders/market-plot.jsx`, `src/lib/founders/equity/company-comp.js`
+  - Includes: thesis sentence generated from the real ratio; equity annualised net of strike; list below `md` with all eleven rows; tap-to-expand at every breakpoint; text badges; scenario control above the chart; one data-driven component; prints as the expanded list
+  - Verify: tests 26-29d, 30b
+- [ ] **T9 (P1, human: ~1 day / CC: ~40min)** — UI — "Copy the ask" as sendable sentences
+  - Surfaced by: Design pass 3 — HARD REJECTION, strong headline with no clear action
+  - Files: `src/lib/founders/handoff.js`, `src/components/founders/ladder/`
+  - Includes: cash and equity, one defensibility line each with its source, the as-of date; reuses the existing clipboard fallback
+  - Verify: test 30g
 - [ ] **T7 (P2, human: ~4h / CC: ~20min)** — copy + registry — Privacy copy on both pages, registry entry, both CTAs
   - Surfaced by: Architecture 2, open question O1
   - Files: `tools.js`, `founders/page.jsx`, `founders/equity/page.jsx`, `verdict.jsx`
@@ -530,12 +644,12 @@ Synthesized from this review's findings. Each derives from a specific finding.
 
 ## Wireframes
 
-`~/.gstack/projects/HeavenlyEntity-my-next-spotlight/designs/joboffer-20260903/`
+`~/.gstack/projects/HeavenlyEntity-my-next-spotlight/designs/`
 
-- `joboffer-wireframe.png` — the ladder. Its embedded plot is **superseded** by D11.
-- `joboffer-plot-v2.png` — the stacked-bar plot. Its user-equity segment is **superseded** by D11's scenario layer.
+- `joboffer-v3-20260904/joboffer-v3.png` — **current.** Panel 1 step one's density (the problem DD9 fixes), panel 2 the post-D10 ladder showing equity falling as cash rises, panel 3 the post-D11 plot. Layout is the reference; the numbers are illustrative.
+- `joboffer-20260903/` — **superseded** by D10, D11 and the design pass. Kept for history only.
 
-Both predate D10 and D11, so treat the layout as current and the numbers as illustrative.
+**All three wireframes predate the design specification above.** Where they disagree with it, the specification wins. Known divergences in v3: the ceiling rung carries the accent fill (DD3 removes it), there is no verdict line above the ladder (DD3 adds one), the plot has no thesis sentence (DD7), the badges are single letters (DD12), and the user's equity is not annualised (DD11).
 
 ## Open question
 
@@ -543,20 +657,20 @@ Both predate D10 and D11, so treat the layout as current and the numbers as illu
 
 ## GSTACK REVIEW REPORT
 
-| Review        | Trigger               | Why                             | Runs | Status       | Findings                                       |
-| ------------- | --------------------- | ------------------------------- | ---- | ------------ | ---------------------------------------------- |
-| CEO Review    | `/plan-ceo-review`    | Scope & strategy                | 0    | —            | —                                              |
-| Codex Review  | `/codex review`       | Independent 2nd opinion         | 1    | issues_found | 17 findings, 17 folded                         |
-| Eng Review    | `/plan-eng-review`    | Architecture & tests (required) | 1    | clean        | 25 issues, 0 critical gaps                     |
-| Design Review | `/plan-design-review` | UI/UX gaps                      | 1    | clean        | score 6/10 → 9/10, 15 decisions (sibling plan) |
-| DX Review     | `/plan-devex-review`  | Developer experience gaps       | 0    | —            | —                                              |
+| Review        | Trigger               | Why                             | Runs | Status       | Findings                                         |
+| ------------- | --------------------- | ------------------------------- | ---- | ------------ | ------------------------------------------------ |
+| CEO Review    | `/plan-ceo-review`    | Scope & strategy                | 0    | —            | —                                                |
+| Codex Review  | `/codex review`       | Independent 2nd opinion         | 2    | issues_found | 17 eng findings + 10 design findings, all folded |
+| Eng Review    | `/plan-eng-review`    | Architecture & tests (required) | 1    | clean        | 25 issues, 0 critical gaps                       |
+| Design Review | `/plan-design-review` | UI/UX gaps                      | 1    | clean        | score 5/10 → 9/10, 12 decisions                  |
+| DX Review     | `/plan-devex-review`  | Developer experience gaps       | 0    | —            | —                                                |
 
-**CODEX:** 17 findings, all folded. The load-bearing one: the ladder's rungs paired an equity range derived from the user's current salary with a recommended p75 salary, which was incoherent and collapsed the floor into the target. Also caught the plot's undrawable equity segment, store field names that would silently default every non-CTO seat, a `clear()` that wrote defaults instead of clearing, test paths that would never be discovered, and an entirely untracked baseline.
+**CODEX:** Two passes. The engineering pass found the ladder paired an equity range derived from the user's current salary with a recommended p75 salary, which was incoherent and collapsed the floor into the target. The design pass triggered hard rejection #3, a strong headline with no clear action, and caught that the chart stacked one year of company stock beside four years of the user's equity.
 
-**CROSS-MODEL:** Three tensions, all resolved in the outside voice's favour after verification against source. Ladder math (`adjustments.js:52` confirmed the band derives from `offeredSalary`). Plot units (a percentage has no dollar length without an assumed exit; my own wireframe drew one anyway). Adjustment priority (geography moves cash more than industry, so adding industry alone raised total error). No tension was resolved against the outside voice.
+**CROSS-MODEL:** Two independent design readers agreed on all seven litmus checks and on the three biggest gaps: eight controls on step one, no mobile design for an eleven-row chart, and no artifact for the user to take away. They disagreed once, on mobile row count; resolved toward Codex's position, keeping all eleven rows, because the design pass had just made the size of the gap the chart's thesis. Every cross-model tension across both reviews resolved in the outside voice's favour after verification against source.
 
-**DESIGN REVIEW NOTE:** The clean design review on record is for `docs/plans/founders-desk-equity-calculator.md`, not this plan. This plan's UI has not had a design pass. `/plan-design-review` is recommended before T5.
+**DESIGN NOTE:** Both wireframes predate this specification. Where they disagree, the specification wins; the known divergences are listed in the Wireframes section.
 
-**VERDICT:** ENG CLEARED — ready to implement, blocked on T0 (land the existing untracked work first).
+**VERDICT:** ENG + DESIGN CLEARED — ready to implement. T0 landed 2026-09-04.
 
 NO UNRESOLVED DECISIONS
