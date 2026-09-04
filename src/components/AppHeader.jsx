@@ -9,6 +9,7 @@ import { Container } from '@/components/Container'
 import avatarImage from '@/images/avatar.png'
 import { useEffect, useRef, useState } from 'react'
 import PillNav from '@/components/PillNav'
+import { REVIEW_HREF, liveTools } from '@/lib/founders/tools'
 import amwareLogo from '@/images/logos/Amware-icon-mono.svg'
 
 function SunIcon(props) {
@@ -244,6 +245,7 @@ export function AppHeader() {
   return (
     <>
       <header
+        data-print="hide"
         className="pointer-events-none relative z-50 flex flex-col"
         style={{
           height: 'var(--header-height)',
@@ -330,6 +332,28 @@ export function AppHeader() {
                             href: '/courses',
                             kicker: '/courses · the playbook',
                             desc: 'The same systems, taught — learn to build it yourself.',
+                          },
+                        ],
+                      },
+                    },
+                    {
+                      label: "Founders' Desk",
+                      ariaLabel: "Founders' Desk menu",
+                      submenu: {
+                        title:
+                          "// FOUNDERS' DESK — TOOLS FOR TECHNICAL FOUNDERS",
+                        items: [
+                          ...liveTools().map((tool) => ({
+                            label: tool.label,
+                            href: tool.href,
+                            kicker: tool.kicker,
+                            desc: tool.blurb,
+                          })),
+                          {
+                            label: 'Review my offer',
+                            href: REVIEW_HREF,
+                            kicker: '/contact · offer review',
+                            desc: 'Send the offer, get a read from AMWARE.',
                           },
                         ],
                       },

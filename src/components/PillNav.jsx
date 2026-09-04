@@ -495,7 +495,7 @@ const PillNav = ({
                                     <span className="amw-kicker block">
                                       {sub.kicker}
                                     </span>
-                                    <span className="group-hover:text-[var(--amw-accent)] mt-1 flex items-center gap-2 text-sm font-semibold tracking-tight text-zinc-900 transition-colors dark:text-zinc-100">
+                                    <span className="group-hover:text-[var(--amw-accent-ink)] mt-1 flex items-center gap-2 text-sm font-semibold tracking-tight text-zinc-900 transition-colors dark:text-zinc-100">
                                       {sub.label}
                                       <span
                                         className="amw-mono text-xs opacity-0 transition-opacity group-hover:opacity-100"

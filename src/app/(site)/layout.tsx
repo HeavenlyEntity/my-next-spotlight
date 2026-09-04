@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Geist, Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
-import { AppHeader } from '@/components/AppHeader'
+import { SiteHeader } from '@/components/SiteHeader'
 import { Footer } from '@/components/Footer'
 import { StagewiseInit } from '@/components/StagewiseInit'
 
@@ -23,6 +23,12 @@ const navCode = JetBrains_Mono({
   subsets: ['latin'],
   weight: ['500', '600'],
   variable: '--font-nav-code',
+  display: 'swap',
+})
+
+const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist',
   display: 'swap',
 })
 
@@ -85,7 +91,7 @@ export default function SiteLayout({
   return (
     <html
       lang="en"
-      className={`h-full antialiased ${inter.variable} ${navCode.variable}`}
+      className={`h-full antialiased ${inter.variable} ${navCode.variable} ${geist.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -98,7 +104,7 @@ export default function SiteLayout({
           </div>
         </div>
         <div className="relative flex w-full flex-col">
-          <AppHeader />
+          <SiteHeader />
           <main className="flex-auto">{children}</main>
           <Footer />
         </div>
