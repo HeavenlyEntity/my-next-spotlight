@@ -88,6 +88,9 @@ function buildMeshGradients(colors) {
   return gradients
 }
 
+const DEFAULT_SHADOW =
+  'rgba(0,0,0,0.1) 0 1px 2px, rgba(0,0,0,0.1) 0 2px 4px, rgba(0,0,0,0.1) 0 4px 8px, rgba(0,0,0,0.1) 0 8px 16px, rgba(0,0,0,0.1) 0 16px 32px, rgba(0,0,0,0.1) 0 32px 64px'
+
 const BorderGlow = ({
   children,
   className = '',
@@ -101,6 +104,7 @@ const BorderGlow = ({
   animated = false,
   colors = ['#c084fc', '#f472b6', '#38bdf8'],
   fillOpacity = 0.5,
+  shadow = DEFAULT_SHADOW,
 }) => {
   const cardRef = useRef(null)
   const [isHovered, setIsHovered] = useState(false)
@@ -222,8 +226,7 @@ const BorderGlow = ({
         background: backgroundColor,
         borderRadius: `${borderRadius}px`,
         transform: 'translate3d(0, 0, 0.01px)',
-        boxShadow:
-          'rgba(0,0,0,0.1) 0 1px 2px, rgba(0,0,0,0.1) 0 2px 4px, rgba(0,0,0,0.1) 0 4px 8px, rgba(0,0,0,0.1) 0 8px 16px, rgba(0,0,0,0.1) 0 16px 32px, rgba(0,0,0,0.1) 0 32px 64px',
+        boxShadow: shadow,
       }}
     >
       {/* mesh gradient border */}

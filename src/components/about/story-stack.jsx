@@ -1,0 +1,194 @@
+'use client'
+
+import { createRef, useMemo } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+
+/* Scroll-stacking story cards, built to read as real card stock dealt
+   onto a pile. Geometry ported from React Bits "ScrollStack"
+   (reactbits.dev, MIT): each card pins a little lower than the one before
+   so the pile fans, and a covered card eases back toward a base scale.
+   The original drives everything through Lenis and manual transforms;
+   this port pins with CSS sticky and reads scroll with Motion's
+   useScroll, so it needs no smooth-scroll library.
+
+   The paper is built in layers, all scroll-linked:
+   - surface: warm stock (--amw-paper) with fractal grain, a top-light
+     sheen, an inset top highlight and a darker bottom lip for thickness;
+   - 3D: the deck sits in a perspective; a card arrives tipped 12deg away
+     (rotateX) with a slight rotateZ tilt and lays flat as it lands on its
+     pin line, then leans back a couple of degrees once the next sheet
+     covers it;
+   - light: a large cast shadow while the sheet is in the air collapses to
+     a tight contact shadow on landing; a teal glint sweeps the sheet as it
+     arrives, the one "futuristic" note against otherwise honest paper.
+   Sheets are fully opaque. Reduced motion keeps the stacking (positional)
+   and renders every sheet in its resting state. */
+
+const PIN_TOP = 96
+const STACK_GAP = 14
+const BASE_SCALE = 0.92
+const SCALE_STEP = 0.015
+const DEAL_TILT = 1.6
+const SETTLE_TILT = 0.9
+const DEAL_PITCH = 12
+const SETTLE_PITCH = -2.5
+
+const GRAIN =
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")"
+
+/* Inset highlight + bottom lip are constant; the two outer shadows are
+   what change between "in the air" and "resting on the pile". */
+const EDGE =
+  'inset 0 1px 0 var(--amw-paper-light), inset 0 -3px 0 var(--amw-paper-edge)'
+/* Same layer count as the resting shadow so Motion can tween between them. */
+const SHADOW_LIFTED = `${EDGE}, 0 2px 4px rgba(0,0,0,0.06), 0 -12px 30px -22px rgba(0,0,0,0), 0 48px 72px -28px rgba(0,0,0,0.5)`
+const SHADOW_RESTING = `${EDGE}, 0 1px 2px rgba(0,0,0,0.08), 0 -12px 30px -22px rgba(0,0,0,0.45), 0 14px 28px -20px rgba(0,0,0,0.35)`
+
+function StoryCard({ chapter, index, total, cardRef, nextRef, reduce }) {
+  const pinTop = PIN_TOP + index * STACK_GAP
+  const isLast = index === total - 1
+  const side = index % 2 === 0 ? 1 : -1
+
+  /* This card arriving: from the bottom of the viewport to its pin line. */
+  const { scrollYProgress: arrive } = useScroll({
+    target: cardRef,
+    offset: ['start end', `start ${pinTop}px`],
+  })
+  /* The next card arriving: the span during which this card is covered. */
+  const { scrollYProgress: covered } = useScroll({
+    target: nextRef ?? cardRef,
+    offset: ['start end', `start ${pinTop + STACK_GAP}px`],
+  })
+
+  const dealRotate = useTransform(arrive, [0, 1], [DEAL_TILT * side, 0])
+  const settleRotate = useTransform(covered, [0, 1], [0, -SETTLE_TILT * side])
+  const rotate = useTransform(
+    [dealRotate, settleRotate],
+    ([deal, settle]) => deal + (isLast ? 0 : settle)
+  )
+  const dealPitch = useTransform(arrive, [0, 1], [DEAL_PITCH, 0])
+  const settlePitch = useTransform(covered, [0, 1], [0, SETTLE_PITCH])
+  const rotateX = useTransform(
+    [dealPitch, settlePitch],
+    ([deal, settle]) => deal + (isLast ? 0 : settle)
+  )
+  const scale = useTransform(
+    covered,
+    [0, 1],
+    [1, BASE_SCALE + index * SCALE_STEP]
+  )
+  const boxShadow = useTransform(
+    arrive,
+    [0, 0.85, 1],
+    [SHADOW_LIFTED, SHADOW_LIFTED, SHADOW_RESTING]
+  )
+  const glintX = useTransform(arrive, [0.15, 1], ['-140%', '140%'])
+
+  const style = reduce
+    ? { top: pinTop, boxShadow: SHADOW_RESTING }
+    : {
+        top: pinTop,
+        rotate,
+        rotateX,
+        scale: isLast ? 1 : scale,
+        boxShadow,
+        transformOrigin: 'top center',
+      }
+
+  return (
+    <motion.article
+      ref={cardRef}
+      style={style}
+      className="bg-[var(--amw-paper)] ring-[var(--amw-line-strong)] sticky overflow-hidden rounded-xl p-6 ring-1 will-change-transform md:p-8"
+    >
+      {/* Paper surface: grain, then a top-light sheen. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-multiply dark:opacity-[0.1] dark:mix-blend-screen"
+        style={{ backgroundImage: GRAIN }}
+      />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(180deg, var(--amw-paper-light) 0%, transparent 38%)',
+        }}
+      />
+      {/* Teal glint that sweeps the sheet as it is dealt. */}
+      {!reduce && (
+        <motion.span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 -left-1/2 w-full"
+          style={{
+            x: glintX,
+            background:
+              'linear-gradient(105deg, transparent 42%, color-mix(in srgb, var(--amw-accent) 22%, transparent) 50%, transparent 58%)',
+          }}
+        />
+      )}
+
+      {/* Index-card header: number on the left, deck position on the
+          right, ruled off with an accent line that fades out to the edge. */}
+      <div className="relative flex items-center justify-between gap-4 pb-4">
+        <span className="amw-mono text-[var(--amw-accent-ink)] bg-[var(--amw-accent-soft)] ring-[var(--amw-accent)]/30 rounded-md px-2 py-1 text-sm font-medium ring-1">
+          {chapter.number}
+        </span>
+        <div className="flex items-center gap-1.5" aria-hidden="true">
+          {Array.from({ length: total }).map((_, i) => (
+            <span
+              key={i}
+              className={`h-1 rounded-full ${
+                i === index
+                  ? 'bg-[var(--amw-accent)] w-6'
+                  : 'bg-[var(--amw-line-strong)] w-3'
+              }`}
+            />
+          ))}
+        </div>
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-px"
+          style={{
+            background:
+              'linear-gradient(90deg, var(--amw-accent) 0%, color-mix(in srgb, var(--amw-accent) 35%, transparent) 55%, transparent 100%)',
+          }}
+        />
+      </div>
+
+      <h3
+        style={{ fontFamily: 'Layer, sans-serif' }}
+        className="relative mt-6 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 md:text-3xl"
+      >
+        {chapter.title}
+      </h3>
+      <p className="relative mt-4 max-w-prose text-base leading-relaxed text-zinc-600 dark:text-zinc-400 md:text-lg">
+        {chapter.copy}
+      </p>
+    </motion.article>
+  )
+}
+
+export function StoryStack({ chapters }) {
+  const reduce = useReducedMotion()
+  const refs = useMemo(() => chapters.map(() => createRef()), [chapters])
+
+  return (
+    <div
+      className="flex flex-col gap-6 pb-24"
+      style={{ perspective: 1400, perspectiveOrigin: '50% 0%' }}
+    >
+      {chapters.map((chapter, index) => (
+        <StoryCard
+          key={chapter.number}
+          chapter={chapter}
+          index={index}
+          total={chapters.length}
+          cardRef={refs[index]}
+          nextRef={refs[index + 1]}
+          reduce={reduce}
+        />
+      ))}
+    </div>
+  )
+}

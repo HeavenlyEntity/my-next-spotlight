@@ -616,17 +616,21 @@ const ProfileCardComponent = ({
                 pointerEvents: 'none',
               }}
             >
+              {/* Brand type: the name in Layer (the display face used for
+                  every headline), the title as a mono kicker, white over a
+                  faint teal fade instead of the template's blue gradient. */}
               <div
-                className="font-inter absolute flex w-full flex-col font-extrabold leading-relaxed"
-                style={{ top: '1.2em', display: 'flex', gridArea: 'auto' }}
+                className="absolute flex w-full flex-col items-center gap-2 px-6 text-center"
+                style={{ top: '1.4em', gridArea: 'auto' }}
               >
                 <h3
-                  className="m-0 font-semibold"
+                  className="m-0 font-bold leading-none tracking-tight"
                   style={{
-                    fontSize: 'min(5svh, 3em)',
+                    fontFamily: 'Layer, sans-serif',
+                    fontSize: 'clamp(1.5rem, 4.5svh, 2.25rem)',
                     backgroundImage:
-                      'linear-gradient(to bottom, #fff, #6f6fbe)',
-                    backgroundSize: '1em 1.5em',
+                      'linear-gradient(to bottom, #ffffff 40%, #99f6e4)',
+                    backgroundSize: '100% 1.2em',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
@@ -639,18 +643,10 @@ const ProfileCardComponent = ({
                   {name}
                 </h3>
                 <p
-                  className="mx-auto w-min whitespace-nowrap font-semibold"
+                  className="m-0 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80"
                   style={{
-                    position: 'relative',
-                    top: '-12px',
-                    fontSize: '16px',
-                    margin: '0 auto',
-                    backgroundImage:
-                      'linear-gradient(to bottom, #fff, #4a4ac0)',
-                    backgroundSize: '1em 1.5em',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
+                    fontFamily:
+                      'var(--font-nav-code), ui-monospace, SFMono-Regular, monospace',
                     display: 'block',
                     gridArea: 'auto',
                     borderRadius: '0',

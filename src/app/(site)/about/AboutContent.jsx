@@ -1,11 +1,11 @@
 'use client'
 
-import Image from 'next/image'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import clsx from 'clsx'
+import Image from 'next/image'
+import { ChevronRight, Mail, MapPin } from 'lucide-react'
 import { motion } from 'motion/react'
 
-import { Container } from '@/components/Container'
 import {
   TwitterIcon,
   InstagramIcon,
@@ -13,205 +13,340 @@ import {
   LinkedInIcon,
 } from '@/components/SocialIcons'
 import ProfileCard from '@/components/ProfileCard'
+import PhotoStrip from '@/components/about/photo-strip'
+import {
+  ExperienceRecord,
+  EducationRecord,
+  SkillsRecord,
+} from '@/components/about/service-records'
+import { StackRecord } from '@/components/about/stack-record'
+import { StoryStack } from '@/components/about/story-stack'
+import { SectionEyebrow } from '@/components/landing/section-eyebrow'
 import portraitImage from '@/images/portrait-bg-removed.png'
 import amwareLogo from '@/images/logos/AMWARE-Crown-Black.svg'
+import crownMark from '@/images/logos/amware-crown-mark.webp'
 
-function SocialLink({ className, href, children, icon: Icon }) {
-  return (
-    <li className={clsx(className, 'flex')}>
-      <Link
-        href={href}
-        className="group flex text-sm font-medium text-zinc-800 transition hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
-      >
-        <Icon className="h-6 w-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500" />
-        <span className="ml-4">{children}</span>
-      </Link>
-    </li>
-  )
+/* About page in the "minimal" landing template's grammar: a centred
+   header over the photo strip, then the template's Features split (a
+   sticky profile column beside numbered story cards), then the service
+   record on the template's section rhythm, closing on link cards. */
+
+const easeOut = [0.16, 1, 0.3, 1]
+
+const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.3 },
+  transition: { duration: 0.8, ease: easeOut },
 }
 
-function MailIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
-      <path
-        fillRule="evenodd"
-        d="M6 5a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H6Zm.245 2.187a.75.75 0 0 0-.99 1.126l6.25 5.5a.75.75 0 0 0 .99 0l6.25-5.5a.75.75 0 0 0-.99-1.126L12 12.251 6.245 7.187Z"
-      />
-    </svg>
-  )
+const chapters = [
+  {
+    number: '01',
+    title: 'First program at eight',
+    copy: 'I have loved making things and being creative for as long as I can remember. I wrote my first program at eight, two weeks after my mom brought home the brand new eMachine I taught myself to type on.',
+  },
+  {
+    number: '02',
+    title: 'Cars, art, and taking things apart',
+    copy: 'The only thing I loved more than computers as a kid was cars, art, and taking things apart. At thirteen I started building PCs, chasing the biggest, baddest gaming rig. My first build was an ASUS with 4 GB of DDR2. A caveman these days.',
+  },
+  {
+    number: '03',
+    title: 'From factory floors to Schwab',
+    copy: 'That curiosity became a career. I started as an automation programmer at Honeywell, writing the scripts that kept industrial systems humming, moved into web engineering as a junior developer, then joined Charles Schwab and shipped production code for one of the largest brokerages in the world. Every role deepened the same instinct: figure out how the machine works, then make it work better.',
+  },
+  {
+    number: '04',
+    title: 'Designing the systems, not just the features',
+    copy: 'At NewGen Business Solutions I stepped into a Senior Lead role and the work shifted from writing features to designing the systems they lived in. I owned architecture, set technical direction, and mentored engineers through complex builds. The hardest problems were never in the code. They were in the gap between what the business needed and what the technology could deliver.',
+  },
+  {
+    number: '05',
+    title: 'Bridging the boardroom and the codebase',
+    copy: 'That realization led to an MBA, completed in February 2026: pitching real investors, stress-testing business models, learning the language of growth alongside the language of code. Today I am the founder of MiPi, co-founder of Kingdom Kode, and an on-demand CTO for teams who need someone who can whiteboard architecture in the morning and present unit economics in the afternoon.',
+  },
+]
+
+const socialLinks = [
+  {
+    label: 'Follow on X',
+    icon: TwitterIcon,
+    href: 'https://x.com/AmwareDotDev',
+  },
+  {
+    label: 'Follow on Instagram',
+    icon: InstagramIcon,
+    href: 'https://www.instagram.com/amware.dev/',
+  },
+  {
+    label: 'Follow on GitHub',
+    icon: GitHubIcon,
+    href: 'https://github.com/HeavenlyEntity',
+  },
+  {
+    label: 'Follow on LinkedIn',
+    icon: LinkedInIcon,
+    href: 'https://www.linkedin.com/in/alec-mingione-90bb63aa/',
+  },
+]
+
+/* Sticky offset for a column that may be taller than the viewport: pin
+   to the header line when it fits, otherwise pin bottom-aligned so the
+   business card (the part with the actions) is always the visible end. */
+function useStickyTop(ref, offset = 96, gap = 24) {
+  const [top, setTop] = useState(offset)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const measure = () => {
+      setTop(Math.min(offset, window.innerHeight - el.offsetHeight - gap))
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    window.addEventListener('resize', measure)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [ref, offset, gap])
+  return top
 }
 
 export default function AboutContent() {
+  const columnRef = useRef(null)
+  const stickyTop = useStickyTop(columnRef)
+
   return (
-    <Container className="mt-16 sm:mt-32">
-      <div className="grid grid-cols-1 gap-y-16 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-y-12">
-        <div className="lg:pl-20">
-          <div className="max-w-68 mx-auto flex justify-center px-2.5 sm:max-w-xs sm:justify-self-center lg:mx-0 lg:w-[325px] lg:max-w-none">
-            <ProfileCard
-              avatarUrl={portraitImage.src}
-              name="Alec Mingione"
-              title="Founder & Engineer"
-              handle="AmwareDotDev"
-              status="Engineering the Future"
-              iconUrl={amwareLogo.src}
-              behindGlowEnabled
-              behindGlowColor="rgba(125, 190, 255, 0.67)"
-              showUserInfo={false}
-              cardHeightMobile="62svh"
-              cardMaxHeightMobile="460px"
-              cardHeightDesktop="80svh"
-              cardMaxHeightDesktop="650px"
-            />
+    <div className="amw">
+      {/* Header + photo strip */}
+      <section className="px-6 pt-16 md:pt-24">
+        <div className="mx-auto max-w-6xl">
+          <motion.div className="mb-10 text-center md:mb-14" {...fadeInUp}>
+            <SectionEyebrow index="00" label="THE OPERATOR" />
+            <h1
+              style={{ fontFamily: 'Layer, sans-serif' }}
+              className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 md:text-5xl lg:text-6xl"
+            >
+              Engineer. Architect. CTO.
+            </h1>
+            <p className="mx-auto mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
+              I am Alec Mingione, in Phoenix, Arizona. I build the systems, and
+              the businesses on top of them.
+            </p>
+          </motion.div>
+          <motion.div
+            {...fadeInUp}
+            transition={{ ...fadeInUp.transition, delay: 0.15 }}
+          >
+            <PhotoStrip />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Story: sticky profile column beside numbered chapters */}
+      <section className="px-6 py-16 md:py-24">
+        <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
+          <motion.div
+            ref={columnRef}
+            style={{ top: stickyTop }}
+            className="flex flex-col items-center gap-6 lg:sticky lg:w-96 lg:shrink-0 lg:items-start lg:self-start"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: easeOut }}
+          >
+            <div className="max-w-68 flex w-full justify-center sm:max-w-xs lg:w-[325px] lg:max-w-none">
+              <ProfileCard
+                avatarUrl={portraitImage.src}
+                name="Alec Mingione"
+                title="Founder & Engineer"
+                handle="AmwareDotDev"
+                status="Engineering the Future"
+                iconUrl={amwareLogo.src}
+                behindGlowEnabled
+                behindGlowColor="rgba(125, 190, 255, 0.67)"
+                showUserInfo={false}
+                cardHeightMobile="62svh"
+                cardMaxHeightMobile="460px"
+                cardHeightDesktop="52svh"
+                cardMaxHeightDesktop="420px"
+              />
+            </div>
+
+            {/* Virtual business card: everything that was loose under the
+                avatar, on one 36px icon grid with hairline dividers. */}
+            <div className="border-[var(--amw-line)] bg-[var(--amw-muted)] w-full max-w-xs rounded-2xl border p-5 lg:w-[325px] lg:max-w-none">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p
+                    style={{ fontFamily: 'Layer, sans-serif' }}
+                    className="truncate text-lg font-bold leading-tight tracking-tight text-zinc-900 dark:text-zinc-50"
+                  >
+                    Alec Mingione
+                  </p>
+                  <p className="amw-kicker mt-1">@AmwareDotDev</p>
+                </div>
+                <Image
+                  src={crownMark}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-8 w-auto shrink-0 opacity-80 dark:invert"
+                />
+              </div>
+
+              <div
+                className="bg-[var(--amw-line)] my-4 h-px"
+                aria-hidden="true"
+              />
+
+              <ul className="space-y-2">
+                <li>
+                  <a
+                    href="mailto:amware.develop@gmail.com"
+                    className="hover:text-[var(--amw-accent-ink)] group flex items-center gap-3 text-sm font-medium text-zinc-800 no-underline transition-colors dark:text-zinc-200"
+                  >
+                    <span
+                      className="border-[var(--amw-line)] bg-[var(--amw-card)] text-[var(--amw-accent-ink)] inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border"
+                      aria-hidden="true"
+                    >
+                      <Mail className="h-4 w-4" strokeWidth={1.75} />
+                    </span>
+                    <span className="truncate">amware.develop@gmail.com</span>
+                  </a>
+                </li>
+                <li className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  <span
+                    className="border-[var(--amw-line)] bg-[var(--amw-card)] text-[var(--amw-accent-ink)] inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border"
+                    aria-hidden="true"
+                  >
+                    <MapPin className="h-4 w-4" strokeWidth={1.75} />
+                  </span>
+                  <span>Phoenix, Arizona</span>
+                </li>
+              </ul>
+
+              <div
+                className="bg-[var(--amw-line)] my-4 h-px"
+                aria-hidden="true"
+              />
+
+              <div className="flex items-center justify-between gap-3">
+                <p className="amw-kicker">Elsewhere</p>
+                <div className="flex items-center gap-2">
+                  {socialLinks.map(({ label, icon: Icon, href }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:bg-[var(--amw-accent)] hover:text-zinc-950 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900/10 text-zinc-800 transition-all duration-300 hover:scale-110 motion-reduce:hover:scale-100 dark:bg-white/10 dark:text-zinc-200"
+                      aria-label={label}
+                    >
+                      <Icon className="h-4 w-4 fill-current" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <Link
+                href="/services"
+                className="bg-[var(--amw-accent)] text-zinc-950 group mt-5 inline-flex w-full items-center justify-center gap-3 rounded-md py-3 pl-5 pr-3 font-medium no-underline transition-all duration-500 ease-out hover:rounded-[50px] hover:shadow-lg"
+              >
+                <span>Work With Me</span>
+                <span className="text-zinc-950 flex h-10 w-10 items-center justify-center rounded-full bg-white transition-all duration-300 group-hover:scale-110 dark:bg-zinc-900 dark:text-zinc-50">
+                  <ChevronRight
+                    className="relative left-px h-4 w-4"
+                    aria-hidden="true"
+                  />
+                </span>
+              </Link>
+            </div>
+          </motion.div>
+
+          <div className="min-w-0 flex-1">
+            <StoryStack chapters={chapters} />
           </div>
         </div>
-        <div className="lg:order-first lg:row-span-2 ">
-          <motion.h1
-            style={{ fontFamily: 'Layer' }}
-            className="text-5xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 md:text-4xl"
-          >
-            I&apos;m{' '}
-            <motion.span
-              style={{ fontFamily: 'Layer' }}
-              initial={{
-                opacity: 0,
-                scale: 0,
-              }}
-              animate={{
-                scale: 1,
-                opacity: 1,
-              }}
-              transition={{
-                duration: 0.5,
-              }}
-              className="bg-linear-to-r inline-block from-teal-600 to-green-400 bg-clip-text text-transparent"
+      </section>
+
+      {/* Service record */}
+      <section className="px-6 py-16 md:py-24">
+        <div className="mx-auto max-w-6xl">
+          <motion.div className="mb-10 text-center md:mb-14" {...fadeInUp}>
+            <SectionEyebrow index="01" label="SERVICE RECORD" />
+            <h2
+              style={{ fontFamily: 'Layer, sans-serif' }}
+              className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 md:text-4xl lg:text-5xl"
             >
-              Alec Mingione
-            </motion.span>
-            . I live in{' '}
-            <motion.span
-              style={{ fontFamily: 'Layer' }}
-              initial={{
-                opacity: 0,
-                scale: 0,
-              }}
-              animate={{
-                scale: 1,
-                opacity: 1,
-              }}
-              transition={{
-                duration: 0.5,
-                delay: 0.5,
-              }}
-              className="bg-linear-to-r inline-block from-red-600 to-yellow-400 bg-clip-text text-transparent"
+              The Record Behind the Playbook
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-12">
+            <motion.div className="flex flex-col gap-10" {...fadeInUp}>
+              <ExperienceRecord />
+              <EducationRecord />
+            </motion.div>
+            <motion.div
+              className="flex flex-col gap-10"
+              {...fadeInUp}
+              transition={{ ...fadeInUp.transition, delay: 0.1 }}
             >
-              Phoenix Arizona
-            </motion.span>
-            , where I create the&nbsp;
-            <motion.span
-              style={{ fontFamily: 'Layer' }}
-              initial={{
-                opacity: 0,
-                scale: 0,
-              }}
-              animate={{
-                scale: 1,
-                opacity: 1,
-                color: 'gray',
-                textDecoration: '2px teal strikethrough',
-              }}
-              transition={{
-                duration: 0.5,
-                delay: 1,
-              }}
-            >
-              future
-            </motion.span>{' '}
-            in technology.
-          </motion.h1>
-          <div
-            style={{ fontSize: 18 }}
-            className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400"
-          >
-            <p>
-              I&apos;ve loved making things; being creative for as long as I can
-              remember, and wrote my first program when I was 8 years old, just
-              two weeks after my mom brought home the brand new Emachine 2000
-              that I taught myself to type on.
-            </p>
-            <p>
-              The only thing I loved more than computers as a kid was cars, art,
-              and taking things apart. At 13 I began building computers for the
-              time trying to create the biggest and baddest gaming PC. My first
-              build was an ASUS with 4GBs of DDR2 RAM. A caveman now a days!
-            </p>
-            <p>
-              That curiosity turned into a career. I started as an automation
-              programmer at Honeywell, writing the scripts that kept industrial
-              systems humming. From there I moved into web
-              engineering&mdash;cutting my teeth as a junior developer, then
-              joining Charles Schwab as a Software Engineer where I shipped
-              production code for one of the largest brokerages in the world.
-              Every role deepened the same instinct I had as a kid: figure out
-              how the machine works, then make it work better.
-            </p>
-            <p>
-              At NewGen Business Solutions I stepped into a Senior Lead role and
-              the work shifted from writing features to designing the systems
-              they lived in. I owned architecture decisions, set technical
-              direction for the team, and mentored engineers through complex
-              builds. It was the first time I realized the hardest problems
-              weren&apos;t in the code&mdash;they were in the gap between what
-              the business needed and what the technology could deliver.
-            </p>
-            <p>
-              That realization led me to pursue an MBA, which I completed in
-              February 2026&mdash;pitching to real investors, stress-testing
-              business models, and learning to speak the language of growth
-              alongside the language of code. Today I&apos;m the founder of MiPi
-              and Co-Founder of Kingdom Kode, and I serve as an on-demand CTO
-              for teams that need someone who can whiteboard architecture in the
-              morning and present unit economics in the afternoon. If
-              you&apos;re looking for someone who bridges the boardroom and the
-              codebase, that&apos;s exactly the gap I was built to close.
-            </p>
+              <SkillsRecord />
+              <StackRecord />
+            </motion.div>
           </div>
         </div>
-        <div className="lg:pl-20">
-          <ul role="list">
-            <SocialLink href="https://x.com/AmwareDotDev" icon={TwitterIcon}>
-              Follow on Twitter
-            </SocialLink>
-            <SocialLink
-              href="https://www.instagram.com/amware.dev/"
-              icon={InstagramIcon}
-              className="mt-4"
+      </section>
+
+      {/* Ways in */}
+      <section className="px-6 pb-8 md:pb-16">
+        <motion.div
+          className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2"
+          {...fadeInUp}
+        >
+          {[
+            {
+              href: '/projects',
+              title: 'See the work',
+              copy: 'Products, platforms, and client builds, shipped and in production.',
+              label: 'All projects',
+            },
+            {
+              href: '/contact',
+              title: 'Start a conversation',
+              copy: 'A question, a proposal, or just a hello. I answer every message myself.',
+              label: 'Get in touch',
+            },
+          ].map((card) => (
+            <Link
+              key={card.href}
+              href={card.href}
+              className="border-[var(--amw-line)] bg-[var(--amw-card)] hover:border-[var(--amw-accent)] group flex items-center justify-between gap-6 rounded-2xl border p-6 no-underline transition-colors duration-300"
             >
-              Follow on Instagram
-            </SocialLink>
-            <SocialLink
-              href="https://github.com/HeavenlyEntity"
-              icon={GitHubIcon}
-              className="mt-4"
-            >
-              Follow on GitHub
-            </SocialLink>
-            <SocialLink
-              href="https://www.linkedin.com/in/alec-mingione-90bb63aa/"
-              icon={LinkedInIcon}
-              className="mt-4"
-            >
-              Follow on LinkedIn
-            </SocialLink>
-            <SocialLink
-              href="mailto:amware.develop@gmail.com"
-              icon={MailIcon}
-              className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40"
-            >
-              amware.develop@gmail.com
-            </SocialLink>
-          </ul>
-        </div>
-      </div>
-    </Container>
+              <div>
+                <h3 className="text-lg font-medium tracking-tight text-zinc-900 dark:text-zinc-100">
+                  {card.title}
+                </h3>
+                <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                  {card.copy}
+                </p>
+                <p className="text-[var(--amw-accent-ink)] mt-3 text-sm font-medium">
+                  {card.label}
+                </p>
+              </div>
+              <span className="bg-[var(--amw-accent)] text-zinc-950 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all duration-300 group-hover:scale-110 motion-reduce:group-hover:scale-100">
+                <ChevronRight
+                  className="relative left-px h-4 w-4"
+                  aria-hidden="true"
+                />
+              </span>
+            </Link>
+          ))}
+        </motion.div>
+      </section>
+    </div>
   )
 }

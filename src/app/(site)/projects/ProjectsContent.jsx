@@ -1,14 +1,26 @@
 'use client'
 
+import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'motion/react'
-import { ArrowUpRight } from 'lucide-react'
-import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import {
+  ArrowUpRight,
+  ChevronRight,
+  LayoutGrid,
+  List as ListIcon,
+  Lock,
+} from 'lucide-react'
 
-import { Container } from '@/components/Container'
 import BorderGlow from '@/components/BorderGlow'
-import AgenticBall from '@/components/AgenticBall'
+import { SectionEyebrow } from '@/components/landing/section-eyebrow'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import logoCosmos from '@/images/logos/cosmos.svg'
 import logoPortalGen from '@/images/logos/PortalGen Fav-1.png'
 import logoOpenShuttle from '@/images/logos/open-shuttle.svg'
@@ -19,38 +31,9 @@ import logoWindstone from '@/images/logos/Windstone icon-1.png'
 import logoMipi from '@/images/logos/mipi-lander-int-icon.svg'
 import authjsLogo from '@/images/logos/authjs.png'
 import logoConventionSuite from '@/images/logos/ConventionSuite.png'
-import logoKingdomKode from '@/images/logos/kingdom-kode-logo.svg'
+import KingdomKodeMark from '@/components/brand/kingdom-kode-mark'
 import logoCelestial from '@/images/logos/dark-celestial-square.svg'
 import logoGearz from '@/images/logos/gearz-icon.svg'
-
-const Sparkline = ({ data, color }) => {
-  const max = Math.max(...data)
-  const min = Math.min(...data)
-  const range = max - min || 1
-  const height = 24
-  const width = 80
-  const points = data
-    .map((val, i) => {
-      const x = (i / (data.length - 1)) * width
-      const y = height - ((val - min) / range) * height
-      return `${x},${y}`
-    })
-    .join(' ')
-
-  return (
-    <svg width={width} height={height} className="overflow-visible">
-      <polyline
-        points={points}
-        fill="none"
-        stroke={color || 'currentColor'}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 import coverMipi from '@/images/projects/mipi-cover.png'
 import coverWindstone from '@/images/projects/windstone-cover.png'
 import coverAuthjs from '@/images/projects/authjs-cover.png'
@@ -64,6 +47,22 @@ import coverVrsa from '@/images/projects/vrsa-cover.png'
 import coverVbRemoteSat from '@/images/projects/vbremotesat-cover.png'
 import coverCelestial from '@/images/projects/celestial-cover.png'
 import coverGearz from '@/images/projects/gearz-cover.webp'
+
+/* Projects page in the "minimal" landing template's grammar: a centred
+   header, the three newest builds as the template's numbered split
+   feature cards beside a sticky intro, then the full archive as a
+   filterable grid of muted cards, closing on link cards. The dataset and
+   covers are unchanged; the old grid/list toggle, table view, WebGL
+   status orbs, and border-glow wrappers are retired. */
+
+const easeOut = [0.16, 1, 0.3, 1]
+
+const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.3 },
+  transition: { duration: 0.8, ease: easeOut },
+}
 
 function parseDate(dateStr) {
   const [month, day, year] = dateStr.split('/')
@@ -114,7 +113,7 @@ const projects = [
     description:
       'Affordable, top-tier AI solutions, software, website, and design services that solve problems right the first time—empowering businesses to thrive in a competitive digital landscape.',
     link: { href: 'https://kingdomkode.com', label: 'kingdomkode.com' },
-    logo: logoKingdomKode,
+    mark: KingdomKodeMark,
     cover: coverKingdomKode,
     status: 'live',
     whatHappened:
@@ -196,7 +195,7 @@ const projects = [
     cover: coverAuthjs,
     status: 'live',
     whatHappened:
-      'Successfully merged into Auth.js and ready to be released into the new version 5!',
+      'Successfully merged into Auth.js and ready to release into version 5. Next it will merge into better-auth as Auth.js converts to better-auth.',
     activity: [30, 25, 40, 45, 35, 50, 60, 75, 85],
   },
   {
@@ -271,483 +270,569 @@ const projects = [
   },
 ].sort((a, b) => parseDate(b.date) - parseDate(a.date))
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3,
-    },
+const FEATURED_COUNT = 3
+
+const STATUS = {
+  live: { label: 'Live', dot: 'bg-[var(--amw-accent)]' },
+  development: {
+    label: 'In development',
+    dot: 'bg-[var(--amw-accent)]/40 ring-1 ring-[var(--amw-accent)]',
+  },
+  archived: { label: 'Archived', dot: 'bg-zinc-400 dark:bg-zinc-500' },
+}
+
+/* Cursor-tracked mesh border + edge glow (React Bits "BorderGlow"), keyed
+   by status like the previous project grid: teal/cyan for live, sky for
+   in-development, zinc for archived. The card surface stays the template's
+   muted panel; the glow only appears near the edge the pointer is on. */
+const GLOW = {
+  live: { colors: ['#34d399', '#06b6d4', '#22d3ee'], glowColor: '160 80 65' },
+  development: {
+    colors: ['#38bdf8', '#0ea5e9', '#0284c7'],
+    glowColor: '200 80 75',
+  },
+  archived: {
+    colors: ['#a1a1aa', '#71717a', '#d4d4d8'],
+    glowColor: '240 10 65',
   },
 }
 
-const projectVariant = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-    scale: 0.95,
-  },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      type: 'spring',
-      stiffness: 100,
-    },
-  },
+const GLOW_PROPS = {
+  backgroundColor: 'var(--amw-muted)',
+  borderRadius: 16,
+  glowRadius: 30,
+  glowIntensity: 0.6,
+  edgeSensitivity: 25,
+  coneSpread: 20,
+  fillOpacity: 0.3,
+  shadow: 'none',
 }
 
-const StatusIndicator = React.memo(({ status, viewMode = 'grid' }) => {
-  StatusIndicator.displayName = 'StatusIndicator'
-  const size = viewMode === 'list' ? 32 : 24
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-      setPrefersReducedMotion(mq.matches)
-      const onChange = (e) => setPrefersReducedMotion(e.matches)
-      mq.addEventListener?.('change', onChange)
-      return () => mq.removeEventListener?.('change', onChange)
-    }
-  }, [])
-  const statusConfig = {
-    live: {
-      color: '#00ff9d',
-      label: 'Live',
-      pulseRing: true,
-      lightColor: '#00cc7d',
-    },
-    development: {
-      color: '#38bdf8',
-      label: 'In Development',
-      pulseRing: true,
-      lightColor: '#0284c7',
-    },
-    archived: {
-      color: '#888888',
-      label: 'Archived',
-      pulseRing: false,
-      lightColor: '#666666',
-    },
-    internal: {
-      color: '#ffae00',
-      label: 'Internal',
-      pulseRing: true,
-      lightColor: '#cc8b00',
-    },
-    sold: {
-      color: '#ffae00',
-      label: 'Sold',
-      pulseRing: true,
-      lightColor: '#cc8b00',
-    },
-  }
+function glowFor(status) {
+  return GLOW[status] || GLOW.archived
+}
 
-  const config = statusConfig[status]
+const FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: 'live', label: 'Live' },
+  { id: 'development', label: 'In development' },
+  { id: 'archived', label: 'Archived' },
+]
 
+function isValidLink(href) {
   return (
-    <motion.div
-      className="inline-flex items-center justify-center"
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.2 }}
-    >
-      <AgenticBall
-        key={viewMode}
-        width={size}
-        height={size}
-        color={config?.color}
-        speed={config?.pulseRing ? 0.8 : 0.4}
-        zoom={1.5}
-        className="shrink-0"
-      />
-      <span className="ml-2 text-xs font-medium text-zinc-900 dark:text-zinc-200">
-        {config?.label}
-      </span>
-    </motion.div>
+    typeof href === 'string' &&
+    href !== '#' &&
+    (href.startsWith('http://') ||
+      href.startsWith('https://') ||
+      href.startsWith('/'))
   )
-})
+}
 
-export default function ProjectsContent() {
-  const [activeProject, setActiveProject] = useState(null)
-  const [viewMode, setViewMode] = useState('grid') // 'grid' | 'list'
-  const hoverTimerRef = useRef(null)
-  const HOVER_REVEAL_DELAY_MS = 300
-
-  const handleMouseEnter = useCallback((name) => {
-    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current)
-    hoverTimerRef.current = setTimeout(() => {
-      setActiveProject(name)
-    }, HOVER_REVEAL_DELAY_MS)
-  }, [])
-
-  const handleMouseLeave = useCallback(() => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current)
-      hoverTimerRef.current = null
-    }
-    setActiveProject(null)
-  }, [])
-
-  const handleClickCard = useCallback((name) => {
-    setActiveProject((prev) => (prev === name ? null : name))
-  }, [])
-
-  const projectsWithValidity = useMemo(() => {
-    return projects.map((p) => {
-      const href = p.link?.href
-      const isValidLink =
-        !!href &&
-        typeof href === 'string' &&
-        href !== '#' &&
-        (href.startsWith('http://') ||
-          href.startsWith('https://') ||
-          href.startsWith('/'))
-      return { ...p, isValidLink }
-    })
-  }, [])
-
-  useEffect(() => {
-    // cleanup hover timer on unmount
-    return () => {
-      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current)
-    }
-  }, [])
-
+function ProjectMark({ project, className }) {
+  if (project.mark) {
+    const Mark = project.mark
+    return <Mark className={`${className} text-zinc-900`} />
+  }
   return (
-    <Container className="mt-16 sm:mt-32">
-      <div className="mb-16 flex flex-col gap-12 sm:mb-24 md:flex-row md:items-start md:justify-between lg:gap-24">
-        <h1 className="max-w-xl shrink-0 text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-          Explore My Work
-        </h1>
-        <div className="flex max-w-2xl flex-col gap-8 pt-2 sm:flex-row md:gap-12">
-          <div className="flex-1">
-            <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-              A curated selection of projects highlighting my approach to clean
-              design, thoughtful user experience, and innovative web
-              development.
-            </p>
+    <Image
+      src={project.logo}
+      alt=""
+      className={`${className} object-contain`}
+      unoptimized
+    />
+  )
+}
+
+function StatusBadge({ status }) {
+  const config = STATUS[status] ?? STATUS.archived
+  return (
+    <span className="amw-kicker inline-flex items-center gap-2 normal-case tracking-[0.04em]">
+      <span
+        className={`inline-block h-2 w-2 rounded-full ${config.dot}`}
+        aria-hidden="true"
+      />
+      {config.label}
+    </span>
+  )
+}
+
+/* ---- featured: the template's split feature card --------------------- */
+
+function FeaturedCard({ project, index }) {
+  const valid = isValidLink(project.link?.href)
+  const glow = glowFor(project.status)
+  return (
+    <motion.article
+      className="group"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, delay: index * 0.1, ease: easeOut }}
+    >
+      <BorderGlow
+        {...GLOW_PROPS}
+        colors={glow.colors}
+        glowColor={glow.glowColor}
+        className="h-full"
+      >
+        <div className="p-2">
+          {/* Every cover is 16:9, so a 16:9 frame shows the whole screenshot at
+          the card's full width with no cropping. */}
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+            <Image
+              src={project.cover}
+              alt={project.name}
+              fill
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            />
+            <span className="ring-[var(--amw-line)] absolute left-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white p-2 ring-1">
+              <ProjectMark project={project} className="h-full w-full" />
+            </span>
           </div>
-          <div className="flex-1">
-            <h3 className="mb-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              Visual Identity
-            </h3>
-            <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-              Every project tells a unique story, crafted with precision,
-              performance, and purpose from my perspective as a creator.
-            </p>
-          </div>
-        </div>
-      </div>
 
-      <div className="mb-6 flex items-center justify-end gap-2">
-        <button
-          onClick={() => setViewMode('grid')}
-          className={`rounded-md px-3 py-1.5 text-sm transition ${
-            viewMode === 'grid'
-              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-              : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800'
-          }`}
-          aria-pressed={viewMode === 'grid'}
-        >
-          Grid
-        </button>
-        <button
-          onClick={() => setViewMode('list')}
-          className={`rounded-md px-3 py-1.5 text-sm transition ${
-            viewMode === 'list'
-              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-              : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800'
-          }`}
-          aria-pressed={viewMode === 'list'}
-        >
-          List
-        </button>
-      </div>
-
-      {viewMode === 'grid' ? (
-        <motion.ul
-          variants={container}
-          initial="hidden"
-          animate="show"
-          role="list"
-          className="grid grid-cols-1 gap-6 md:grid-cols-2"
-        >
-          {projectsWithValidity.map((project) => {
-            const glowConfig = {
-              live: {
-                colors: ['#34d399', '#06b6d4', '#22d3ee'],
-                glowColor: '160 80 65',
-              },
-              development: {
-                colors: ['#38bdf8', '#0ea5e9', '#0284c7'],
-                glowColor: '200 80 75',
-              },
-              archived: {
-                colors: ['#a1a1aa', '#71717a', '#d4d4d8'],
-                glowColor: '240 10 65',
-              },
-            }
-            const glow = glowConfig[project.status] || glowConfig.archived
-
-            return (
-              <motion.li
-                key={project.name}
-                variants={projectVariant}
-                className="group"
-                onMouseEnter={() => handleMouseEnter(project.name)}
-                onMouseLeave={handleMouseLeave}
-                onTouchStart={() => handleMouseEnter(project.name)}
-                onTouchEnd={handleMouseLeave}
-              >
-                <BorderGlow
-                  colors={glow.colors}
-                  glowColor={glow.glowColor}
-                  backgroundColor="var(--card-bg, #ffffff)"
-                  borderRadius={16}
-                  glowRadius={30}
-                  glowIntensity={0.6}
-                  edgeSensitivity={25}
-                  coneSpread={20}
-                  fillOpacity={0.3}
-                  className="h-full [--card-bg:#ffffff] dark:[--card-bg:#18181b]"
-                >
-                  <div
-                    className="relative inset-x-0.5 w-full cursor-pointer overflow-hidden"
-                    onClick={() => handleClickCard(project.name)}
-                  >
-                    {project.cover && (
-                      <Image
-                        src={project.cover}
-                        alt={project.name}
-                        className="object-cover! w-full transition duration-500 group-hover:scale-105"
-                      />
-                    )}
-
-                    <AnimatePresence mode="wait">
-                      {activeProject === project.name &&
-                        project?.whatHappened && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="absolute inset-0 z-20 flex items-center justify-center bg-white/90 p-6 backdrop-blur-md dark:bg-black/80"
-                          >
-                            <motion.div
-                              initial={{ y: 20, opacity: 0 }}
-                              animate={{ y: 0, opacity: 1 }}
-                              className="text-center"
-                            >
-                              <Image
-                                src={project.logo}
-                                alt=""
-                                className="mx-auto mb-4 h-12 w-12 rounded-xl shadow-lg"
-                                unoptimized
-                              />
-                              <StatusIndicator
-                                status={project.status}
-                                viewMode="grid"
-                              />
-                              <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-zinc-900 dark:text-zinc-100 md:text-base">
-                                {project.whatHappened}
-                              </p>
-                              {project.isValidLink && (
-                                <Link
-                                  href={project.link.href}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-105 dark:bg-white dark:text-zinc-900"
-                                >
-                                  Visit Project
-                                  <ArrowUpRight className="h-4 w-4" />
-                                </Link>
-                              )}
-                            </motion.div>
-                          </motion.div>
-                        )}
-                    </AnimatePresence>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-4 px-5 py-4">
-                    <div className="flex items-center gap-3 overflow-hidden">
-                      <h2 className="shrink-0 text-base font-semibold text-zinc-900 dark:text-zinc-100">
-                        {project.isValidLink ? (
-                          <Link
-                            href={project.link.href}
-                            className="hover:underline focus:outline-hidden"
-                          >
-                            {project.name}
-                          </Link>
-                        ) : (
-                          project.name
-                        )}
-                      </h2>
-                      <div className="flex shrink-0 items-center gap-1.5">
-                        {project.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <span className="shrink-0 rounded-full border border-zinc-200 bg-zinc-50 px-3.5 py-1 text-xs font-semibold text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                      {getFullYear(project.date)}
-                    </span>
-                  </div>
-                </BorderGlow>
-              </motion.li>
-            )
-          })}
-        </motion.ul>
-      ) : (
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="shadow-xs w-full overflow-hidden rounded-xl border border-zinc-200 bg-white backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/40"
-        >
-          <div className="overflow-x-auto">
-            <table className="w-full whitespace-nowrap text-left text-sm">
-              <thead className="border-b border-zinc-200 bg-zinc-50/50 text-xs uppercase tracking-wider text-zinc-500 dark:border-zinc-800 dark:bg-zinc-800/50 dark:text-zinc-400">
-                <tr>
-                  <th className="px-6 py-4 font-medium">Project</th>
-                  <th className="px-6 py-4 font-medium">Timeline</th>
-                  <th className="px-6 py-4 font-medium">Tech</th>
-                  <th className="px-6 py-4 font-medium">Activity</th>
-                  <th className="px-6 py-4 font-medium">Status</th>
-                  <th className="px-6 py-4 text-right font-medium">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                {projectsWithValidity.map((project, idx) => {
-                  const glowConfig = {
-                    live: { color: '#34d399' },
-                    development: { color: '#38bdf8' },
-                    archived: { color: '#a1a1aa' },
-                    internal: { color: '#fbbf24' },
-                  }
-                  const cConfig =
-                    glowConfig[project.status] || glowConfig.archived
-                  return (
-                    <motion.tr
-                      key={project.name}
-                      variants={projectVariant}
-                      className="group transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="shadow-xs relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
-                            <Image
-                              src={project.logo}
-                              alt={project.name}
-                              className="h-full w-full object-cover p-1.5"
-                              unoptimized
-                            />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-                              {project.name}
-                            </span>
-                            {project.isValidLink ? (
-                              <Link
-                                href={project.link.href}
-                                className="text-xs text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
-                              >
-                                {project.link.label}
-                              </Link>
-                            ) : (
-                              <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                                {project.link.label}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400">
-                        {parseDate(project.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5">
-                          {project.tags.slice(0, 2).map((tag) => (
-                            <span
-                              key={tag}
-                              className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                          {project.tags.length > 2 && (
-                            <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
-                              +{project.tags.length - 2}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Sparkline
-                          data={project.activity}
-                          color={cConfig.color}
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <StatusIndicator
-                          status={project.status}
-                          viewMode="list"
-                        />
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        {project.isValidLink ? (
-                          <Link
-                            href={project.link.href}
-                            className="shadow-xs inline-flex w-24 justify-center rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-700 transition hover:scale-105 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
-                          >
-                            Visit Project
-                          </Link>
-                        ) : (
-                          <span className="inline-flex w-24 justify-center rounded-md border border-transparent px-3 py-1.5 text-xs font-semibold text-zinc-400 shadow-none dark:text-zinc-500">
-                            Internal
-                          </span>
-                        )}
-                      </td>
-                    </motion.tr>
-                  )
-                })}
-              </tbody>
-            </table>
-            <div className="flex items-center justify-between border-t border-zinc-200 bg-zinc-50/50 px-6 py-3 dark:border-zinc-800 dark:bg-zinc-800/50">
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                Showing {projects.length} results
-              </span>
-              <div className="flex gap-1">
-                <button
-                  disabled
-                  className="shadow-xs rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500"
-                >
-                  Previous
-                </button>
-                <button className="rounded-md border border-teal-500 bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:border-teal-500/30 dark:bg-teal-500/10 dark:text-teal-400">
-                  1
-                </button>
-                <button
-                  disabled
-                  className="shadow-xs rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500"
-                >
-                  Next
-                </button>
+          <div className="px-4 pb-4 pt-6 md:px-6 md:pb-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="amw-mono text-[var(--amw-accent-ink)] bg-[var(--amw-accent-soft)] block w-fit rounded-md px-2 py-1 text-sm font-medium">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <StatusBadge status={project.status} />
               </div>
+              <span className="amw-mono text-xs text-zinc-500 dark:text-zinc-400">
+                {getFullYear(project.date)}
+              </span>
+            </div>
+            <h3 className="mt-4 text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-3xl">
+              {project.name}
+            </h3>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 md:text-base">
+              {project.description.split('\n')[0]}
+            </p>
+            {project.whatHappened && (
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+                <span className="amw-kicker mr-2">Outcome</span>
+                {project.whatHappened}
+              </p>
+            )}
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-2">
+                {project.tags.map((tag) => (
+                  <span key={tag} className="amw-chip">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              {valid ? (
+                <a
+                  href={project.link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-[var(--amw-accent-ink)] inline-flex items-center gap-1.5 text-sm font-medium text-zinc-900 no-underline transition-colors dark:text-zinc-100"
+                >
+                  {project.link.label}
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400">
+                  <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+                  Internal build
+                </span>
+              )}
             </div>
           </div>
+        </div>
+      </BorderGlow>
+    </motion.article>
+  )
+}
+
+/* ---- archive: muted grid card ----------------------------------------- */
+
+function ArchiveCard({ project }) {
+  const valid = isValidLink(project.link?.href)
+  const glow = glowFor(project.status)
+  const Wrapper = valid ? 'a' : 'div'
+  const wrapperProps = valid
+    ? { href: project.link.href, target: '_blank', rel: 'noreferrer' }
+    : {}
+
+  return (
+    <motion.article
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      transition={{ duration: 0.4, ease: easeOut }}
+      className="h-full"
+    >
+      <BorderGlow
+        {...GLOW_PROPS}
+        colors={glow.colors}
+        glowColor={glow.glowColor}
+        className="h-full"
+      >
+        <Wrapper
+          {...wrapperProps}
+          className="group flex h-full flex-col p-2 no-underline"
+        >
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+            <Image
+              src={project.cover}
+              alt={project.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            />
+            <span className="ring-[var(--amw-line)] absolute left-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white p-1.5 ring-1">
+              <ProjectMark project={project} className="h-full w-full" />
+            </span>
+          </div>
+          <div className="flex flex-1 flex-col px-3 pb-3 pt-4">
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="text-base font-medium tracking-tight text-zinc-900 dark:text-zinc-100">
+                {project.name}
+              </h3>
+              <span className="amw-mono shrink-0 text-xs text-zinc-500 dark:text-zinc-400">
+                {getFullYear(project.date)}
+              </span>
+            </div>
+            <p className="line-clamp-2 mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+              {project.description.split('\n')[0]}
+            </p>
+            <div className="mt-auto flex items-center justify-between gap-3 pt-4">
+              <StatusBadge status={project.status} />
+              {valid ? (
+                <span className="text-[var(--amw-accent-ink)] inline-flex items-center gap-1 text-xs font-medium">
+                  {project.link.label}
+                  <ArrowUpRight
+                    className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transition-none"
+                    aria-hidden="true"
+                  />
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  <Lock className="h-3 w-3" aria-hidden="true" />
+                  Internal
+                </span>
+              )}
+            </div>
+          </div>
+        </Wrapper>
+      </BorderGlow>
+    </motion.article>
+  )
+}
+
+/* ---- archive: list row -------------------------------------------------- */
+
+function ArchiveRow({ project }) {
+  const valid = isValidLink(project.link?.href)
+  const Wrapper = valid ? 'a' : 'div'
+  const wrapperProps = valid
+    ? { href: project.link.href, target: '_blank', rel: 'noreferrer' }
+    : {}
+
+  return (
+    <motion.li
+      layout
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: easeOut }}
+      className="border-[var(--amw-line)] border-b last:border-b-0"
+    >
+      <Wrapper
+        {...wrapperProps}
+        className="hover:bg-[var(--amw-card)] group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 px-4 py-4 no-underline transition-colors md:grid-cols-[auto_minmax(0,1.6fr)_minmax(0,1.4fr)_5rem_9rem_auto] md:px-6"
+      >
+        <span className="ring-[var(--amw-line)] inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white p-2 ring-1">
+          <ProjectMark project={project} className="h-full w-full" />
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            {project.name}
+          </p>
+          <p className="amw-mono mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">
+            {valid ? project.link.label : 'internal'}
+          </p>
+          <div className="mt-1.5 md:hidden">
+            <StatusBadge status={project.status} />
+          </div>
+        </div>
+        <div className="hidden flex-wrap items-center gap-1.5 md:flex">
+          {project.tags.map((tag) => (
+            <span key={tag} className="amw-chip">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <span className="amw-mono hidden text-xs text-zinc-500 dark:text-zinc-400 md:inline">
+          {getFullYear(project.date)}
+        </span>
+        <span className="hidden md:inline-flex">
+          <StatusBadge status={project.status} />
+        </span>
+        <span className="text-[var(--amw-accent-ink)] inline-flex h-9 w-9 items-center justify-center justify-self-end rounded-full">
+          {valid ? (
+            <ArrowUpRight
+              className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transition-none"
+              aria-hidden="true"
+            />
+          ) : (
+            <Lock
+              className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500"
+              aria-hidden="true"
+            />
+          )}
+        </span>
+      </Wrapper>
+    </motion.li>
+  )
+}
+
+export default function ProjectsContent() {
+  const [filter, setFilter] = useState('all')
+  const [view, setView] = useState('grid')
+  const featured = projects.slice(0, FEATURED_COUNT)
+  const archive = useMemo(
+    () =>
+      filter === 'all' ? projects : projects.filter((p) => p.status === filter),
+    [filter]
+  )
+  const counts = useMemo(
+    () =>
+      FILTERS.reduce((acc, f) => {
+        acc[f.id] =
+          f.id === 'all'
+            ? projects.length
+            : projects.filter((p) => p.status === f.id).length
+        return acc
+      }, {}),
+    []
+  )
+
+  return (
+    <div className="amw">
+      {/* Header */}
+      <section className="px-6 pt-16 md:pt-24">
+        <motion.div className="mx-auto max-w-6xl text-center" {...fadeInUp}>
+          <SectionEyebrow index="00" label="FIELD EVIDENCE" />
+          <h1
+            style={{ fontFamily: 'Layer, sans-serif' }}
+            className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 md:text-5xl lg:text-6xl"
+          >
+            Shipped, Not Staged
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
+            {projects.length} builds across products, platforms, open source,
+            and internal tools. Every one of them met real users.
+          </p>
         </motion.div>
-      )}
-    </Container>
+      </section>
+
+      {/* Featured: sticky intro beside the newest builds */}
+      <section className="px-6 py-16 md:py-24">
+        <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
+          <motion.div
+            className="lg:sticky lg:top-28 lg:w-80 lg:shrink-0"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: easeOut }}
+          >
+            <SectionEyebrow index="01" label="ON THE BENCH" />
+            <h2
+              style={{ fontFamily: 'Layer, sans-serif' }}
+              className="mb-4 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 md:mb-6 md:text-3xl lg:text-4xl"
+            >
+              What I am building now
+            </h2>
+            <p className="mb-6 max-w-sm text-base text-zinc-600 dark:text-zinc-400 md:mb-8 md:text-lg">
+              The three newest builds. Founder products first, then the client
+              and studio work that keeps the playbook sharp.
+            </p>
+            <Link
+              href="/services"
+              className="group inline-flex w-full items-center justify-center gap-3 rounded-md bg-zinc-900 py-3 pl-5 pr-3 font-medium text-white no-underline transition-all duration-500 ease-out hover:rounded-[50px] dark:bg-zinc-100 dark:text-zinc-900 sm:w-auto"
+            >
+              <span>Build With Me</span>
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-zinc-900 transition-all duration-300 group-hover:scale-110 dark:bg-zinc-900 dark:text-zinc-100">
+                <ChevronRight
+                  className="relative left-px h-4 w-4"
+                  aria-hidden="true"
+                />
+              </span>
+            </Link>
+          </motion.div>
+
+          <div className="flex min-w-0 flex-1 flex-col gap-6 md:gap-10">
+            {featured.map((project, index) => (
+              <FeaturedCard
+                key={project.name}
+                project={project}
+                index={index}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Archive */}
+      <section className="px-6 py-16 md:py-24">
+        <div className="mx-auto max-w-6xl">
+          <motion.div
+            className="mb-8 flex flex-col items-start justify-between gap-6 md:mb-12 md:flex-row md:items-end"
+            {...fadeInUp}
+          >
+            <div>
+              <SectionEyebrow index="02" label="THE ARCHIVE" />
+              <h2
+                style={{ fontFamily: 'Layer, sans-serif' }}
+                className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 md:text-4xl lg:text-5xl"
+              >
+                Every Build on Record
+              </h2>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-3">
+                <span className="amw-kicker" id="projects-status-label">
+                  Status
+                </span>
+                <Select value={filter} onValueChange={setFilter}>
+                  <SelectTrigger
+                    aria-labelledby="projects-status-label"
+                    className="min-w-[11.5rem]"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {FILTERS.map((f) => (
+                      <SelectItem key={f.id} value={f.id}>
+                        <span className="flex items-center gap-2">
+                          {f.label}
+                          <span className="amw-mono text-xs text-zinc-500 dark:text-zinc-400">
+                            {counts[f.id]}
+                          </span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div
+                className="border-[var(--amw-line)] bg-[var(--amw-muted)] inline-flex rounded-lg border p-1"
+                role="group"
+                aria-label="View"
+              >
+                {[
+                  ['grid', LayoutGrid, 'Grid view'],
+                  ['list', ListIcon, 'List view'],
+                ].map(([id, Icon, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setView(id)}
+                    aria-pressed={view === id}
+                    aria-label={label}
+                    title={label}
+                    className={`inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md transition-colors ${
+                      view === id
+                        ? 'bg-[var(--amw-card)] text-zinc-900 shadow-sm dark:text-zinc-50'
+                        : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100'
+                    }`}
+                  >
+                    <Icon
+                      className="h-4 w-4"
+                      strokeWidth={1.75}
+                      aria-hidden="true"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {view === 'grid' ? (
+            <motion.div
+              layout
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              <AnimatePresence mode="popLayout">
+                {archive.map((project) => (
+                  <ArchiveCard key={project.name} project={project} />
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          ) : (
+            <div className="bg-[var(--amw-muted)] overflow-hidden rounded-2xl">
+              <div className="amw-kicker border-[var(--amw-line)] hidden grid-cols-[auto_minmax(0,1.6fr)_minmax(0,1.4fr)_5rem_9rem_auto] items-center gap-4 border-b px-6 py-3 md:grid">
+                <span className="w-10" aria-hidden="true" />
+                <span>Project</span>
+                <span>Tech</span>
+                <span>Year</span>
+                <span>Status</span>
+                <span className="w-9" aria-hidden="true" />
+              </div>
+              <motion.ul layout>
+                <AnimatePresence mode="popLayout">
+                  {archive.map((project) => (
+                    <ArchiveRow key={project.name} project={project} />
+                  ))}
+                </AnimatePresence>
+              </motion.ul>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Ways in */}
+      <section className="px-6 pb-8 md:pb-16">
+        <motion.div
+          className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2"
+          {...fadeInUp}
+        >
+          {[
+            {
+              href: '/products',
+              title: 'Start from these foundations',
+              copy: 'The boilerplates ship the same stack these builds run on.',
+              label: 'Browse boilerplates',
+            },
+            {
+              href: '/contact',
+              title: 'Have a build in mind?',
+              copy: 'Tell me what you are shipping and where you are stuck.',
+              label: 'Get in touch',
+            },
+          ].map((card) => (
+            <Link
+              key={card.href}
+              href={card.href}
+              className="border-[var(--amw-line)] bg-[var(--amw-card)] hover:border-[var(--amw-accent)] group flex items-center justify-between gap-6 rounded-2xl border p-6 no-underline transition-colors duration-300"
+            >
+              <div>
+                <h3 className="text-lg font-medium tracking-tight text-zinc-900 dark:text-zinc-100">
+                  {card.title}
+                </h3>
+                <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                  {card.copy}
+                </p>
+                <p className="text-[var(--amw-accent-ink)] mt-3 text-sm font-medium">
+                  {card.label}
+                </p>
+              </div>
+              <span className="bg-[var(--amw-accent)] text-zinc-950 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all duration-300 group-hover:scale-110 motion-reduce:group-hover:scale-100">
+                <ChevronRight
+                  className="relative left-px h-4 w-4"
+                  aria-hidden="true"
+                />
+              </span>
+            </Link>
+          ))}
+        </motion.div>
+      </section>
+    </div>
   )
 }
