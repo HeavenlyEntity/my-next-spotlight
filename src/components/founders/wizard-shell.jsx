@@ -20,13 +20,16 @@ export function WizardShell({
   onNext,
   nextDisabled = false,
   lead = null,
+  /* The job offer wizard has its own registry, so the shell takes one rather
+     than being welded to the equity tool's steps. */
+  steps = STEPS,
   children,
 }) {
   const reduce = useReducedMotion()
   const headingRef = useRef(null)
-  const current = STEPS.find((s) => s.index === step) ?? STEPS[0]
+  const current = steps.find((s) => s.index === step) ?? steps[0]
   const isFirst = current.index === 1
-  const isLast = current.index === STEPS.length
+  const isLast = current.index === steps.length
 
   useEffect(() => {
     /* Move focus to the new headline after the first render of a step. */
@@ -37,10 +40,10 @@ export function WizardShell({
   return (
     <div>
       <p className="amw-kicker mb-3">
-        Step {current.index} of {STEPS.length} · {current.eyebrow}
+        Step {current.index} of {steps.length} · {current.eyebrow}
       </p>
       <ol className="mb-8 flex list-none gap-1.5 p-0" aria-label="Progress">
-        {STEPS.map((s) => (
+        {steps.map((s) => (
           <li
             key={s.id}
             aria-current={s.index === current.index ? 'step' : undefined}

@@ -618,7 +618,7 @@ Synthesized from this review's findings. Each derives from a specific finding.
   - Surfaced by: Code quality 1, Outside voice 5, 7, 9, 15
   - Files: `src/lib/founders/offer-store.js`, `handoff.js`, `ContactForm.jsx`, `handoff.test.js`
   - Verify: tests 15, 17, 18, 32, 33
-- [ ] **T5 (P1, human: ~3 days / CC: ~2h)** — UI — Three-step wizard, verdict, ladder, hydration gate
+- [x] **T5 (P1, human: ~3 days / CC: ~2h)** — DONE 2026-09-04 — UI — Three-step wizard, verdict, ladder, hydration gate
   - Surfaced by: Design passes 1, 2, 6 — no stated hierarchy, no states, eight controls on one step
   - Files: `src/app/(site)/founders/job-offer/`, `src/components/founders/ladder/`
   - Includes: verdict at display scale with six headline variants; ladder as rows with the current-offer marker; three steps; industry and location as selects; "None of these" chip; `hasHydrated()` gate with a fixed-geometry skeleton; count-up suppressed on first paint; blur-commit inputs
@@ -653,7 +653,8 @@ Synthesized from this review's findings. Each derives from a specific finding.
 
 ## Open question
 
-- **O1 Registry slot.** Does this absorb the "Salary / equity" coming-soon entry, take a new slot, or do the pair get renamed as two reads? Cosmetic, decidable at T7.
+- ~~**O1 Registry slot.**~~ RESOLVED at T5: the job offer calculator absorbed the "Salary / equity" soon-slot, since the ask ladder is that trade priced at both ends. The desk now lists two live tools.
+- **O1 (original text) Registry slot.** Does this absorb the "Salary / equity" coming-soon entry, take a new slot, or do the pair get renamed as two reads? Cosmetic, decidable at T7.
 
 ## GSTACK REVIEW REPORT
 

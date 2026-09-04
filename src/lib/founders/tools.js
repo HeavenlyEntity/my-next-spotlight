@@ -23,13 +23,15 @@ export const TOOLS = [
     blurb: 'Your stake through seed, A, B, C and an IPO.',
   },
   {
-    id: 'salary-equity',
-    label: 'Salary ⇄ equity',
-    href: null,
+    /* Absorbs the old "Salary ⇄ equity" slot: the ask ladder is that trade
+       priced at both ends, so shipping both would advertise one idea twice. */
+    id: 'job-offer',
+    label: 'Job offer calculator',
+    href: '/founders/job-offer',
     icon: 'ArrowLeftRight',
-    status: 'soon',
-    kicker: 'soon',
-    blurb: 'Price a pay cut against a grant at each stage.',
+    status: 'live',
+    kicker: '/founders/job-offer · no account',
+    blurb: 'What to ask for, in cash and equity, and where to stop.',
   },
   {
     id: 'glossary',

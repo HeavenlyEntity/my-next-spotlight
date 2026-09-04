@@ -1,5 +1,6 @@
 'use client'
 
+import { NumberField } from '@/components/founders/number-field'
 import { ChipGroup } from '@/components/founders/chip-group'
 import { SliderField } from '@/components/founders/slider-field'
 import { fmtPct } from '@/components/founders/format'
@@ -28,65 +29,6 @@ const INSTRUMENT_LABELS = {
   options: 'Options',
   restricted_stock: 'Restricted stock',
   unsure: 'Not sure',
-}
-
-const inputClass =
-  'border-[var(--amw-line-strong)] bg-[var(--amw-card)] focus:border-[var(--amw-accent)] focus:ring-[var(--amw-accent)]/20 amw-mono w-full rounded-md border px-3 py-2.5 text-sm tabular-nums focus:outline-none focus:ring-4'
-
-function NumberField({
-  id,
-  label,
-  value,
-  onCommit,
-  hint,
-  prefix,
-  placeholder,
-}) {
-  return (
-    <div>
-      <label
-        htmlFor={id}
-        className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
-      >
-        {label}
-      </label>
-      <div className="mt-2 flex items-center gap-2">
-        {prefix && (
-          <span className="amw-mono text-sm text-zinc-500">{prefix}</span>
-        )}
-        <input
-          id={id}
-          type="number"
-          inputMode="decimal"
-          min={0}
-          key={value ?? 'empty'}
-          defaultValue={value ?? ''}
-          placeholder={placeholder}
-          onBlur={(event) =>
-            onCommit(
-              event.target.value === '' ? null : Number(event.target.value)
-            )
-          }
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault()
-              event.currentTarget.blur()
-            }
-          }}
-          aria-describedby={hint ? `${id}-hint` : undefined}
-          className={inputClass}
-        />
-      </div>
-      {hint && (
-        <p
-          id={`${id}-hint`}
-          className="mt-2 text-xs text-zinc-500 dark:text-zinc-400"
-        >
-          {hint}
-        </p>
-      )}
-    </div>
-  )
 }
 
 export function SalaryAndOffer({ inputs, read, onChange }) {
