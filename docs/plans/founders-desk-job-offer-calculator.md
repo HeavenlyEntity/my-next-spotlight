@@ -623,7 +623,7 @@ Synthesized from this review's findings. Each derives from a specific finding.
   - Files: `src/app/(site)/founders/job-offer/`, `src/components/founders/ladder/`
   - Includes: verdict at display scale with six headline variants; ladder as rows with the current-offer marker; three steps; industry and location as selects; "None of these" chip; `hasHydrated()` gate with a fixed-geometry skeleton; count-up suppressed on first paint; blur-commit inputs
   - Verify: tests 21-25, 30, 30c, 30d, 30f, 31
-- [ ] **T6 (P1, human: ~2.5 days / CC: ~1.5h)** — UI — Market plot: thesis, annualised equity, mobile list, tap disclosure
+- [x] **T6 (P1, human: ~2.5 days / CC: ~1.5h)** — DONE 2026-09-04 — UI — Market plot: thesis, annualised equity, mobile list, tap disclosure
   - Surfaced by: Design passes 4, 6, 7 — demoralising with no thesis, no mobile design, mismatched time bases
   - Files: `src/components/founders/market-plot.jsx`, `src/lib/founders/equity/company-comp.js`
   - Includes: thesis sentence generated from the real ratio; equity annualised net of strike; list below `md` with all eleven rows; tap-to-expand at every breakpoint; text badges; scenario control above the chart; one data-driven component; prints as the expanded list

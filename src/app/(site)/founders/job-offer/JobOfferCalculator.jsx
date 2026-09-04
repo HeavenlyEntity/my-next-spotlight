@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { DeskEyebrow } from '@/components/founders/desk-eyebrow'
 import { WizardShell } from '@/components/founders/wizard-shell'
 import { AskLadder } from '@/components/founders/ladder/ask-ladder'
+import { MarketPlot } from '@/components/founders/market-plot'
 import {
   CompanyStep,
   OfferStep,
@@ -12,6 +13,7 @@ import {
 } from '@/components/founders/ladder/wizard-steps'
 import { computeRead } from '@/lib/founders/equity/engine'
 import { computeAsk } from '@/lib/founders/equity/negotiation'
+import { buildPlot } from '@/lib/founders/equity/plot'
 import { OFFER_STEPS } from '@/lib/founders/offer-steps'
 import {
   hasHydrated,
@@ -65,6 +67,9 @@ export default function JobOfferCalculator() {
   /* True only for the paint immediately after hydration: those values arrived,
      they did not change, so nothing should animate up to them. */
   const [justHydrated, setJustHydrated] = useState(false)
+  /* The outcome the plot models. Conservative by default: the reader should
+     meet the modest case first, not the one that flatters the offer. */
+  const [scenarioId, setScenarioId] = useState('conservative')
 
   const store = useOfferStore()
   const inputs = useOfferStore((s) => s.inputs)
@@ -99,6 +104,11 @@ export default function JobOfferCalculator() {
   const ask = useMemo(
     () => computeAsk(read, { industry: store.industry, geo: store.geo }),
     [read, store.industry, store.geo]
+  )
+
+  const plot = useMemo(
+    () => buildPlot(read, ask, { scenarioId }),
+    [read, ask, scenarioId]
   )
 
   const isAsk = step === OFFER_STEPS.length
@@ -138,6 +148,8 @@ export default function JobOfferCalculator() {
             </p>
 
             <AskLadder ask={ask} suppressCount={justHydrated} />
+
+            <MarketPlot plot={plot} onScenarioChange={setScenarioId} />
 
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <button
