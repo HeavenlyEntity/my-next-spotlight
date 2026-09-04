@@ -17,24 +17,24 @@ They are two framings of one engine, not two engines.
 
 ## Decisions (D1-D16)
 
-| #   | Decision                                                                                                                             | Source                          |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
-| D1  | Full scope in v1: ask ladder + industry + geography + comparison plot. Scope reduction offered and declined.                         | Step 0                          |
-| D2  | Company figures refresh via a **script**, with a visible as-of date and a self-warning banner past six months.                       | Architecture 1                  |
-| D3  | Store **persists by default** (sessionStorage) with a clear button. Desk and equity copy change to "nothing leaves your browser".    | Architecture 2                  |
-| D4  | Cash band bucket comes from **`read.classification.class`**, never the raw joining input.                                            | Architecture 3                  |
-| D5  | The floor's reality check values equity at **zero**. Refined by D10: this is a note, not the floor equation.                         | Architecture 4                  |
-| D6  | The store **subsumes** `handoff.js` storage. `briefForContact()` survives as pure formatting.                                        | Code quality 1                  |
-| D7  | The chart is **hand-built on the desk's figure grammar**, not pulled from PaceUI or React Bits.                                      | Code quality 2                  |
-| D8  | Refresh script gets a **fixture parser test plus live sanity checks** that refuse to write bad data.                                 | Tests 1                         |
-| D9  | Number inputs **commit on blur or Enter**, matching the existing slider convention.                                                  | Performance 1                   |
-| D10 | **Each rung recomputes the equity band at its own cash.** Fixes incoherent pairs and the floor collapse.                             | Outside voice 2                 |
-| D11 | Plot draws **cash bars plus a scenario-driven equity layer**. Rendered for the engineer seat, withheld for the others.               | Outside voice 10, 11            |
-| D12 | **Land the existing work first.** The founders feature is entirely untracked.                                                        | Outside voice 17                |
-| D13 | **Geography is an input** alongside industry, because it moves cash more.                                                            | Outside voice 13                |
-| D14 | Cold start asks the **two classification gates** on step 1.                                                                          | Outside voice 4                 |
-| D15 | Seven mechanical defects folded: field names, shares mode, clear semantics, table shapes, refresh script, storage merge, test paths. | Outside voice 5,7,9,12,14,15,16 |
-| D16 | Cold start also asks the **responsibility chips**; the gates alone leave non-formation paths pending.                                | classify.js:58                  |
+| #   | Decision                                                                                                                                                                                        | Source                          |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| D1  | Full scope in v1: ask ladder + industry + geography + comparison plot. Scope reduction offered and declined.                                                                                    | Step 0                          |
+| D2  | Company figures refresh via a **script**, with a visible as-of date and a self-warning banner past six months. The as-of is the **retrieval date**, never the page's own "Last updated" string. | Architecture 1 + research       |
+| D3  | Store **persists by default** (sessionStorage) with a clear button. Desk and equity copy change to "nothing leaves your browser".                                                               | Architecture 2                  |
+| D4  | Cash band bucket comes from **`read.classification.class`**, never the raw joining input.                                                                                                       | Architecture 3                  |
+| D5  | The floor's reality check values equity at **zero**. Refined by D10: this is a note, not the floor equation.                                                                                    | Architecture 4                  |
+| D6  | The store **subsumes** `handoff.js` storage. `briefForContact()` survives as pure formatting.                                                                                                   | Code quality 1                  |
+| D7  | The chart is **hand-built on the desk's figure grammar**, not pulled from PaceUI or React Bits.                                                                                                 | Code quality 2                  |
+| D8  | Refresh script gets a **fixture parser test plus live sanity checks** that refuse to write bad data.                                                                                            | Tests 1                         |
+| D9  | Number inputs **commit on blur or Enter**, matching the existing slider convention.                                                                                                             | Performance 1                   |
+| D10 | **Each rung recomputes the equity band at its own cash.** Fixes incoherent pairs and the floor collapse.                                                                                        | Outside voice 2                 |
+| D11 | Plot draws **cash bars plus a scenario-driven equity layer**. Renders for engineer (IC ladder) and CTO (leadership ladder); withheld for CEO.                                                   | Outside voice 10, 11 + research |
+| D12 | **Land the existing work first.** The founders feature is entirely untracked.                                                                                                                   | Outside voice 17                |
+| D13 | **Geography is an input** alongside industry, because it moves cash more.                                                                                                                       | Outside voice 13                |
+| D14 | Cold start asks the **two classification gates** on step 1.                                                                                                                                     | Outside voice 4                 |
+| D15 | Seven mechanical defects folded: field names, shares mode, clear semantics, table shapes, refresh script, storage merge, test paths.                                                            | Outside voice 5,7,9,12,14,15,16 |
+| D16 | Cold start also asks the **responsibility chips**; the gates alone leave non-formation paths pending.                                                                                           | classify.js:58                  |
 
 ## The relationship between the two tools
 
