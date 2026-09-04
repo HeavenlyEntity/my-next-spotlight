@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { normalizeInputs, parseNumber } from '../normalize.js'
 import { BOUNDS } from '../bounds.js'
-import { MARKET_SALARY } from '../benchmarks.js'
+import { marketSalaryFor } from '../salary-bands.js'
 
 describe('parseNumber', () => {
   it('parses typed strings and rejects blanks', () => {
@@ -35,7 +35,7 @@ describe('normalizeInputs', () => {
     expect(n.founders).toBe(2)
     expect(n.vestingYears).toBe(4)
     expect(n.cliffMonths).toBe(12)
-    expect(n.marketSalary).toBe(MARKET_SALARY.cto.preseed)
+    expect(n.marketSalary).toBe(marketSalaryFor('cto', 'preseed'))
     expect(n.offeredSalary).toBeNull()
     expect(n.offeredEquityPct).toBeNull()
     expect(n.responsibilities).toEqual([])
@@ -158,7 +158,7 @@ describe('normalizeInputs', () => {
   it('uses the role × stage market salary default', () => {
     expect(
       normalizeInputs({ role: 'engineer', stage: 'seed' }).marketSalary
-    ).toBe(MARKET_SALARY.engineer.seed)
+    ).toBe(marketSalaryFor('engineer', 'seed'))
     expect(normalizeInputs({ marketSalary: 0 }).marketSalary).toBe(0)
     const n = normalizeInputs({ marketSalary: 9e9 })
     expect(n.marketSalary).toBe(2_000_000)

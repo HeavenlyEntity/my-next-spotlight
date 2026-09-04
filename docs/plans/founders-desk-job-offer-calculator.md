@@ -601,7 +601,7 @@ Synthesized from this review's findings. Each derives from a specific finding.
   - Surfaced by: Outside voice 17 — `git ls-files src/components/founders src/lib/founders` returns zero files
   - Files: the whole working tree
   - Verify: `git status` clean; `pnpm test` green on the committed tree
-- [ ] **T1 (P1, human: ~2 days / CC: ~1.5h)** — engine data — Encode `SALARY_BANDS[role][bucket][stage]`, `INDUSTRY[key][role]`, `GEO[key]` with per-row provenance, and make the band's median the engine's single market number (DD4)
+- [x] **T1 (P1, human: ~2 days / CC: ~1.5h)** — DONE 2026-09-04 — engine data — Encode `SALARY_BANDS[role][bucket][stage]`, `INDUSTRY[key][role]`, `GEO[key]` with per-row provenance, and make the band's median the engine's single market number (DD4)
   - Surfaced by: Outside voice 12 — declared shapes cannot express D4 or the seniority curves
   - Files: `src/lib/founders/equity/salary-bands.js`
   - Verify: tests 13, 30e; the equity calculator's existing tests re-verified after the market number changes

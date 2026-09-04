@@ -5,7 +5,6 @@ import {
   EXERCISE_WINDOWS,
   INSTRUMENTS,
   JOINING,
-  MARKET_SALARY,
   OFFER_MODES,
   PATHS,
   REPURCHASE_VESTED,
@@ -13,6 +12,7 @@ import {
   STAGES,
   STAGE_ALIASES,
 } from './benchmarks.js'
+import { marketSalaryFor } from './salary-bands.js'
 
 const ENUM_DEFAULTS = Object.freeze({
   role: 'cto',
@@ -183,7 +183,7 @@ export function normalizeInputs(raw) {
     out[name] = clampNumeric(name, src[name], clamped)
   }
 
-  const marketDefault = MARKET_SALARY[role][stageKey]
+  const marketDefault = marketSalaryFor(role, stageKey)
   const market = parseNumber(src.marketSalary)
   if (market === null) {
     out.marketSalary = marketDefault

@@ -16,12 +16,12 @@ describe('headline and number to say', () => {
     const r = computeRead(EXAMPLE)
     expect(r.offer.position).toBe('below')
     expect(r.brief.headline).toBe(HEADLINES.below)
-    expect(r.offer.numberToSay.value).toBe(11.5)
+    expect(r.offer.numberToSay.value).toBe(12)
     expect(r.offer.numberToSay.sentence).toContain(
-      'sits at 8 to 15 percent fully diluted'
+      'sits at 8.5 to 15.5 percent fully diluted'
     )
     expect(r.offer.numberToSay.sentence).toContain("I'm at 3 percent")
-    expect(r.offer.numberToSay.sentence).toContain('Ask for 11.5')
+    expect(r.offer.numberToSay.sentence).toContain('Ask for 12')
     expect(r.brief.numberToSay).toEqual(r.offer.numberToSay)
   })
 
@@ -51,7 +51,7 @@ describe('headline and number to say', () => {
     expect(r.offer.pct).toBeNull()
     expect(r.offer.position).toBe('unknown')
     expect(r.brief.headline).toBe(
-      'Founding executive work at pre-seed sits at 8 to 15 percent. Enter the offer to see the gap.'
+      'Founding executive work at pre-seed sits at 8.5 to 15.5 percent. Enter the offer to see the gap.'
     )
     expect(r.offer.numberToSay.value).toBeNull()
     expect(r.offer.numberToSay.sentence).not.toContain("I'm at")
@@ -203,7 +203,7 @@ describe('questions and text', () => {
     const t = r.brief.text
     expect(t).toContain("AMWARE // FOUNDERS' DESK")
     expect(t).toContain(r.brief.headline)
-    expect(t).toContain('Range: 8–15%')
+    expect(t).toContain('Range: 8.5–15.5%')
     expect(t).toContain('Offer: 3%')
     expect(t).toContain('Adjustments')
     expect(t).toContain('Banked work')

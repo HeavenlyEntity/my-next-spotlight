@@ -465,26 +465,10 @@ export const SCENARIO_VALUATIONS = Object.freeze({
 })
 
 /* Market salary defaults (USD, US non-Bay-Area hubs). Ravio 2026 / founder-math / Kore1. */
-export const MARKET_SALARY = Object.freeze({
-  cto: Object.freeze({
-    preseed: 120_000,
-    seed: 150_000,
-    series_a: 190_000,
-    series_b_plus: 230_000,
-  }),
-  engineer: Object.freeze({
-    preseed: 110_000,
-    seed: 135_000,
-    series_a: 160_000,
-    series_b_plus: 185_000,
-  }),
-  ceo_builder: Object.freeze({
-    preseed: 100_000,
-    seed: 140_000,
-    series_a: 180_000,
-    series_b_plus: 220_000,
-  }),
-})
+/* MARKET_SALARY moved to salary-bands.js as `marketSalaryFor(role, stage)`,
+   which derives it from the researched hired band so the equity calculator and
+   the job offer calculator can never disagree about what "market" means.
+   Design review DD4, 2026-09-04. */
 
 /*
  * The canonical hero example: a fractional CTO converting at pre-seed, offered
@@ -510,7 +494,9 @@ export const EXAMPLE = Object.freeze({
   hoursPerWeek: 10,
   ratePerHour: 150,
   feesBilled: 52_000,
-  marketSalary: 120_000,
+  /* marketSalary is deliberately absent: it resolves from the researched
+     hired band via marketSalaryFor(), so the example can never drift from the
+     data the rest of the desk cites. Design review DD4. */
   offeredSalary: 120_000,
   offerMode: 'percent',
   offeredEquityPct: 3,

@@ -35,7 +35,7 @@ describe('briefForContact', () => {
     expect(message).toContain('Stage (last closed round): pre-seed')
     expect(message).toContain('Offered equity: 3% fully diluted')
     expect(message).toContain(
-      'Salary vs market: $90k offered vs $120k market ($30k below)'
+      'Salary vs market: $90k offered vs $143k market ($53k below)'
     )
     expect(message).toContain('Company’s stated exit path: IPO')
     expect(message).toMatch(

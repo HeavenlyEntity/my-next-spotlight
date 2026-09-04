@@ -204,7 +204,7 @@ describe('offer resolution', () => {
   })
 
   it('reports the gap in points only when below', () => {
-    expect(computeRead(EXAMPLE).offer.gapPts).toEqual([5, 12])
+    expect(computeRead(EXAMPLE).offer.gapPts).toEqual([5.5, 12.5])
     expect(
       computeRead({ ...EXAMPLE, offeredEquityPct: 9 }).offer.gapPts
     ).toBeNull()
@@ -222,20 +222,22 @@ describe('EXAMPLE_READ', () => {
       hi: 15,
       confidence: 'sourced',
     })
-    expect(EXAMPLE_READ.adjustments.total).toBe(0)
+    /* The example's $120k against a $143k market is a real pay cut, which is
+       what the founder discount is: taking a founder's salary earns equity. */
+    expect(EXAMPLE_READ.adjustments.total).toBe(0.69)
     expect(EXAMPLE_READ.offer).toMatchObject({
       pct: 3,
       mode: 'percent',
       position: 'below',
     })
     expect(EXAMPLE_READ.offer.range).toEqual({
-      lo: 8,
-      hi: 15,
+      lo: 8.5,
+      hi: 15.5,
       grain: 0.5,
-      mid: 11.5,
+      mid: 12,
     })
-    expect(EXAMPLE_READ.offer.gapPts).toEqual([5, 12])
-    expect(EXAMPLE_READ.offer.numberToSay.value).toBe(11.5)
+    expect(EXAMPLE_READ.offer.gapPts).toEqual([5.5, 12.5])
+    expect(EXAMPLE_READ.offer.numberToSay.value).toBe(12)
     expect(EXAMPLE_READ.preselectedPath).toBe('ipo')
     expect(Object.isFrozen(EXAMPLE_READ)).toBe(true)
   })
@@ -293,8 +295,11 @@ describe('adjustments and rounds through the engine', () => {
     expect(none.adjustments.salary.applied).toBe(false)
     const zero = computeRead({ ...EXAMPLE, offeredSalary: 0 })
     expect(zero.adjustments.salary.applied).toBe(true)
-    expect(zero.adjustments.salary.pts).toBe(3.6)
-    expect(zero.offer.range.lo).toBe(11.5)
+    /* $0 against a $143k market exceeds the +4 salary cap, so this also
+       exercises the clamp. */
+    expect(zero.adjustments.salary.pts).toBe(4)
+    expect(zero.adjustments.salary.capped).toBe(true)
+    expect(zero.offer.range.lo).toBe(12)
   })
 
   it('preselects acquisition when the path is unknown and still computes all paths', () => {
