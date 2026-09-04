@@ -633,7 +633,8 @@ Synthesized from this review's findings. Each derives from a specific finding.
   - Files: `src/lib/founders/handoff.js`, `src/components/founders/ladder/`
   - Includes: cash and equity, one defensibility line each with its source, the as-of date; reuses the existing clipboard fallback
   - Verify: test 30g
-- [ ] **T7 (P2, human: ~4h / CC: ~20min)** — copy + registry — Privacy copy on both pages, registry entry, both CTAs
+- [x] **T7 (P2, human: ~4h / CC: ~20min)** — DONE 2026-09-04 — copy + registry — Privacy copy on both pages, registry entry, both CTAs
+  - Note: the hand-off back to the equity read needed the read side of the store built. The equity wizard was write-only, so "See how the equity band was sized" would have landed on an empty form. It now seeds from the store on hydration, behind the same DD5 gate, and carries its own clear button so its privacy claim is keepable without leaving the page.
   - Surfaced by: Architecture 2, open question O1
   - Files: `tools.js`, `founders/page.jsx`, `founders/equity/page.jsx`, `verdict.jsx`
   - Verify: registry test asserts every live tool has a route
@@ -654,7 +655,7 @@ Synthesized from this review's findings. Each derives from a specific finding.
 ## Open question
 
 - ~~**O1 Registry slot.**~~ RESOLVED at T5: the job offer calculator absorbed the "Salary / equity" soon-slot, since the ask ladder is that trade priced at both ends. The desk now lists two live tools.
-- **O1 (original text) Registry slot.** Does this absorb the "Salary / equity" coming-soon entry, take a new slot, or do the pair get renamed as two reads? Cosmetic, decidable at T7.
+- ~~**O1 (original text) Registry slot.**~~ CLOSED at T7: the T5 answer stands. The job offer calculator absorbed the "Salary / equity" slot; the pair keep their own names, and the desk landing gained the second tool as one quiet line rather than a second CTA.
 
 ## GSTACK REVIEW REPORT
 

@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react'
 import { Verdict } from '../results/verdict'
 import { computeRead } from '@/lib/founders/equity/engine'
 import { EXAMPLE } from '@/lib/founders/equity/benchmarks'
+import { ASK_HREF } from '@/lib/founders/tools'
 
 const cases = [
   {
@@ -55,4 +56,15 @@ describe('Verdict headline', () => {
       ).toHaveAttribute('href', '/contact/offer-review')
     })
   }
+})
+
+describe('the hand-off to the ask (T7)', () => {
+  it('offers the next question as a link, never as a second button', () => {
+    render(<Verdict read={computeRead(EXAMPLE)} />)
+    const handoff = screen.getByRole('link', { name: /turn this into an ask/i })
+    expect(handoff).toHaveAttribute('href', ASK_HREF)
+    /* One primary. Two buttons side by side is a tool menu, and the reader has
+       to choose before they know what either does. */
+    expect(handoff.className).not.toMatch(/bg-\[var\(--amw-accent\)\]/)
+  })
 })

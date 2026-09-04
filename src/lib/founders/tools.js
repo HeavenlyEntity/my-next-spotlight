@@ -57,6 +57,13 @@ export const DESK_HREF = '/founders'
 
 export const REVIEW_HREF = '/contact/offer-review'
 
+/* The two tool routes, named, because the hand-off links between them live in
+   components that should not be reaching into the TOOLS array by index. Both
+   are asserted against the registry by the registries test. */
+export const ASK_HREF = '/founders/job-offer'
+
+export const EQUITY_HREF = '/founders/equity'
+
 export const liveTools = () => TOOLS.filter((tool) => tool.status === 'live')
 
 export const soonTools = () => TOOLS.filter((tool) => tool.status === 'soon')

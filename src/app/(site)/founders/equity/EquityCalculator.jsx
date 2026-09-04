@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useReducer } from 'react'
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 
 import { DeskEyebrow } from '@/components/founders/desk-eyebrow'
 import { WizardShell } from '@/components/founders/wizard-shell'
@@ -16,14 +16,27 @@ import { SalaryAndOffer } from '@/components/founders/steps/salary-and-offer'
 import { ResultsScreen } from '@/components/founders/results/results-screen'
 import { CLASS_LABELS } from '@/components/founders/format'
 import { trackCompleted, trackStep } from '@/components/founders/analytics'
-import { ENGINE_KEYS, useOfferStore } from '@/lib/founders/offer-store'
+import {
+  ENGINE_KEYS,
+  hasHydrated,
+  onHydrated,
+  useOfferStore,
+} from '@/lib/founders/offer-store'
 import { computeRead } from '@/lib/founders/equity/engine'
 import { STEPS } from '@/lib/founders/steps'
 
 /* One reducer holds the inputs, the step, and the "show the math"
    overrides; `computeRead` derives everything else on every change and
-   feeds the rail, the announcer, the steps' hints, and the results. No
-   persistence, no URL state: reload resets, by design. */
+   feeds the rail, the announcer, the steps' hints, and the results.
+
+   THE REDUCER IS LOCAL, THE SHARED FIELDS ARE NOT. This page used to reset on
+   reload by design. Decision D3 changed that: the shared store persists to
+   sessionStorage, so answers survive a reload and cross to the job offer
+   calculator. The traffic runs both ways now. Out: the effect below, once the
+   user has touched something. In: `seed`, once, on hydration, so the "See how
+   the equity band was sized" hand-off lands on the user's own answers instead
+   of an empty wizard. Only ENGINE_KEYS cross; the step, the overrides and the
+   fractional sliders stay here. */
 
 const INITIAL_INPUTS = {
   role: 'cto',
@@ -65,6 +78,16 @@ const INITIAL_STATE = {
 
 function reducer(state, action) {
   switch (action.type) {
+    /* Answers arriving from the shared store on hydration. Deliberately does
+       NOT set `touched`: these values arrived, the user did not type them, and
+       marking them touched would arm the live announcer and start the
+       write-back effect against a store that already holds them. */
+    case 'seed':
+      return { ...state, inputs: { ...state.inputs, ...action.patch } }
+    /* Back to a blank wizard. The caller empties the shared store first; this
+       drops the local half, which the store never held. */
+    case 'reset':
+      return { ...INITIAL_STATE }
     case 'change': {
       const patch = { ...action.patch }
       /* A role switch invalidates the role-specific chips. */
@@ -118,9 +141,71 @@ function reducer(state, action) {
   }
 }
 
+/* The wizard card's geometry, held while persisted answers land, so a chip row
+   never flips under someone a beat after it renders. */
+function WizardSkeleton() {
+  return (
+    <div
+      aria-hidden="true"
+      className="lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-8"
+    >
+      <div className="bg-[var(--amw-muted)] animate-pulse rounded-2xl p-6 md:p-8">
+        <div className="bg-[var(--amw-card)] h-3 w-28 rounded" />
+        <div className="bg-[var(--amw-card)] mt-5 h-8 w-3/4 rounded-md" />
+        <div className="bg-[var(--amw-card)] mt-4 h-4 w-full max-w-lg rounded" />
+        <div className="mt-10 space-y-6">
+          {[0, 1, 2].map((i) => (
+            <div key={i}>
+              <div className="bg-[var(--amw-card)] h-3 w-32 rounded" />
+              <div className="bg-[var(--amw-card)] mt-3 h-11 w-full rounded-md" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="hidden lg:block" />
+    </div>
+  )
+}
+
 export default function EquityCalculator() {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
   const { step, inputs, overrides, touched } = state
+  /* `persist` hydrates after mount, so the first paint is always this
+     wizard's own defaults. Gate on this rather than letting a chip row flip
+     under the user a beat after it renders (design review DD5). */
+  const [hydrated, setHydrated] = useState(() => hasHydrated())
+  /* Read inside a one-shot effect, so it must be a ref rather than a dep. */
+  const touchedRef = useRef(touched)
+  touchedRef.current = touched
+
+  /* Pull the shared fields in, once, when persisted state lands. Guarded on
+     `isPristine()` so an untouched store never overwrites this wizard's own
+     defaults with the same values under a different name, and on `touched` so
+     it can never land on top of something the user is part-way through
+     typing. */
+  useEffect(() => {
+    const take = () => {
+      const store = useOfferStore.getState()
+      if (store.isPristine()) return
+      const patch = {}
+      for (const key of ENGINE_KEYS) {
+        if (key in INITIAL_INPUTS) patch[key] = store[key]
+      }
+      dispatch({ type: 'seed', patch })
+    }
+    if (hasHydrated()) {
+      if (!touchedRef.current) take()
+      setHydrated(true)
+      return undefined
+    }
+    return onHydrated(() => {
+      if (!touchedRef.current) take()
+      setHydrated(true)
+    })
+    /* Once, on hydration. Re-running on every input change would fight the
+       user's own edits with the store's copy of them. */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   /* Push the shared fields into the store so the job offer calculator and the
      contact form see the same answers. Only the keys both tools own; the step,
@@ -177,7 +262,9 @@ export default function EquityCalculator() {
             <DeskEyebrow current="equity" className="mb-8" />
           </div>
 
-          {isResults ? (
+          {!hydrated ? (
+            <WizardSkeleton />
+          ) : isResults ? (
             <div>
               <div data-print="hide" className="mb-8">
                 <button
@@ -220,10 +307,28 @@ export default function EquityCalculator() {
               </div>
             </div>
           )}
+
+          {/* Decision D3: the shared answers now persist to sessionStorage, so
+              "nothing stored" would be false. Say the true thing instead, in
+              the same words the job offer calculator uses, and put the control
+              that makes the claim keepable beside it. */}
+          <p className="amw-kicker mt-12" data-print="hide">
+            No account. Nothing leaves your browser.{' '}
+            <button
+              type="button"
+              onClick={() => {
+                useOfferStore.getState().clear()
+                dispatch({ type: 'reset' })
+              }}
+              className="amw-kicker hover:text-[var(--amw-accent-ink)] underline underline-offset-4 transition-colors"
+            >
+              Clear my answers
+            </button>
+          </p>
         </div>
       </section>
 
-      {!isResults && (
+      {hydrated && !isResults && (
         <div className="md:hidden">
           <RailSummaryBar read={read} step={step} />
         </div>

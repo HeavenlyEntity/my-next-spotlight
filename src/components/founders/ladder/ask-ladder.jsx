@@ -1,9 +1,11 @@
 'use client'
 
+import Link from 'next/link'
 import { useReducedMotion } from 'motion/react'
 
 import CountUp from '@/components/react-bits/count-up'
 import { fmtMoney, fmtPct, fmtPts } from '@/components/founders/format'
+import { EQUITY_HREF } from '@/lib/founders/tools'
 import { headlineFor } from './headline'
 
 /*
@@ -204,7 +206,17 @@ export function AskLadder({ ask, suppressCount = false }) {
 
       {/* 3. The trade, then 4. the floor note. */}
       <p className="mt-6 max-w-3xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-        {ask.sentences.trade}
+        {ask.sentences.trade}{' '}
+        {/* The sentence above quotes two bands without saying where they came
+            from, and "where did that come from" is the next thought. It runs
+            off the same store, so the read opens on these answers rather than
+            an empty wizard. */}
+        <Link
+          href={EQUITY_HREF}
+          className="hover:text-[var(--amw-accent-ink)] whitespace-nowrap text-zinc-700 underline underline-offset-4 transition-colors dark:text-zinc-300"
+        >
+          See how the equity band was sized &rarr;
+        </Link>
       </p>
       <p className="border-[var(--amw-line-strong)] mt-4 max-w-3xl border-l-2 pl-4 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
         {ask.sentences.floor}

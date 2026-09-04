@@ -1,8 +1,8 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-import { TOOLS, liveTools, soonTools } from '../tools.js'
+import { ASK_HREF, EQUITY_HREF, TOOLS, liveTools, soonTools } from '../tools.js'
 import { STEPS, pendingAfter } from '../steps.js'
 
 const APP = path.resolve(process.cwd(), 'src/app/(site)')
@@ -24,6 +24,52 @@ describe('tools registry', () => {
     for (const tool of TOOLS) {
       expect(tool.icon).toMatch(/^[A-Z][A-Za-z]+$/)
       expect(tool.blurb.length).toBeGreaterThan(10)
+    }
+  })
+})
+
+describe('the two hand-off routes', () => {
+  it('names routes that are really in the registry as live tools', () => {
+    /* The hand-off links import these rather than reaching into TOOLS by
+       index. If a tool is renamed or unpublished, this fails instead of the
+       link quietly 404ing. */
+    for (const href of [ASK_HREF, EQUITY_HREF]) {
+      const tool = liveTools().find((t) => t.href === href)
+      expect(tool, href).toBeTruthy()
+    }
+  })
+})
+
+describe('privacy copy (decision D3)', () => {
+  /* The shared store persists to sessionStorage now, so "nothing stored" is
+     false wherever it still appears. It was true on three surfaces before the
+     job offer calculator shipped, which is exactly the kind of claim that
+     survives a behaviour change because nobody re-reads marketing copy. */
+  const SURFACES = [
+    'src/app/(site)/founders/page.jsx',
+    'src/app/(site)/founders/equity/page.jsx',
+    'src/app/(site)/founders/equity/EquityCalculator.jsx',
+    'src/app/(site)/founders/job-offer/page.jsx',
+    'src/app/(site)/founders/job-offer/JobOfferCalculator.jsx',
+  ]
+
+  it('never claims nothing is stored', () => {
+    for (const file of SURFACES) {
+      const text = readFileSync(path.resolve(process.cwd(), file), 'utf8')
+      /* The comment explaining why the claim was retired is allowed; the claim
+         itself is not. */
+      const claims = text
+        .split('\n')
+        .filter((line) => /nothing stored/i.test(line))
+        .filter((line) => !/would be false/.test(line))
+      expect(claims, file).toEqual([])
+    }
+  })
+
+  it('says the true thing on every tool surface instead', () => {
+    for (const file of SURFACES) {
+      const text = readFileSync(path.resolve(process.cwd(), file), 'utf8')
+      expect(text, file).toMatch(/leaves your browser/i)
     }
   })
 })

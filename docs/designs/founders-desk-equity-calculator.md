@@ -21,7 +21,7 @@ Technical people who build a company's product routinely accept equity sized for
 ## Status Quo
 
 - "They accept what's offered." No tool. A business co-founder or a lawyer proposes a number and the engineer says yes.
-- Existing calculators (Capbase, Gust, BVJ Consulting, Alumni Founders, MoonshotNX, Valuefy, foundrs) are multi-founder *split* tools: they divide 100% among a team by scoring idea, capital, commitment, expertise, network, and track record. None classify founder vs hire, none price salary against equity, none handle banked part-time work, and none distinguish an IPO path from an acquisition or bootstrapped exit. Only Alumni Founders projects dilution to exit dollars (Carta 2026 medians).
+- Existing calculators (Capbase, Gust, BVJ Consulting, Alumni Founders, MoonshotNX, Valuefy, foundrs) are multi-founder _split_ tools: they divide 100% among a team by scoring idea, capital, commitment, expertise, network, and track record. None classify founder vs hire, none price salary against equity, none handle banked part-time work, and none distinguish an IPO path from an acquisition or bootstrapped exit. Only Alumni Founders projects dilution to exit dollars (Carta 2026 medians).
 - Benchmarks (Ravio, Index Ventures, founder-math, Stock Option Counsel) split the world into "founding CTO" (20–40%) and "hired CTO" (seed 1–5%, Series A 1–3%) with nothing in between. The target user lives in that gap.
 - Conclusion: the tool replaces silence, not a worse tool. Its job is to make an under-sized offer visibly wrong in under a minute.
 
@@ -38,7 +38,7 @@ Technical people who build a company's product routinely accept equity sized for
 - Next.js 15 App Router, React 19, JavaScript (no TS in app code), Tailwind 4, shadcn (`components.json` tsx:false, radix-ui umbrella), `motion/react` only in client components. pnpm.
 - amw design system (`src/styles/storefront.css`): tokens exist only inside `.amw`; portaled content must carry the class.
 - Template grammar from the minimal template: `SectionEyebrow` + Layer headline, `max-w-6xl`, muted `rounded-2xl` panels, fadeInUp on view, chevron CTA.
-- No account, nothing stored, nothing sent (premise P4). No URL-encoded state (an offer pasted into Slack is a privacy foot-gun). No event tracking of calculator inputs in v1; the site-wide Vercel `<Analytics />` and `<SpeedInsights />` in `(site)/layout.tsx` still record a pageview for `/founders/equity`. The results copy promises "Nothing you type leaves your browser" and that must be literally true: no request payload may contain an input.
+- ~~No account, nothing stored, nothing sent (premise P4).~~ **SUPERSEDED 2026-09-04 by decision D3 of the job offer calculator plan**: the shared answers now persist to `sessionStorage` so they survive a reload and cross between the two tools, with a clear button on both. Nothing is _sent_ — that half still holds, and the copy on every surface now says "nothing leaves your browser". No URL-encoded state (an offer pasted into Slack is a privacy foot-gun). No event tracking of calculator inputs in v1; the site-wide Vercel `<Analytics />` and `<SpeedInsights />` in `(site)/layout.tsx` still record a pageview for `/founders/equity`. The results copy promises "Nothing you type leaves your browser" and that must be literally true: no request payload may contain an input.
 - Never run `pnpm build` while the dev server is on; verify with `tsc --noEmit`, per-file `next lint`, prettier.
 - Numbers must cite a source and a "last updated" date. Every result page carries "not legal or financial advice."
 - Nav lives in `src/components/AppHeader.jsx` (`PillNav` items). `PillNav` renders every submenu item as a `<Link>` keyed by `href`, so nothing goes in the dropdown without a real route.
@@ -46,10 +46,10 @@ Technical people who build a company's product routinely accept equity sized for
 
 ## Premises
 
-1. **Single seat, founder-vs-hire first.** The user is one person evaluating one offer, not a team splitting a pie. The first output is the classification (founder / founding executive / hired executive / hire) and the band it implies. *Agreed.*
-2. **Percent range first, exit dollars as scenarios.** *Revised after Codex's challenge.* The headline is a present-day fully diluted ownership range and the gap to the offer, because that is the number the person can defend in the room. Exit value is shown one screen later as conservative / base / upside scenarios under the declared path; the IPO path changes how many dilution rounds sit between today and the exit, which is where "20% at an IPO-bound company is a bigger ask" is made visible.
+1. **Single seat, founder-vs-hire first.** The user is one person evaluating one offer, not a team splitting a pie. The first output is the classification (founder / founding executive / hired executive / hire) and the band it implies. _Agreed._
+2. **Percent range first, exit dollars as scenarios.** _Revised after Codex's challenge._ The headline is a present-day fully diluted ownership range and the gap to the offer, because that is the number the person can defend in the room. Exit value is shown one screen later as conservative / base / upside scenarios under the declared path; the IPO path changes how many dilution rounds sit between today and the exit, which is where "20% at an IPO-bound company is a bigger ask" is made visible.
 3. **Salary and banked work price on the same axis.** The salary cut on conversion and the fractional work already delivered (foregone fees at market rate) both convert into equity points at a stage-specific exchange rate, shown as separate adjustments so the person can negotiate each one.
-4. **Lead magnet: no account, nothing stored.** Runs in the browser, ends with a printable brief and a CTA to have AMWARE review the actual offer.
+4. **Lead magnet: no account, nothing stored.** Runs in the browser, ends with a printable brief and a CTA to have AMWARE review the actual offer. _Amended 2026-09-04 (D3): stored in the tab, never sent. See the Constraints note above._
 
 ## Cross-Model Perspective
 
@@ -65,12 +65,15 @@ Synthesis: agreement on the wedge, the classification, and the prototype shape. 
 ## Approaches Considered
 
 ### Approach A: One-page calculator
+
 Single client route, form plus live results, hard-coded benchmarks, one nav item. Rejected: fifteen inputs on one screen overwhelms the first-time founder, and there is no home for the second tool.
 
 ### Approach C: Offer Grader
+
 Enter the offer plus five yes/no questions, get a letter grade and the one number to say; full calculator behind "show the math." Rejected: a grade can feel glib for a contract decision. What survives is the idea of leading with one sentence; no grade is rendered.
 
 ### Approach B: Founders' Desk product surface (chosen)
+
 A nested route under `(site)` with a desk landing, a guided wizard with a persistent results rail, a pure tested calculation engine, versioned sourced benchmark data, and a printable negotiation brief ending in a pre-filled contact CTA.
 
 ## Recommended Approach
@@ -95,6 +98,7 @@ A nested route under `(site)` with a desk landing, a guided wizard with a persis
 Location: `src/lib/founders/equity/` with `benchmarks.js` (data + sources + `updatedAt`), `classify.js`, `bands.js`, `adjustments.js`, `dilution.js`, `scenarios.js`, `engine.js` (composes), and `__tests__/`. The engine uses relative imports only (no `@/` alias) so vitest needs no alias config, and it never touches the DOM.
 
 **Inputs**
+
 ```
 role: 'cto' | 'engineer' | 'ceo_builder'
 joining: 'formation' | 'fractional_conversion' | 'hired_after'
@@ -106,6 +110,7 @@ comp: { marketSalary, offeredSalary?, offeredEquityPct?, instrument, vestingYear
 ```
 
 **Classification** (`classify.js`)
+
 - Each responsibility chip carries a weight; every role's set sums to 8.5 so the thresholds below apply unchanged. `founderScore` = sum of selected weights.
   - CTO: architecture 1, shipped the MVP 1.5, hired engineers 1, owned the roadmap 1, ran infra and on-call 0.5, investor/tech diligence 1, ops: vendors and contracts 1, personal capital in 1.5.
   - Software engineer: designed the architecture 1.5, shipped the MVP 1.5, owned a product area end to end 1, ran infra and on-call 1, hired or mentored engineers 1, customer-facing support 0.5, ops: vendors and contracts 0.5, personal capital in 1.5.
@@ -117,6 +122,7 @@ comp: { marketSalary, offeredSalary?, offeredEquityPct?, instrument, vestingYear
 **Bands** (`bands.js`; fully diluted percent, `[lo, hi]`; every reachable role × class × stage cell is defined)
 
 Founder (any role, joining = formation):
+
 - `base = 100 / founders`; `lo = base − 15`, `hi = base + 15` for cto and engineer; `lo = base`, `hi = base + 15` for ceo_builder. Clamp both to `[1, 90]`. Values are percentage points.
 - At stages after formation, multiply `lo` and `hi` by the product of `(1 − d)` over rounds already closed: seed → [seed]; series_a → [seed, A]; series_b_plus → [seed, A, B], with `d` from the dilution table below.
 
@@ -143,6 +149,7 @@ Sources per row in `benchmarks.js`: Index Ventures Rewarding Talent, Ravio 2026,
 | ceo_builder | 100k | 140k | 180k | 220k |
 
 **Adjustments** (`adjustments.js`; percentage points, shown separately, added to both `lo` and `hi`; apply to every class including `founder`)
+
 - Exchange rate by stage (`unitDollars → unitPts`): pre-seed $50k → 0.75; seed $50k → 0.5; Series A $100k → 0.75; Series B+ $100k → 0.4. `pts = (dollars / unitDollars) × unitPts`, linear. (Rule of thumb from founder-math: at seed every $50k of salary ≈ 0.5–1% equity.)
 - Banked work: only when `joining === 'fractional_conversion'`, otherwise `bankedPts = 0` (salaried or founder contribution). `banked = max(0, months × 4.33 × hoursPerWeek × ratePerHour − feesBilled)`; `bankedPts = min(5, pts(banked))`.
 - Salary: only when `offeredSalary` is present. `gap = marketSalary − offeredSalary`; `salaryPts = clamp(pts(gap × min(vestingYears, 2)), −2, +4)`.
@@ -150,7 +157,8 @@ Sources per row in `benchmarks.js`: Index Ventures Rewarding Talent, Ravio 2026,
 - Instrument: no math; options vs restricted stock is flagged in the brief as a question to ask (tax and exercise cost).
 
 **Offer read** (`engine.js`)
-- `range = [lo + adj, hi + adj]`, rounded to 0.05 pt when `hi + adj < 2` and to 0.5 pt otherwise, then floored *after* rounding to `[0.05, 0.1]` (14 of the 36 non-founder cells sit below 1%, so a coarse grain would print "0 to 0.5 percent"). The table-driven test asserts `0 < lo < hi` post-rounding for every cell.
+
+- `range = [lo + adj, hi + adj]`, rounded to 0.05 pt when `hi + adj < 2` and to 0.5 pt otherwise, then floored _after_ rounding to `[0.05, 0.1]` (14 of the 36 non-founder cells sit below 1%, so a coarse grain would print "0 to 0.5 percent"). The table-driven test asserts `0 < lo < hi` post-rounding for every cell.
 - `position`: below / within / above when `offeredEquityPct` is present; `unknown` otherwise (gap bar empty, copy "Enter the offer to see the gap").
 - `gapPts = [range.lo − offer, range.hi − offer]` when below.
 - "The number to say": the midpoint of `range` rounded at the same grain as the range, with the range in the sentence. Template: "{Class} {role} work at {stage} sits at {lo} to {hi} percent fully diluted. I'm at {offer}." Ask for the midpoint. With no offer the sentence drops the "I'm at" clause.
@@ -172,6 +180,7 @@ Remaining rounds by stage: idea/pre-seed → [seed, A, B, C, D, IPO]; seed → [
 "Ask sanity" line: the offered percent under acquisition vs IPO, base case, so a 20% ask at an IPO-bound company shows its absolute size.
 
 ### Components and files
+
 - `src/app/(site)/founders/page.jsx` (desk landing, server), `src/app/(site)/founders/equity/page.jsx` (metadata) + `EquityCalculator.jsx` (client).
 - `src/components/founders/desk-sidebar.jsx`, `wizard-shell.jsx` (steps, progress, Motion step transitions honoring reduced motion), `results-rail.jsx` (+ mobile summary bar), `live-announcer.jsx`, `steps/who-you-are.jsx`, `steps/the-work.jsx`, `steps/salary-and-offer.jsx`, `results/read.jsx`, `results/rounds-timeline.jsx`, `results/exit-scenarios.jsx`, `results/show-the-math.jsx`, `results/brief-actions.jsx`.
 - shadcn `slider` added via `pnpm dlx shadcn@latest add slider` and scoped with `amw` like Select; `SliderField` wrapper pairs it with a number input. Chips are `button[aria-pressed]` using `.amw-chip`, with `.amw-chip--accent` as the pressed style (`.amw-chip` alone has no pressed state). Lucide icons for the sidebar marks.
@@ -181,6 +190,7 @@ Remaining rounds by stage: idea/pre-seed → [seed, A, B, C, D, IPO]; seed → [
 - Tests: vitest (new dev dependency) with `"test": "vitest run"` in `package.json` and a minimal `vitest.config.mjs` (node environment, `include: ['src/lib/**/__tests__/**']`). Table-driven tests over role × joining × stage assert every band cell resolves; explicit cases for the fractional-conversion wedge, the below/within/above sentence, formation always classifying as founder, the combined adjustment cap, and IPO vs acquisition round counts per stage.
 
 ### Accessibility and behavior
+
 - Sliders keyboard-operable with `aria-valuetext` in units; the paired number input is the typed override.
 - Live announcements via the hidden announcer only (see rail above).
 - Chips meet 44px targets; step transitions respect `prefers-reduced-motion`.
