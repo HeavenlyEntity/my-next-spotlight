@@ -5,14 +5,16 @@
    ========================================================================= */
 
 .amw {
-  --amw-accent: #0d9488; /* teal-600 — readable on light */
-  --amw-accent-ink: #0f766e;
-  --amw-accent-soft: rgba(13, 148, 136, 0.1);
+  --amw-accent: #14bbac; /* brand teal: fills, edges, markers (7.9:1 under zinc-950 text) */
+  --amw-accent-ink: #0d857a; /* same hue, darkened only to 4.5:1 on white for text */
+  --amw-accent-soft: rgba(20, 187, 172, 0.12);
   --amw-line: rgba(24, 24, 27, 0.1);
   --amw-line-strong: rgba(24, 24, 27, 0.16);
   --amw-grid: rgba(24, 24, 27, 0.045);
   --amw-card: #ffffff;
   --amw-card-2: #fafafa;
+  --amw-muted: #f4f4f5; /* soft section panels (landing) */
+  --amw-page: #ffffff; /* the site's inner page surface */
   --amw-ink: #18181b;
   --amw-mut: #71717a;
   --amw-mono: var(--font-nav-code), ui-monospace, 'SFMono-Regular', monospace;
@@ -27,13 +29,20 @@
   --amw-grid: rgba(255, 255, 255, 0.05);
   --amw-card: #0b0b0f;
   --amw-card-2: #101015;
+  --amw-muted: #101015;
+  --amw-page: #18181b;
   --amw-ink: #f4f4f5;
   --amw-mut: #a1a1aa;
 }
 
 /* ---- forced-dark terminal panel (home hero) ------------------------------ */
-/* Always renders with the dark token set, regardless of site theme. */
-.amw .amw-panel-dark {
+/* Always renders with the dark token set, regardless of site theme.
+   `.amw-panel-invert` (the site menu) is dark on the light site and light on
+   the dark site, so the accent inside it always sits on the surface it was
+   tuned for; its dark-theme half follows below. */
+.amw .amw-panel-dark,
+.amw.amw-panel-dark,
+.amw.amw-panel-invert {
   --amw-accent: #3ce8ce;
   --amw-accent-ink: #5eead4;
   --amw-accent-soft: rgba(60, 232, 206, 0.12);
@@ -42,8 +51,34 @@
   --amw-grid: rgba(255, 255, 255, 0.05);
   --amw-card: #0b0b0f;
   --amw-card-2: #101015;
+  --amw-muted: #101015;
+  --amw-page: #0b0b0f;
   --amw-ink: #f4f4f5;
   --amw-mut: #a1a1aa;
+}
+
+:where(.dark) .amw.amw-panel-invert {
+  --amw-accent: #14bbac;
+  --amw-accent-ink: #0d857a;
+  --amw-accent-soft: rgba(20, 187, 172, 0.12);
+  --amw-line: rgba(24, 24, 27, 0.1);
+  --amw-line-strong: rgba(24, 24, 27, 0.16);
+  --amw-grid: rgba(24, 24, 27, 0.045);
+  --amw-card: #ffffff;
+  --amw-card-2: #fafafa;
+  --amw-muted: #f4f4f5;
+  --amw-page: #ffffff;
+  --amw-ink: #18181b;
+  --amw-mut: #71717a;
+}
+
+/* ---- landing rail: hide the native scrollbar, keep it scrollable -------- */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 /* ---- blueprint grid panel ------------------------------------------------ */
@@ -132,7 +167,8 @@
   line-height: 1;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--amw-accent);
+  /* Ink variant: meets AA at this size in light mode (the raw accent is 2.4:1). */
+  color: var(--amw-accent-ink);
 }
 .amw-kicker {
   font-family: var(--amw-mono);
@@ -147,22 +183,28 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-family: var(--amw-mono);
-  font-size: 0.625rem;
+  font-family: var(--font-geist, var(--font-sans, sans-serif));
+  font-size: 0.75rem;
+  font-weight: 500;
   line-height: 1;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 0.3rem 0.5rem;
+  letter-spacing: 0.01em;
+  padding: 0.35rem 0.7rem;
   border: 1px solid var(--amw-line);
-  border-radius: 0.4rem;
+  border-radius: 999px;
   color: var(--amw-mut);
   background: color-mix(in srgb, var(--amw-card-2) 70%, transparent);
   white-space: nowrap;
 }
 .amw-chip--accent {
-  color: var(--amw-accent);
+  color: var(--amw-accent-ink);
   border-color: color-mix(in srgb, var(--amw-accent) 45%, transparent);
   background: var(--amw-accent-soft);
+}
+
+/* Token-driven keyboard focus for every interactive element in scope. */
+.amw :is(a, button, input):focus-visible {
+  outline: 2px solid var(--amw-accent-ink);
+  outline-offset: 2px;
 }
 .amw-chip--dot::before {
   content: '';
@@ -307,11 +349,19 @@
 }
 
 /* ---- checklist (what's included) ----------------------------------------- */
-.amw-check {
+/* `.amw-service-body` is the rich-text body of a service card: its lists
+   drop the prose bullets and take the same check marks. */
+.amw-service-body :where(ul) {
+  list-style: none;
+  padding-left: 0;
+}
+.amw-check,
+.amw-service-body :where(ul > li) {
   position: relative;
   padding-left: 1.4rem;
 }
-.amw-check::before {
+.amw-check::before,
+.amw-service-body :where(ul > li)::before {
   content: '';
   position: absolute;
   left: 0;
@@ -322,7 +372,8 @@
   background: var(--amw-accent-soft);
   border: 1px solid color-mix(in srgb, var(--amw-accent) 45%, transparent);
 }
-.amw-check::after {
+.amw-check::after,
+.amw-service-body :where(ul > li)::after {
   content: '';
   position: absolute;
   left: 0.27rem;
@@ -334,11 +385,102 @@
   transform: rotate(45deg);
 }
 
+/* ---- creed decode -------------------------------------------------------- */
+.amw-creed-char {
+  display: inline-block;
+  text-align: center;
+}
+.amw-creed-char[data-state='scramble'] {
+  color: var(--amw-mut);
+  opacity: 0.65;
+}
+.amw-creed-char[data-state='lock'] {
+  animation: amw-creed-lock 0.42s ease-out;
+}
+.amw-creed-char[data-initial] {
+  color: var(--amw-accent);
+}
+@keyframes amw-creed-lock {
+  from {
+    opacity: 0.4;
+    text-shadow: 0 0 16px color-mix(in srgb, var(--amw-accent) 55%, transparent);
+  }
+  to {
+    opacity: 1;
+    text-shadow: none;
+  }
+}
+
+/* ---- corner scoop (media cutout) ----------------------------------------- */
+/* Inverted-radius notch: the media corner is scooped back to the card
+   surface, with concave fillets drawn by radial gradients in the same
+   token so both themes stay seamless. */
+.amw-scoop {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  padding: 0.55rem 0 0 0.55rem;
+  background: var(--amw-scoop-bg, var(--amw-card));
+  border-top-left-radius: 1.1rem;
+}
+.amw-scoop::before,
+.amw-scoop::after {
+  content: '';
+  position: absolute;
+  width: 1.1rem;
+  height: 1.1rem;
+  background: radial-gradient(
+    circle 1.1rem at 0 0,
+    transparent calc(1.1rem - 0.5px),
+    var(--amw-scoop-bg, var(--amw-card)) 1.1rem
+  );
+}
+.amw-scoop::before {
+  right: 0;
+  top: -1.1rem;
+}
+.amw-scoop::after {
+  left: -1.1rem;
+  bottom: 0;
+}
+
+/* Mirrored variant: notch in the bottom-LEFT corner. */
+.amw-scoop--bl {
+  right: auto;
+  left: 0;
+  padding: 0.55rem 0.55rem 0 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 1.1rem;
+}
+.amw-scoop--bl::before,
+.amw-scoop--bl::after {
+  background: radial-gradient(
+    circle 1.1rem at 100% 0,
+    transparent calc(1.1rem - 0.5px),
+    var(--amw-scoop-bg, var(--amw-card)) 1.1rem
+  );
+}
+.amw-scoop--bl::before {
+  right: auto;
+  left: 0;
+  top: -1.1rem;
+}
+.amw-scoop--bl::after {
+  left: auto;
+  right: -1.1rem;
+  bottom: 0;
+}
+
 /* ---- accessibility ------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .amw-reveal {
     animation: none;
     opacity: 1;
+  }
+  .amw-creed-char[data-state='lock'] {
+    animation: none;
   }
   .amw-card:hover {
     transform: none;
@@ -350,4 +492,122 @@
   .amw-cursor::after {
     animation: none;
   }
+}
+
+/* ---- creed on the accent footer slab ------------------------------------ */
+/* The accent-coloured initials and muted scramble glyphs vanish against
+   the teal, so the footer variant swaps them for ink tones. */
+.amw-creed--on-accent .amw-creed-char[data-initial] {
+  color: #ffffff;
+}
+.amw-creed--on-accent .amw-creed-char[data-state='scramble'] {
+  color: rgba(9, 9, 11, 0.55);
+}
+.amw-creed--on-accent .amw-creed-char[data-state='lock'] {
+  animation-name: amw-creed-lock-ink;
+}
+@keyframes amw-creed-lock-ink {
+  from {
+    opacity: 0.4;
+    text-shadow: 0 0 16px rgba(255, 255, 255, 0.6);
+  }
+  to {
+    opacity: 1;
+    text-shadow: none;
+  }
+}
+
+/* ---- paper stock (about story deck) --------------------------------------- */
+/* Warm off-white sheet in light mode, charcoal stock in dark; the edge
+   token draws the sheet's thickness along its bottom lip. */
+.amw {
+  --amw-paper: #fbfaf6;
+  --amw-paper-edge: rgba(24, 24, 27, 0.14);
+  --amw-paper-light: rgba(255, 255, 255, 0.75);
+}
+:where(.dark) .amw {
+  --amw-paper: #16161b;
+  --amw-paper-edge: rgba(0, 0, 0, 0.6);
+  --amw-paper-light: rgba(255, 255, 255, 0.06);
+}
+
+/* ---- Founders' Desk ------------------------------------------------------ */
+
+/* Chips as inputs: 44px targets, readable size. Selection is never colour
+   alone; the component adds a check glyph. */
+.amw-chip--input {
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  gap: 0.45rem;
+  cursor: pointer;
+  white-space: normal;
+  text-align: left;
+  transition: border-color 0.2s ease, background-color 0.2s ease,
+    color 0.2s ease;
+}
+.amw-chip--input:hover {
+  border-color: color-mix(in srgb, var(--amw-accent) 45%, transparent);
+}
+
+/* Segmented control: the same chip vocabulary fused into one pill row. */
+.amw-segmented {
+  display: inline-flex;
+  border: 1px solid var(--amw-line-strong);
+  border-radius: 999px;
+  background: var(--amw-card);
+  overflow: hidden;
+}
+.amw-segmented .amw-chip--input {
+  border: 0;
+  border-radius: 0;
+  min-height: 44px;
+}
+.amw-segmented .amw-chip--input + .amw-chip--input {
+  border-left: 1px solid var(--amw-line);
+}
+
+/* Keyboard focus for radio chips and the slider thumb, matching the
+   site-wide focus rule above. */
+.amw :is([role='radio'], [role='slider']):focus-visible {
+  outline: 2px solid var(--amw-accent-ink);
+  outline-offset: 2px;
+}
+
+/* Print sheet for the negotiation brief: always the light token set,
+   chrome hidden, figures and tables kept whole. */
+@media print {
+  .amw,
+  :where(.dark) .amw {
+    --amw-accent: #14bbac;
+    --amw-accent-ink: #0d857a;
+    --amw-accent-soft: rgba(20, 187, 172, 0.12);
+    --amw-line: rgba(24, 24, 27, 0.1);
+    --amw-line-strong: rgba(24, 24, 27, 0.16);
+    --amw-card: #ffffff;
+    --amw-card-2: #fafafa;
+    --amw-muted: #ffffff;
+    --amw-page: #ffffff;
+    --amw-ink: #18181b;
+    --amw-mut: #52525b;
+    color: #18181b;
+    background: #ffffff;
+  }
+  [data-print='hide'] {
+    display: none !important;
+  }
+  .amw-brief {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .amw-brief figure,
+  .amw-brief table {
+    break-inside: avoid;
+  }
+  .amw-print-only {
+    display: block !important;
+  }
+}
+.amw-print-only {
+  display: none;
 }
