@@ -12,7 +12,8 @@
     "generate:importmap": "payload generate:importmap",
     "seed:articles": "tsx --env-file=.env.local scripts/seed-articles.ts",
     "reset:password": "node scripts/reset-user-password.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "refresh:comp": "node scripts/refresh-company-comp.mjs"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {

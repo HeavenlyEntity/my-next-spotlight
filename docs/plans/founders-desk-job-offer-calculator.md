@@ -606,7 +606,7 @@ Synthesized from this review's findings. Each derives from a specific finding.
   - Files: `src/lib/founders/equity/salary-bands.js`
   - Verify: tests 13, 30e; the equity calculator's existing tests re-verified after the market number changes
   - Note: resolve CTO x pre-seed, which is both the store default and a missing row
-- [ ] **T2 (P1, human: ~1 day / CC: ~40min)** — data pipeline — Company comp file plus the refresh script, fixture test and sanity gate
+- [x] **T2 (P1, human: ~1 day / CC: ~40min)** — DONE 2026-09-04 — data pipeline — Company comp file plus the refresh script, fixture test and sanity gate
   - Surfaced by: Architecture 1, Tests 1, Outside voice 14
   - Files: `src/lib/founders/equity/company-comp.js`, `scripts/refresh-company-comp.mjs`
   - Verify: tests 19, 20; run the script against a corrupted fixture and confirm it refuses
