@@ -3,10 +3,10 @@
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 
+import { useOfferStore } from '@/lib/founders/offer-store'
 import { trackCta } from '@/components/founders/analytics'
 import { CLASS_LABELS, fmtPct } from '@/components/founders/format'
 import { REVIEW_HREF } from '@/lib/founders/tools'
-import { briefForContact, stashBrief } from '@/lib/founders/handoff'
 import CountUp from '@/components/react-bits/count-up'
 
 const pct = (v) => `${Number(v.toFixed(1))}%`
@@ -15,6 +15,7 @@ const pct = (v) => `${Number(v.toFixed(1))}%`
    range at display size, the number to say, and the one teal CTA. */
 
 export function Verdict({ read }) {
+  const markAsked = useOfferStore((s) => s.markAsked)
   const { classification, offer, brief, band } = read
   const classLabel = CLASS_LABELS[classification.class] ?? '?'
   const inferred = band.confidence === 'inferred'
@@ -55,7 +56,7 @@ export function Verdict({ read }) {
         <Link
           href={REVIEW_HREF}
           onClick={() => {
-            stashBrief(briefForContact(read))
+            markAsked()
             trackCta()
           }}
           className="bg-[var(--amw-accent)] text-zinc-950 group inline-flex w-full items-center justify-center gap-3 rounded-md py-3 pl-5 pr-3 font-medium no-underline transition-all duration-500 ease-out hover:rounded-[50px] sm:w-auto"

@@ -11,9 +11,9 @@ import { ShowTheMath } from '@/components/founders/results/show-the-math'
 import { BriefActions } from '@/components/founders/results/brief-actions'
 import { IfItEnds } from '@/components/founders/results/if-it-ends'
 import { PATH_LABELS } from '@/components/founders/format'
+import { useOfferStore } from '@/lib/founders/offer-store'
 import { trackCta } from '@/components/founders/analytics'
 import { REVIEW_HREF } from '@/lib/founders/tools'
-import { briefForContact, stashBrief } from '@/lib/founders/handoff'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 
@@ -27,6 +27,7 @@ const PATH_OPTIONS = ['bootstrap', 'acquisition', 'ipo'].map((id) => ({
 }))
 
 export function ResultsScreen({ read, overrides, onOverride }) {
+  const markAsked = useOfferStore((s) => s.markAsked)
   const declared = read.preselectedPath
   const [path, setPath] = useState(declared)
   const [mathOpen, setMathOpen] = useState(false)
@@ -123,7 +124,7 @@ export function ResultsScreen({ read, overrides, onOverride }) {
         <Link
           href={REVIEW_HREF}
           onClick={() => {
-            stashBrief(briefForContact(read))
+            markAsked()
             trackCta()
           }}
           className="bg-[var(--amw-accent)] text-zinc-950 group inline-flex w-full items-center justify-center gap-3 rounded-md py-3 pl-5 pr-3 font-medium no-underline transition-all duration-500 ease-out hover:rounded-[50px] sm:w-auto"

@@ -614,7 +614,7 @@ Synthesized from this review's findings. Each derives from a specific finding.
   - Surfaced by: Outside voice 2 — rung pairs computed from different salary assumptions
   - Files: `src/lib/founders/equity/negotiation.js`
   - Verify: tests 1-16
-- [ ] **T4 (P1, human: ~1 day / CC: ~40min)** — state — Zustand store with engine-matching field names; storage removed from `handoff.js`; contact form reads the store
+- [x] **T4 (P1, human: ~1 day / CC: ~40min)** — DONE 2026-09-04 — state — Zustand store with engine-matching field names; storage removed from `handoff.js`; contact form reads the store
   - Surfaced by: Code quality 1, Outside voice 5, 7, 9, 15
   - Files: `src/lib/founders/offer-store.js`, `handoff.js`, `ContactForm.jsx`, `handoff.test.js`
   - Verify: tests 15, 17, 18, 32, 33
@@ -637,7 +637,7 @@ Synthesized from this review's findings. Each derives from a specific finding.
   - Surfaced by: Architecture 2, open question O1
   - Files: `tools.js`, `founders/page.jsx`, `founders/equity/page.jsx`, `verdict.jsx`
   - Verify: registry test asserts every live tool has a route
-- [ ] **T8 (P2, human: ~30min / CC: ~5min)** — config — Widen the vitest UI project to discover `src/app/**/__tests__/`
+- [x] **T8 (P2, human: ~30min / CC: ~5min)** — DONE 2026-09-04, pulled forward because T4 needed it to test at all — config — Widen the vitest UI project to discover `src/app/**/__tests__/`
   - Surfaced by: Outside voice 16 — `vitest.config.mjs:18`
   - Files: `vitest.config.mjs`
   - Verify: a test placed under `src/app/` runs

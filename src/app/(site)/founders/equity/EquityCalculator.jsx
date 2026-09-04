@@ -16,6 +16,7 @@ import { SalaryAndOffer } from '@/components/founders/steps/salary-and-offer'
 import { ResultsScreen } from '@/components/founders/results/results-screen'
 import { CLASS_LABELS } from '@/components/founders/format'
 import { trackCompleted, trackStep } from '@/components/founders/analytics'
+import { ENGINE_KEYS, useOfferStore } from '@/lib/founders/offer-store'
 import { computeRead } from '@/lib/founders/equity/engine'
 import { STEPS } from '@/lib/founders/steps'
 
@@ -120,6 +121,21 @@ function reducer(state, action) {
 export default function EquityCalculator() {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
   const { step, inputs, overrides, touched } = state
+
+  /* Push the shared fields into the store so the job offer calculator and the
+     contact form see the same answers. Only the keys both tools own; the step,
+     the overrides and the fractional sliders stay local. Nothing is written
+     until the user has actually touched something, so landing on the wizard
+     and leaving cannot resurrect defaults over a store the user just cleared
+     (design review D6, D15 #9). */
+  useEffect(() => {
+    if (!touched) return
+    const patch = {}
+    for (const key of ENGINE_KEYS) {
+      if (key in inputs) patch[key] = inputs[key]
+    }
+    useOfferStore.getState().set(patch)
+  }, [inputs, touched])
 
   const read = useMemo(
     () => computeRead(inputs, { valuations: overrides.valuations }),

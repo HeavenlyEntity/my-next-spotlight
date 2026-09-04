@@ -7,7 +7,13 @@ import { ChevronRight, Clock, MapPin, MessageSquare } from 'lucide-react'
 import { motion } from 'motion/react'
 import { GitHubIcon, LinkedInIcon, TwitterIcon } from '@/components/SocialIcons'
 import { SectionEyebrow } from '@/components/landing/section-eyebrow'
-import { takeBrief } from '@/lib/founders/handoff'
+import { briefForContact } from '@/lib/founders/handoff'
+import { computeRead } from '@/lib/founders/equity/engine'
+import {
+  hasHydrated,
+  onHydrated,
+  useOfferStore,
+} from '@/lib/founders/offer-store'
 
 /* Contact page in the "minimal" landing template's grammar: a centred
    section header, soft muted panels, template-style inputs, and the
@@ -120,7 +126,7 @@ const TOPICS = {
       '',
       'What I want help with: ',
     ].join('\n'),
-    ack: 'Prefilled from your read, on this device only. Edit anything before you send.',
+    ack: 'Prefilled from your read. Your answers stay in this browser. Edit anything before you send.',
   },
 }
 
@@ -133,13 +139,29 @@ export default function ContactForm({ topic = 'default' }) {
   /* The calculator's CTA stashes a filled brief for this device only;
      take it once so the form arrives with the values, never a blank
      template. A plain visit keeps the template with blanks. */
+  /* Prefill from the shared store rather than a second stash of the same data
+     (design review D6). `askedAt` is the intent signal: it is set when the user
+     clicks a review CTA, so typing this URL directly still gets an empty form.
+     The store persists to sessionStorage and hydrates after mount, so wait for
+     that rather than reading defaults on the first paint. */
   useEffect(() => {
-    if (topic !== 'offer-review') return
-    const handoff = takeBrief()
-    if (handoff) {
-      setSubject(handoff.subject)
-      setMessage(handoff.message)
+    if (topic !== 'offer-review') return undefined
+    const fill = () => {
+      const s = useOfferStore.getState()
+      if (!s.askedAt) return
+      try {
+        const filled = briefForContact(computeRead(s.inputs()))
+        setSubject(filled.subject)
+        setMessage(filled.message)
+      } catch {
+        /* leave the template in place rather than clearing what they can see */
+      }
     }
+    if (hasHydrated()) {
+      fill()
+      return undefined
+    }
+    return onHydrated(fill)
   }, [topic])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)

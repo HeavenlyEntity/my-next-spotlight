@@ -1,14 +1,15 @@
 import { LABELS } from './equity/benchmarks.js'
 import { fmtMoney, fmtPct } from './equity/brief.js'
 
-/* One-shot handoff from the calculator's results screen to the contact
-   form. The filled brief lives in memory for the client-side navigation
-   and, as a fallback for a full page load, in sessionStorage on this
-   device only. The contact form takes it once and clears both. Nothing
-   goes into a URL and nothing leaves the browser. */
-
-const KEY = 'amw:offer-review'
-let memory = null
+/* Formatting only.
+ *
+ * This used to own a second sessionStorage key ('amw:offer-review') alongside
+ * the shared store's 'amw:offer'. Two mechanisms holding the same six fields,
+ * under names one character apart, is how a tool starts showing one number on
+ * one page and a different number on the next. The store is now the single
+ * source of truth for the user's answers; this file just turns a read into the
+ * text of a message (design review D6).
+ */
 
 /**
  * Build the subject and the filled message for the contact form from a
@@ -75,36 +76,4 @@ export function briefForContact(read) {
     }`,
     message: lines.join('\n'),
   }
-}
-
-/**
- * Stash the filled brief for the contact form.
- * @param {{ subject: string, message: string }} payload
- */
-export function stashBrief(payload) {
-  memory = payload
-  try {
-    window.sessionStorage.setItem(KEY, JSON.stringify(payload))
-  } catch {
-    /* storage may be unavailable; memory still carries the client-side navigation */
-  }
-}
-
-/**
- * Take the stashed brief once, clearing memory and storage.
- * @returns {{ subject: string, message: string }|null}
- */
-export function takeBrief() {
-  let payload = memory
-  memory = null
-  try {
-    if (!payload) {
-      const raw = window.sessionStorage.getItem(KEY)
-      if (raw) payload = JSON.parse(raw)
-    }
-    window.sessionStorage.removeItem(KEY)
-  } catch {
-    /* ignore */
-  }
-  return payload && typeof payload.message === 'string' ? payload : null
 }
