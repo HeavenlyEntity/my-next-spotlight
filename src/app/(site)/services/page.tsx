@@ -1,4 +1,5 @@
 import { Container } from '@/components/Container'
+import { RichText } from '@/components/site/RichText'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import {
   StoreHero,
@@ -44,9 +45,16 @@ export default async function ServicesPage() {
         {docs.length === 0 ? (
           <StoreEmpty label="services" />
         ) : (
-          <ul className="mt-10 grid grid-cols-1 gap-5 sm:mt-12 lg:grid-cols-2">
+          <ul className="mt-10 grid grid-cols-1 items-start gap-6 sm:mt-12 md:grid-cols-2 md:gap-8">
             {docs.map((service, i) => (
-              <ServiceCard key={service.id} service={service} index={i} />
+              <ServiceCard
+                key={service.id}
+                service={service}
+                index={i}
+                description={
+                  <RichText data={service.description} className="prose-sm" />
+                }
+              />
             ))}
           </ul>
         )}

@@ -44,7 +44,7 @@ export default async function CoursesPage() {
         {docs.length === 0 ? (
           <StoreEmpty label="courses" />
         ) : (
-          <ul className="mt-10 grid grid-cols-1 gap-5 sm:mt-12 sm:grid-cols-2">
+          <ul className="mt-10 grid grid-cols-1 gap-4 sm:mt-12 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
             {docs.map((course, i) => (
               <CourseCard key={course.id} course={course} index={i} />
             ))}

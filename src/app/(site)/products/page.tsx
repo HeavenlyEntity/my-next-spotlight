@@ -45,7 +45,7 @@ export default async function ProductsPage() {
         {docs.length === 0 ? (
           <StoreEmpty label="products" />
         ) : (
-          <ul className="mt-10 grid grid-cols-1 gap-5 sm:mt-12 sm:grid-cols-2">
+          <ul className="mt-10 grid grid-cols-1 gap-6 sm:mt-12 md:gap-8">
             {docs.map((product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
             ))}
