@@ -610,7 +610,7 @@ Synthesized from this review's findings. Each derives from a specific finding.
   - Surfaced by: Architecture 1, Tests 1, Outside voice 14
   - Files: `src/lib/founders/equity/company-comp.js`, `scripts/refresh-company-comp.mjs`
   - Verify: tests 19, 20; run the script against a corrupted fixture and confirm it refuses
-- [ ] **T3 (P1, human: ~1.5 days / CC: ~1h)** — engine — `computeAsk` with per-rung recomputation
+- [x] **T3 (P1, human: ~1.5 days / CC: ~1h)** — DONE 2026-09-04 — engine — `computeAsk` with per-rung recomputation
   - Surfaced by: Outside voice 2 — rung pairs computed from different salary assumptions
   - Files: `src/lib/founders/equity/negotiation.js`
   - Verify: tests 1-16
