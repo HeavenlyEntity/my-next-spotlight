@@ -41,20 +41,13 @@
 **Priority:** P2
 **Depends on:** a budget decision. Nothing technical.
 
-### Keep the desk landing a hero, not a menu, with two live tools
+### ~~Keep the desk landing a hero, not a menu, with two live tools~~ DONE 2026-09-04
 
-**What:** Re-compose `/founders` for two live tools. Today it is a single-tool hero: eyebrow, hook headline, one CTA, the example figure, and a dimmed line of coming tools. The job offer calculator makes it two, and decision D3 also changes its privacy sentence from "No account, nothing stored" to "nothing leaves your browser".
+**Done:** the landing was recomposed for two live tools without becoming a menu. The hero shape, the headline and the single primary CTA are unchanged. What changed: the sentence promises both tools; the anchor panel now holds both of the desk's outputs for the same canonical example (the equity gap, then the ask it supports, computed on the server from `computeAsk(EXAMPLE_READ)` so the landing ships no negotiation code and the figures cannot drift); the inventory line names both live tools alongside the coming ones; the benchmarks line cites the cash source now that cash figures appear above it.
 
-**Why:** that page scored 9/10 in its own design review, and its very first decision was a hero composition rather than a tool menu. Both outside voices had hard-rejected the menu version. The obvious way to add a second tool is a second CTA, and two CTAs is a menu. This entry exists so nobody undoes that decision by accident.
+**Guarded by:** `src/app/(site)/founders/__tests__/desk-landing.test.jsx` asserts exactly one primary action, one panel, the second tool as a link rather than a rival button, and no accent fill on the example ladder.
 
-**Pros:** protects a reviewed page from regressing as the desk grows.
-**Cons:** the page is short and the fix may be one line in the registry.
-
-**Context:** the desk landing and its soon-tools line are driven by `src/lib/founders/tools.js`. The original rationale is in the equity calculator plan's design specification, decision 1A: one first-viewport composition, one primary CTA, the `GapFigure` example as the anchor. Whatever replaces it must still answer "what is this desk for" before "which tool do you want".
-
-**Effort:** S
-**Priority:** P2
-**Depends on:** T7 of the job offer calculator plan, which already touches that page for the registry entry and the privacy copy.
+**Also fixed in passing:** `GapFigure` centred all four labels on one row, so the landing's own example (offered 3% against a band opening at 8.5%) rendered as "offered 3%.5%" at 375px. The offer label now has its own row. Regression test in `src/components/founders/__tests__/gap-figure.test.jsx`.
 
 ### PDF attachment on the contact form for the printed brief
 

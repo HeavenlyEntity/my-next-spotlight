@@ -10,7 +10,14 @@ import { motion, useInView, useReducedMotion } from 'motion/react'
    Motion (optional): the marker springs in from the axis' left edge when
    the figure enters view, then the gap callout fades in. Under reduced
    motion everything renders at rest. Scale and whitespace carry the
-   hierarchy; there are no shadows. Prints in monochrome via tokens. */
+   hierarchy; there are no shadows. Prints in monochrome via tokens.
+
+   THE OFFER LABEL SITS ON ITS OWN ROW. All four labels are centred on their
+   own value, so whenever the offer lands near a band edge they overlap: the
+   landing's own example (offered 3% against a band opening at 8.5%) collided
+   into "offered 3%.5%" at 375px. Giving the offer its own row fixes it at
+   every width without measuring anything, and the marker line already ties
+   the label to its position. */
 
 const pct = (value, max) => `${Math.min(Math.max(value / max, 0), 1) * 100}%`
 
@@ -107,7 +114,7 @@ export function GapFigure({
         {hasOffer && (
           <span
             aria-hidden="true"
-            className="amw-mono absolute top-full mt-1.5 -translate-x-1/2 whitespace-nowrap text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-50"
+            className="amw-mono absolute top-full mt-7 -translate-x-1/2 whitespace-nowrap text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-50"
             style={{ left: pct(offer, axisMax) }}
           >
             offered {offer}%
@@ -116,7 +123,9 @@ export function GapFigure({
       </div>
       {callout && (
         <motion.p
-          className="mt-9 text-base font-semibold text-zinc-900 dark:text-zinc-50"
+          className={`${
+            hasOffer ? 'mt-16' : 'mt-9'
+          } text-base font-semibold text-zinc-900 dark:text-zinc-50`}
           initial={shouldAnimate ? { opacity: 0 } : false}
           animate={shouldAnimate && !inView ? { opacity: 0 } : { opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.7 }}

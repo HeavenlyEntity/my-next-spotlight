@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from 'motion/react'
 
+import { ExampleLadder } from '@/components/founders/example-ladder'
 import { GapFigure } from '@/components/founders/gap-figure'
 import { EXAMPLE_READ } from '@/lib/founders/equity/engine'
 import { SOURCES } from '@/lib/founders/equity/benchmarks'
@@ -9,13 +10,24 @@ import { SOURCES } from '@/lib/founders/equity/benchmarks'
 const LANDING_SOURCES = ['carta', 'index', 'yc']
 
 /* The landing's composition: the heading block (server-rendered children)
-   fades up on mount, and under it the example gap figure with its marker
-   springing into the band. The figure reads the canonical example from
-   the engine so the hero can never disagree with the results screen. */
+   fades up on mount, and under it ONE anchor panel holding both of the desk's
+   outputs for the same canonical example: the equity gap, then the ask that
+   gap supports. The figure reads the example from the engine and the rungs
+   arrive as plain data computed in the page, so the hero can never disagree
+   with either tool it advertises.
+
+   TWO FIGURES, ONE PANEL. Two panels would read as two products; the desk is
+   one path with two stops. The hairline between them is the join, not a
+   border around a card. */
 
 const easeOut = [0.16, 1, 0.3, 1]
 
-export function DeskHero({ children }) {
+export function DeskHero({
+  children,
+  ladder = null,
+  ladderNote = null,
+  cashSource = null,
+}) {
   const reduce = useReducedMotion()
   const read = EXAMPLE_READ
   const lo = read.offer.range.lo
@@ -45,7 +57,12 @@ export function DeskHero({ children }) {
           callout={callout}
           animate
         />
-        <p className="amw-kicker mt-6 text-zinc-500 dark:text-zinc-400">
+        {ladder && (
+          <div className="border-[var(--amw-line)] mt-8 border-t pt-8">
+            <ExampleLadder rungs={ladder} note={ladderNote} />
+          </div>
+        )}
+        <p className="amw-kicker mt-8 text-zinc-500 dark:text-zinc-400">
           Benchmarks:{' '}
           {LANDING_SOURCES.map((id, i) => {
             const s = SOURCES.find((x) => x.id === id)
@@ -65,6 +82,7 @@ export function DeskHero({ children }) {
               </span>
             )
           })}
+          {cashSource && ` · ${cashSource}`}
         </p>
       </div>
     </div>
