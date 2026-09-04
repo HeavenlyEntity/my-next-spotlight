@@ -22,6 +22,12 @@
     "hooks": "@/hooks"
   },
   "registries": {
+    "@paceui": {
+      "url": "https://paceui.com/r/{name}.json",
+      "headers": {
+        "Authorization": "Bearer ${PACEUI_API_KEY}"
+      }
+    },
     "@reactbits-starter": {
       "url": "https://pro.reactbits.dev/api/r/starter/{name}.json",
       "headers": {
