@@ -312,6 +312,10 @@ function buildAsk(read, options) {
     offer,
     bands: Object.freeze({
       cash: cashBand,
+      /* The keys travel with the multipliers so a consumer can name the
+         adjustment in words instead of printing a bare 1.1. */
+      industryKey: industry,
+      geoKey,
       industry: mult.industry,
       geo: mult.geo,
       combined: mult.combined,

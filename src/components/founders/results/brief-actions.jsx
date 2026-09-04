@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-
-import { trackCopied, trackPrinted } from '@/components/founders/analytics'
+import { trackPrinted } from '@/components/founders/analytics'
+import { useClipboard } from '@/components/founders/use-clipboard'
 
 /* Quiet utilities under the consequences: Print, Copy brief, Show the
    math. Copy shows "Copied" for two seconds; when the clipboard is
@@ -10,32 +9,7 @@ import { trackCopied, trackPrinted } from '@/components/founders/analytics'
    brief selected appears instead of a dead button. */
 
 export function BriefActions({ text, mathOpen, onToggleMath }) {
-  const [state, setState] = useState('idle')
-  const areaRef = useRef(null)
-
-  useEffect(() => {
-    if (state !== 'copied') return
-    const timer = setTimeout(() => setState('idle'), 2000)
-    return () => clearTimeout(timer)
-  }, [state])
-
-  useEffect(() => {
-    if (state === 'fallback') {
-      areaRef.current?.focus()
-      areaRef.current?.select()
-    }
-  }, [state])
-
-  async function copy() {
-    try {
-      if (!navigator.clipboard?.writeText) throw new Error('no clipboard')
-      await navigator.clipboard.writeText(text)
-      setState('copied')
-      trackCopied()
-    } catch {
-      setState('fallback')
-    }
-  }
+  const { state, areaRef, copy } = useClipboard()
 
   function print() {
     trackPrinted()
@@ -53,7 +27,7 @@ export function BriefActions({ text, mathOpen, onToggleMath }) {
         </button>
         <button
           type="button"
-          onClick={copy}
+          onClick={() => copy(text)}
           className={link}
           aria-live="polite"
         >

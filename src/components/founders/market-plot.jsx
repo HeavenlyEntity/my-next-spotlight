@@ -50,7 +50,7 @@ function Row({ row, domain, isUser, open, onToggle, panelId }) {
 
   return (
     <li
-      className={`border-[var(--amw-line)] border-b last:border-b-0 ${
+      className={`amw-plot-row border-[var(--amw-line)] border-b last:border-b-0 ${
         isUser ? 'bg-[var(--amw-accent-soft)]' : ''
       }`}
     >

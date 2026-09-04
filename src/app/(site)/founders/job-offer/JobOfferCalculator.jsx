@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { DeskEyebrow } from '@/components/founders/desk-eyebrow'
 import { WizardShell } from '@/components/founders/wizard-shell'
+import { AskActions } from '@/components/founders/ladder/ask-actions'
 import { AskLadder } from '@/components/founders/ladder/ask-ladder'
 import { MarketPlot } from '@/components/founders/market-plot'
 import {
@@ -149,27 +150,19 @@ export default function JobOfferCalculator() {
 
             <AskLadder ask={ask} suppressCount={justHydrated} />
 
-            <MarketPlot plot={plot} onScenarioChange={setScenarioId} />
+            {/* Actions before the plot, not after it. The plot is evidence the
+                reader may or may not scroll to; the action on the ask cannot
+                sit below it (design review DD3, screen order). */}
+            <AskActions
+              ask={ask}
+              onEdit={() => setStep(1)}
+              onClear={() => {
+                clear()
+                setStep(1)
+              }}
+            />
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="border-[var(--amw-line-strong)] bg-[var(--amw-card)] min-h-11 hover:border-[var(--amw-accent-ink)] inline-flex items-center rounded-md border px-4 text-sm font-medium text-zinc-800 transition-colors dark:text-zinc-200"
-              >
-                Edit answers
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  clear()
-                  setStep(1)
-                }}
-                className="hover:text-[var(--amw-accent-ink)] text-sm text-zinc-600 underline underline-offset-4 transition-colors dark:text-zinc-400"
-              >
-                Clear my answers
-              </button>
-            </div>
+            <MarketPlot plot={plot} onScenarioChange={setScenarioId} />
           </>
         ) : (
           <WizardShell

@@ -78,21 +78,38 @@ export const offerPendingAfter = (currentIndex) =>
   OFFER_STEPS.filter((step) => step.index > currentIndex && step.pending)
 
 /* Options for the two selects. Kept beside the steps so the labels and the
-   engine keys cannot drift apart. */
+   engine keys cannot drift apart.
+
+   `label` answers the question the select asks. `short` is the same choice
+   said mid-sentence, which is what the copied ask needs: "times 1.1 for AI"
+   reads, "times 1.1 for AI or machine learning" does not. One list, so a new
+   industry cannot arrive with a label and no way to name it in prose. */
 
 export const INDUSTRY_OPTIONS = [
-  { value: 'saas', label: 'SaaS or general B2B software' },
-  { value: 'ai', label: 'AI or machine learning' },
-  { value: 'fintech', label: 'Fintech' },
-  { value: 'health', label: 'Health tech' },
-  { value: 'other', label: 'Something else, or not sure' },
+  { value: 'saas', label: 'SaaS or general B2B software', short: 'SaaS' },
+  { value: 'ai', label: 'AI or machine learning', short: 'AI' },
+  { value: 'fintech', label: 'Fintech', short: 'fintech' },
+  { value: 'health', label: 'Health tech', short: 'health tech' },
+  {
+    value: 'other',
+    label: 'Something else, or not sure',
+    short: 'this sector',
+  },
 ]
 
 export const GEO_OPTIONS = [
-  { value: 'bay_nyc', label: 'Bay Area or New York' },
-  { value: 'us_hub', label: 'Another US tech hub' },
-  { value: 'us_other', label: 'Elsewhere in the US' },
-  { value: 'remote_national', label: 'Remote, paid a national rate' },
+  {
+    value: 'bay_nyc',
+    label: 'Bay Area or New York',
+    short: 'the Bay Area or New York',
+  },
+  { value: 'us_hub', label: 'Another US tech hub', short: 'a US tech hub' },
+  { value: 'us_other', label: 'Elsewhere in the US', short: 'this location' },
+  {
+    value: 'remote_national',
+    label: 'Remote, paid a national rate',
+    short: 'remote at a national rate',
+  },
 ]
 
 export const SEAT_OPTIONS = [

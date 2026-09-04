@@ -604,6 +604,11 @@
   .amw-brief table {
     break-inside: avoid;
   }
+  /* A company row prints as its label, its bar and its breakdown together.
+     Split across a page break it reads as two different companies. */
+  .amw-plot-row {
+    break-inside: avoid;
+  }
   .amw-print-only {
     display: block !important;
   }

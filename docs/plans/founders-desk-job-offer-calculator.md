@@ -628,7 +628,7 @@ Synthesized from this review's findings. Each derives from a specific finding.
   - Files: `src/components/founders/market-plot.jsx`, `src/lib/founders/equity/company-comp.js`
   - Includes: thesis sentence generated from the real ratio; equity annualised net of strike; list below `md` with all eleven rows; tap-to-expand at every breakpoint; text badges; scenario control above the chart; one data-driven component; prints as the expanded list
   - Verify: tests 26-29d, 30b
-- [ ] **T9 (P1, human: ~1 day / CC: ~40min)** — UI — "Copy the ask" as sendable sentences
+- [x] **T9 (P1, human: ~1 day / CC: ~40min)** — DONE 2026-09-04 — UI — "Copy the ask" as sendable sentences
   - Surfaced by: Design pass 3 — HARD REJECTION, strong headline with no clear action
   - Files: `src/lib/founders/handoff.js`, `src/components/founders/ladder/`
   - Includes: cash and equity, one defensibility line each with its source, the as-of date; reuses the existing clipboard fallback
