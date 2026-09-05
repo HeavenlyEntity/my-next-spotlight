@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import KingdomKodeMark from '@/components/brand/kingdom-kode-mark'
 import logoMipi from '@/images/logos/mipi.svg'
 import logoNewgen from '@/images/logos/newgen.png'
@@ -66,8 +66,18 @@ const SKILLS = [
 ]
 
 const ROW_HEIGHT = 64
-const ROW_GAP = 8
-const COLLAPSED_COUNT = 2.5
+/* WHOLE ROWS ONLY, AND COUNTED NOT MEASURED.
+
+   This was 2.5 rows of a hardcoded 64px, which failed twice. The half row left
+   a sliver the toggle then sat on top of, covering 48px of a live row: at 375px
+   "show more" was drawn straight across "Founder & CEO · 2022 - present". And
+   64px is a desktop row; at 375px the role and its period wrap and a row runs
+   about 97px, so a pixel height cut whole rows off regardless of the fraction.
+
+   Slicing the array instead means the collapsed box is always exactly N rows
+   tall at any text wrap, in any language, and the button's count can never
+   disagree with what is on screen. */
+const COLLAPSED_COUNT = 3
 
 function RecordPanel({ label, children, padded = true }) {
   return (
@@ -125,26 +135,19 @@ function RecordRow({ logo, mark: Mark, title, subtitle, meta }) {
 export function ExperienceRecord() {
   const [open, setOpen] = useState(false)
   const reduce = useReducedMotion()
-  const collapsedHeight =
-    Math.floor(COLLAPSED_COUNT) * ROW_HEIGHT +
-    Math.floor(COLLAPSED_COUNT) * ROW_GAP +
-    (COLLAPSED_COUNT % 1) * ROW_HEIGHT
-  const hiddenCount = EXPERIENCE.length - Math.floor(COLLAPSED_COUNT)
+  const visible = open ? EXPERIENCE : EXPERIENCE.slice(0, COLLAPSED_COUNT)
+  const hiddenCount = EXPERIENCE.length - COLLAPSED_COUNT
 
   return (
     <div className="flex flex-col gap-3">
       <h3 className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
         Experience
       </h3>
-      <div
-        className={`border-[var(--amw-line)] bg-[color-mix(in_srgb,var(--amw-card-2)_70%,transparent)] relative overflow-hidden rounded-2xl border px-2 pt-2 sm:px-3 sm:pt-3 ${
-          open ? 'pb-2 sm:pb-3' : 'pb-0'
-        }`}
-      >
+      <div className="border-[var(--amw-line)] bg-[color-mix(in_srgb,var(--amw-card-2)_70%,transparent)] rounded-2xl border p-2 sm:p-3">
         <motion.div
           className="relative overflow-hidden"
           initial={false}
-          animate={{ height: open ? 'auto' : collapsedHeight }}
+          animate={{ height: 'auto' }}
           transition={
             reduce
               ? { duration: 0 }
@@ -152,7 +155,7 @@ export function ExperienceRecord() {
           }
         >
           <ul className="flex flex-col gap-2">
-            {EXPERIENCE.map((entry) => (
+            {visible.map((entry) => (
               <RecordRow
                 key={entry.company}
                 logo={entry.logo}
@@ -165,38 +168,14 @@ export function ExperienceRecord() {
           </ul>
         </motion.div>
 
-        <AnimatePresence>
-          {!open && (
-            <motion.div
-              key="fade"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0"
-              style={{
-                height: ROW_HEIGHT,
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
-                maskImage:
-                  'linear-gradient(to bottom, transparent 0%, black 80%)',
-                WebkitMaskImage:
-                  'linear-gradient(to bottom, transparent 0%, black 80%)',
-              }}
-            />
-          )}
-        </AnimatePresence>
-
+        {/* In normal flow, always. Absolute positioning is what let this land
+            on a row; a real row of its own cannot. 44px minimum because it is
+            a touch target and the system already requires that. */}
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          className={`amw-mono hover:text-[var(--amw-accent-ink)] flex w-full cursor-pointer items-center justify-center gap-1.5 bg-transparent text-xs font-semibold uppercase tracking-[0.14em] text-zinc-700 transition dark:text-zinc-200 ${
-            open
-              ? 'relative mt-3 pb-1'
-              : 'absolute inset-x-0 bottom-0 z-10 py-3'
-          }`}
+          className="amw-mono hover:text-[var(--amw-accent-ink)] min-h-11 relative mt-2 flex w-full cursor-pointer items-center justify-center gap-1.5 bg-transparent text-xs font-semibold uppercase tracking-[0.14em] text-zinc-700 transition dark:text-zinc-200"
         >
           {open ? 'show less ↑' : `show ${hiddenCount} more ↓`}
         </button>

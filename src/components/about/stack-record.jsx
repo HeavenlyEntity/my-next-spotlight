@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { RotateCcw } from 'lucide-react'
 import { useReducedMotion } from 'motion/react'
+import { useMediaQuery } from '@/hooks/use-client-value'
 import logoCreem from '@/images/logos/creem.png'
 import logoPolar from '@/images/logos/polar.png'
 import logoMotion from '@/images/logos/motion.png'
@@ -48,9 +49,21 @@ export function StackRecord() {
   const chipRefs = useRef([])
   const [resetKey, setResetKey] = useState(0)
   const reduce = useReducedMotion()
+  /* Below md the simulation is not a flourish, it is a failure. Eighteen chips
+     fall into roughly 343x210 on a phone: ten stack off the top edge, eight are
+     never visible at all, and "PostgreSQL" clips to "greS". The reader's last
+     impression of the technical credentials was a clipped pile. Drag-to-throw
+     also steals the page scroll, because a thumb swipe that starts on a chip
+     grabs the chip.
+
+     The server assumes narrow, so the static wall is also what ships without
+     JavaScript. `useMediaQuery` reads through useSyncExternalStore, so the
+     hydrating render matches the server rather than flipping after mount. */
+  const isNarrow = useMediaQuery('(max-width: 767px)', true)
+  const showStatic = reduce || isNarrow
 
   useEffect(() => {
-    if (reduce) return
+    if (showStatic) return
     const container = containerRef.current
     const measure = measureRef.current
     if (!container || !measure) return
@@ -212,7 +225,7 @@ export function StackRecord() {
       cancelled = true
       cleanup?.()
     }
-  }, [resetKey, reduce])
+  }, [resetKey, showStatic])
 
   return (
     <div className="flex flex-col gap-3">
@@ -220,13 +233,18 @@ export function StackRecord() {
         Stack
       </h3>
 
-      {reduce ? (
+      {showStatic ? (
         <div className="border-[var(--amw-line)] bg-[color-mix(in_srgb,var(--amw-card-2)_70%,transparent)] rounded-2xl border p-3">
-          <div className="flex flex-wrap gap-2">
+          {/* Every chip readable, in the same pill language as the "What I do"
+              row directly above. Eighteen vendor brand colours next to each
+              other is a logo soup, and the system budgets one accent. */}
+          <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
             {CHIPS.map((chip) => (
-              <ChipPill key={chip.label} chip={chip} />
+              <li key={chip.label}>
+                <StaticChip chip={chip} />
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       ) : (
         <div className="border-[var(--amw-line)] bg-[color-mix(in_srgb,var(--amw-card-2)_70%,transparent)] relative h-40 overflow-hidden rounded-2xl border sm:h-64">
@@ -274,6 +292,45 @@ export function StackRecord() {
         </div>
       )}
     </div>
+  )
+}
+
+/* The readable form. Same pill language as `SkillsRecord` directly above it:
+   card surface, hairline, zinc label. The vendor mark stays as identification,
+   on a neutral tile, so the row reads as a list of tools rather than a wall of
+   competing brand colours. */
+function StaticChip({ chip }) {
+  return (
+    <span className="border-[var(--amw-line)] bg-[var(--amw-card)] inline-flex items-center gap-2 rounded-full border py-1.5 pl-1.5 pr-3.5 text-sm text-zinc-700 dark:text-zinc-300">
+      <span
+        className="bg-[var(--amw-card-2)] border-[var(--amw-line)] inline-flex h-6 w-6 items-center justify-center rounded-full border"
+        aria-hidden="true"
+      >
+        {chip.image ? (
+          <Image
+            src={chip.image}
+            alt=""
+            width={14}
+            height={14}
+            className="h-3.5 w-3.5 object-contain"
+            draggable={false}
+            unoptimized
+          />
+        ) : (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={`https://cdn.simpleicons.org/${chip.slug}`}
+            alt=""
+            width={14}
+            height={14}
+            loading="lazy"
+            className="h-3.5 w-3.5"
+            draggable={false}
+          />
+        )}
+      </span>
+      {chip.label}
+    </span>
   )
 }
 
