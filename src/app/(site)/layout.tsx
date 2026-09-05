@@ -21,7 +21,9 @@ const inter = Inter({
 
 const navCode = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['500', '600'],
+  /* 700 is the creed's acronym weight; without it the browser fakes the
+     bold and AMWARE stops reading against the 500 body letters. */
+  weight: ['500', '600', '700'],
   variable: '--font-nav-code',
   display: 'swap',
 })

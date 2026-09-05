@@ -496,7 +496,14 @@
 
 /* ---- creed on the accent footer slab ------------------------------------ */
 /* The accent-coloured initials and muted scramble glyphs vanish against
-   the teal, so the footer variant swaps them for ink tones. */
+   the teal, so the footer variant swaps them for ink tones. Ink alone is
+   not enough to spell AMWARE, though: every letter was already full-strength
+   zinc-950, so the acronym read as ordinary text. The body letters step back
+   to 70% ink (4.9:1 on the light teal, higher on the dark) and the initials
+   keep the full ink and the real 700 weight, so the six letters carry. */
+.amw-creed--on-accent .amw-creed-char {
+  color: rgba(9, 9, 11, 0.7);
+}
 .amw-creed--on-accent .amw-creed-char[data-initial] {
   color: #09090b;
   font-weight: 700;
