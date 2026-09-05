@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react'
 import RotatingCards from './rotating-cards'
 import coverGearz from '@/images/projects/gearz-cover.webp'
 import coverCelestial from '@/images/projects/celestial-cover.png'
-import coverKingdomKode from '@/images/projects/kingdomkode-cover.png'
+import portKingdomKode from '@/images/photos/kingdom-kode-port.webp'
 import coverConventionSuite from '@/images/projects/conventionsuite-cover-v4.png'
 import coverMipi from '@/images/projects/mipi-cover.png'
 import coverPortalGen from '@/images/projects/portalgen-cover.png'
@@ -35,7 +35,7 @@ const headlineText = 'Let’s Build Something Great'
 const cardData = [
   { label: 'Gearz', image: coverGearz },
   { label: 'Celestial Studio Salon', image: coverCelestial },
-  { label: 'Kingdom Kode', image: coverKingdomKode },
+  { label: 'Kingdom Kode', image: portKingdomKode },
   { label: 'ConventionSuite', image: coverConventionSuite },
   { label: 'MiPi', image: coverMipi },
   { label: 'PortalGen', image: coverPortalGen },
