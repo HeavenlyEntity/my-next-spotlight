@@ -340,7 +340,7 @@ export function SiteHeader() {
               href="/"
               aria-label="AMWARE home"
               onClick={close}
-              className="flex items-center gap-3 no-underline"
+              className="min-h-11 flex items-center gap-3 no-underline"
             >
               <span className="dark:ring-zinc-950/15 h-9 w-9 shrink-0 overflow-hidden rounded-full bg-white/10 p-0.5 ring-1 ring-white/20">
                 <Image

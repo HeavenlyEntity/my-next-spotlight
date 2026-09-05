@@ -6,7 +6,7 @@
 
 .amw {
   --amw-accent: #14bbac; /* brand teal: fills, edges, markers (7.9:1 under zinc-950 text) */
-  --amw-accent-ink: #0d857a; /* same hue, darkened only to 4.5:1 on white for text */
+  --amw-accent-ink: #0b756c; /* same hue, darkened to clear 4.5:1 on white, on the #fafafa panels, AND on accent-soft chips */
   --amw-accent-soft: rgba(20, 187, 172, 0.12);
   --amw-line: rgba(24, 24, 27, 0.1);
   --amw-line-strong: rgba(24, 24, 27, 0.16);
@@ -16,7 +16,7 @@
   --amw-muted: #f4f4f5; /* soft section panels (landing) */
   --amw-page: #ffffff; /* the site's inner page surface */
   --amw-ink: #18181b;
-  --amw-mut: #71717a;
+  --amw-mut: #6b6b74;
   --amw-mono: var(--font-nav-code), ui-monospace, 'SFMono-Regular', monospace;
 }
 
@@ -59,7 +59,7 @@
 
 :where(.dark) .amw.amw-panel-invert {
   --amw-accent: #14bbac;
-  --amw-accent-ink: #0d857a;
+  --amw-accent-ink: #0b756c;
   --amw-accent-soft: rgba(20, 187, 172, 0.12);
   --amw-line: rgba(24, 24, 27, 0.1);
   --amw-line-strong: rgba(24, 24, 27, 0.16);
@@ -69,7 +69,7 @@
   --amw-muted: #f4f4f5;
   --amw-page: #ffffff;
   --amw-ink: #18181b;
-  --amw-mut: #71717a;
+  --amw-mut: #6b6b74;
 }
 
 /* ---- landing rail: hide the native scrollbar, keep it scrollable -------- */
@@ -498,7 +498,8 @@
 /* The accent-coloured initials and muted scramble glyphs vanish against
    the teal, so the footer variant swaps them for ink tones. */
 .amw-creed--on-accent .amw-creed-char[data-initial] {
-  color: #ffffff;
+  color: #09090b;
+  font-weight: 700;
 }
 .amw-creed--on-accent .amw-creed-char[data-state='scramble'] {
   color: rgba(9, 9, 11, 0.55);
@@ -661,7 +662,7 @@
   .amw,
   :where(.dark) .amw {
     --amw-accent: #14bbac;
-    --amw-accent-ink: #0d857a;
+    --amw-accent-ink: #0b756c;
     --amw-accent-soft: rgba(20, 187, 172, 0.12);
     --amw-line: rgba(24, 24, 27, 0.1);
     --amw-line-strong: rgba(24, 24, 27, 0.16);

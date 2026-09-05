@@ -9,7 +9,7 @@ All tokens live on `.amw` and only resolve inside it. Anything portaled out of t
 | Token               | Light                  | Dark                    | Use                                                           |
 | ------------------- | ---------------------- | ----------------------- | ------------------------------------------------------------- |
 | `--amw-accent`      | `#14bbac`              | `#3ce8ce`               | the one accent: primary CTA fill, selected states, band fills |
-| `--amw-accent-ink`  | `#0d857a`              | `#5eead4`               | accent as text or 1px edges                                   |
+| `--amw-accent-ink`  | `#0b756c`              | `#5eead4`               | accent as text or 1px edges                                   |
 | `--amw-accent-soft` | `rgba(20,187,172,.12)` | `rgba(60,232,206,.12)`  | selected chip / segment background, figure band fill          |
 | `--amw-line`        | `rgba(24,24,27,.10)`   | `rgba(255,255,255,.10)` | hairlines, card borders, disclosures                          |
 | `--amw-line-strong` | `rgba(24,24,27,.16)`   | `rgba(255,255,255,.18)` | input borders, secondary buttons                              |
@@ -19,9 +19,13 @@ All tokens live on `.amw` and only resolve inside it. Anything portaled out of t
 | `--amw-muted`       | `#f4f4f5`              | dark card-2 family      | soft section panels (the template's `rounded-2xl` panels)     |
 | `--amw-page`        | `#ffffff`              | dark                    | the page surface                                              |
 | `--amw-ink`         | `#18181b`              | light                   | text and the offer marker                                     |
-| `--amw-mut`         | `#71717a`              | zinc-400 family         | muted text                                                    |
+| `--amw-mut`         | `#6b6b74`              | zinc-400 family         | muted text                                                    |
 | `--amw-holo-cool`   | `#5b7285`              | `#93a9bb`               | the About story deck's glass only: the cool end of its shift  |
 | `--amw-mono`        | `var(--font-nav-code)` | same                    | kickers, eyebrows, numbers                                    |
+
+**Contrast floor (measured 2026-09-05).** Both light tokens were retuned after a measured audit. `--amw-accent-ink` was `#0d857a`, which cleared 4.5:1 on pure white but measured 4.32 on the `#fafafa` panels and 4.02 on `--amw-accent-soft` chips, where it is actually used; `#0b756c` clears all three (5.56 / 5.33 / 4.78). `--amw-mut` was `#71717a`, measuring 4.40 on the `#f4f4f5` muted panels; `#6b6b74` measures 4.80 there. Measure composited over the real background: these are `oklab()`/`lab()` at runtime, and parsing the computed string as RGB reports numbers that are simply wrong.
+
+**Touch targets are 44px, everywhere, not just inputs.** The chip rule below already said so; nav, footer and icon links did not follow it. Where a 44px drawn box would change the design (the desk eyebrow's tool marks), keep the visible box and pad the anchor instead.
 
 Teal budget: selected controls, the primary CTA of a page, figure bands and their edges, one live status dot. Nowhere else. Body text and headings stay zinc.
 

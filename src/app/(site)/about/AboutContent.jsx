@@ -216,7 +216,7 @@ export default function AboutContent() {
                 <li>
                   <a
                     href="mailto:amware.develop@gmail.com"
-                    className="hover:text-[var(--amw-accent-ink)] group flex items-center gap-3 text-sm font-medium text-zinc-800 no-underline transition-colors dark:text-zinc-200"
+                    className="hover:text-[var(--amw-accent-ink)] min-h-11 group flex items-center gap-3 text-sm font-medium text-zinc-800 no-underline transition-colors dark:text-zinc-200"
                   >
                     <span
                       className="border-[var(--amw-line)] bg-[var(--amw-card)] text-[var(--amw-accent-ink)] inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border"
@@ -252,7 +252,7 @@ export default function AboutContent() {
                       href={href}
                       target="_blank"
                       rel="noreferrer"
-                      className="hover:bg-[var(--amw-accent)] hover:text-zinc-950 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900/10 text-zinc-800 transition-all duration-300 hover:scale-110 motion-reduce:hover:scale-100 dark:bg-white/10 dark:text-zinc-200"
+                      className="hover:bg-[var(--amw-accent)] hover:text-zinc-950 flex h-11 w-11 items-center justify-center rounded-full bg-zinc-900/10 text-zinc-800 transition-all duration-300 hover:scale-110 motion-reduce:hover:scale-100 dark:bg-white/10 dark:text-zinc-200"
                       aria-label={label}
                     >
                       <Icon className="h-4 w-4 fill-current" />

@@ -154,7 +154,7 @@ export function Pricing() {
           </Link>
           <Link
             href="/products"
-            className="hover:text-[var(--amw-accent-ink)] text-sm text-zinc-600 no-underline transition-colors dark:text-zinc-400"
+            className="hover:text-[var(--amw-accent-ink)] min-h-11 inline-flex items-center text-sm text-zinc-600 no-underline transition-colors dark:text-zinc-400"
           >
             Browse the boilerplate catalog
           </Link>

@@ -56,7 +56,7 @@ const socialLinks = [
 function LinkColumn({ title, links, delay }) {
   return (
     <motion.div {...fadeInUp} transition={{ ...fadeInUp.transition, delay }}>
-      <h3 className="amw-mono text-zinc-950/60 mb-4 text-xs font-semibold uppercase tracking-[0.14em]">
+      <h3 className="amw-mono text-zinc-950/70 mb-4 text-xs font-semibold uppercase tracking-[0.14em]">
         {title}
       </h3>
       <ul className="space-y-3">
@@ -64,7 +64,7 @@ function LinkColumn({ title, links, delay }) {
           <li key={link.label}>
             <Link
               href={link.href}
-              className="text-zinc-950/80 hover:text-zinc-950 inline-block no-underline transition-all duration-300 hover:translate-x-1 motion-reduce:hover:translate-x-0"
+              className="text-zinc-950/80 hover:text-zinc-950 min-h-11 min-w-11 inline-flex items-center no-underline transition-all duration-300 hover:translate-x-1 motion-reduce:hover:translate-x-0"
             >
               {link.label}
             </Link>
@@ -118,7 +118,7 @@ function FooterCard() {
               <br />
               Build.
             </h2>
-            <p className="text-zinc-950/60 mt-4 text-sm">
+            <p className="text-zinc-950/70 mt-4 text-sm">
               &copy; {new Date().getFullYear()} Alec Mingione. All rights
               reserved.
             </p>
@@ -144,7 +144,7 @@ function FooterCard() {
               </div>
               <Link
                 href="/contact"
-                className="text-zinc-950 inline-block text-lg font-medium underline underline-offset-4 transition-opacity hover:opacity-70"
+                className="text-zinc-950 min-h-11 inline-flex items-center text-lg font-medium underline underline-offset-4 transition-opacity hover:opacity-70"
               >
                 Send a message
               </Link>
@@ -161,7 +161,7 @@ function FooterCard() {
                   href={href}
                   target="_blank"
                   rel="noreferrer"
-                  className="hover:text-[var(--amw-accent)] bg-zinc-950/10 text-zinc-950 hover:bg-zinc-950 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 motion-reduce:hover:scale-100"
+                  className="hover:text-[var(--amw-accent)] bg-zinc-950/10 text-zinc-950 hover:bg-zinc-950 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 motion-reduce:hover:scale-100"
                   aria-label={label}
                 >
                   <Icon className="h-4 w-4 fill-current" />

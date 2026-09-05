@@ -108,7 +108,7 @@ function RecordRow({ logo, mark: Mark, title, subtitle, meta }) {
         ) : logo ? (
           <Image src={logo} alt="" className="h-7 w-7" unoptimized />
         ) : (
-          <span className="amw-mono text-[var(--amw-accent-ink)] text-xs font-semibold">
+          <span className="amw-mono text-xs font-semibold text-[#0b756c]">
             {title.charAt(0)}
           </span>
         )}
@@ -120,7 +120,7 @@ function RecordRow({ logo, mark: Mark, title, subtitle, meta }) {
         <span className="mt-0.5 text-sm text-zinc-600 dark:text-zinc-400">
           {subtitle}
           {meta && (
-            <span className="amw-mono ml-2 text-xs text-zinc-500 dark:text-zinc-500">
+            <span className="amw-mono ml-2 text-xs text-zinc-600 dark:text-zinc-400">
               {meta}
             </span>
           )}

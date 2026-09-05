@@ -179,7 +179,7 @@ export function Testimonials() {
                     <p className="font-medium text-zinc-900 dark:text-zinc-100">
                       {item.name}
                     </p>
-                    <p className="amw-mono text-sm text-zinc-500 dark:text-zinc-400">
+                    <p className="amw-mono text-sm text-zinc-600 dark:text-zinc-400">
                       {item.role}
                     </p>
                   </figcaption>
