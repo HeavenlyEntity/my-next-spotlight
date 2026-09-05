@@ -64,7 +64,17 @@ function LadderSkeleton() {
 
 export default function JobOfferCalculator() {
   const [step, setStep] = useState(1)
-  const [hydrated, setHydrated] = useState(() => hasHydrated())
+  /* MUST start false on BOTH sides, never `useState(() => hasHydrated())`.
+     That reads client-only state during render and answers differently in the
+     two places: on the server there is no sessionStorage, so `persist` never
+     hydrates and it returns false; in the browser sessionStorage is
+     synchronous, so the store is already hydrated by the time React renders
+     and it returns true. The server then paints the skeleton, the client's
+     first render paints the wizard, and React throws away the whole server
+     tree as a hydration mismatch. Starting false everywhere and flipping in an
+     effect keeps the two first renders identical, because effects never run on
+     the server. */
+  const [hydrated, setHydrated] = useState(false)
   /* True only for the paint immediately after hydration: those values arrived,
      they did not change, so nothing should animate up to them. */
   const [justHydrated, setJustHydrated] = useState(false)
@@ -78,8 +88,12 @@ export default function JobOfferCalculator() {
   const clear = useOfferStore((s) => s.clear)
 
   useEffect(() => {
+    /* The synchronous branch is the normal one in a browser: sessionStorage
+       had the answers before the first paint. That is still an arrival, so it
+       suppresses the count-up exactly like the async branch does (DD5). */
     if (hasHydrated()) {
       setHydrated(true)
+      setJustHydrated(true)
       return undefined
     }
     return onHydrated(() => {

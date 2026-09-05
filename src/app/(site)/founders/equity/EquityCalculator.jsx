@@ -170,10 +170,15 @@ function WizardSkeleton() {
 export default function EquityCalculator() {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
   const { step, inputs, overrides, touched } = state
-  /* `persist` hydrates after mount, so the first paint is always this
-     wizard's own defaults. Gate on this rather than letting a chip row flip
-     under the user a beat after it renders (design review DD5). */
-  const [hydrated, setHydrated] = useState(() => hasHydrated())
+  /* Gate the render so a chip row cannot flip under the user a beat after it
+     paints (DD5). MUST start false on BOTH sides, never
+     `useState(() => hasHydrated())`: that reads client-only state during
+     render and answers false on the server (no sessionStorage, so `persist`
+     never hydrates) and true in the browser (sessionStorage is synchronous, so
+     the store is hydrated before React renders). The server would paint the
+     skeleton and the client's first render the wizard, which is a hydration
+     mismatch and costs a full client re-render of the tree. */
+  const [hydrated, setHydrated] = useState(false)
   /* Read inside a one-shot effect, so it must be a ref rather than a dep. */
   const touchedRef = useRef(touched)
   touchedRef.current = touched
