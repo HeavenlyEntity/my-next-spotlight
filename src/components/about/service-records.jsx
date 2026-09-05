@@ -82,9 +82,7 @@ const COLLAPSED_COUNT = 3
 function RecordPanel({ label, children, padded = true }) {
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-        {label}
-      </h3>
+      <h3 className="amw-kicker">{label}</h3>
       <div
         className={`border-[var(--amw-line)] bg-[color-mix(in_srgb,var(--amw-card-2)_70%,transparent)] rounded-2xl border ${
           padded ? 'p-2 sm:p-3' : ''
@@ -140,9 +138,7 @@ export function ExperienceRecord() {
 
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-        Experience
-      </h3>
+      <h3 className="amw-kicker">Experience</h3>
       <div className="border-[var(--amw-line)] bg-[color-mix(in_srgb,var(--amw-card-2)_70%,transparent)] rounded-2xl border p-2 sm:p-3">
         <motion.div
           className="relative overflow-hidden"

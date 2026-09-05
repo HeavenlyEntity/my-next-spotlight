@@ -147,12 +147,15 @@ function StoryCard({ chapter, index, total, cardRef, nextRef, reduce }) {
         />
       </div>
 
-      <h3
+      {/* h2, not h3. Each chapter is a top-level section of the page's
+          narrative and nothing headings the deck above them, so h3 skipped a
+          level straight from the page h1. */}
+      <h2
         style={{ fontFamily: 'Layer, sans-serif' }}
         className="relative mt-6 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 md:text-3xl"
       >
         {chapter.title}
-      </h3>
+      </h2>
       <p className="relative mt-4 max-w-prose text-base leading-relaxed text-zinc-600 dark:text-zinc-400 md:text-lg">
         {chapter.copy}
       </p>

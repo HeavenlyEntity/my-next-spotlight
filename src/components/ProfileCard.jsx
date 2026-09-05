@@ -623,11 +623,16 @@ const ProfileCardComponent = ({
                 className="absolute flex w-full flex-col items-center gap-2 px-6 text-center"
                 style={{ top: '1.4em', gridArea: 'auto' }}
               >
-                <h3
+                {/* A <p>, not a heading. This is the card's identity plate, not
+                    a section of the document: as an <h3> under the page <h1> it
+                    skipped a level in the outline, and at 2.25rem it rendered
+                    LARGER than the 2rem <h1> it sat beneath. Capped below the
+                    h1 so the page's ranking reads correctly. */}
+                <p
                   className="m-0 font-bold leading-none tracking-tight"
                   style={{
                     fontFamily: 'Layer, sans-serif',
-                    fontSize: 'clamp(1.5rem, 4.5svh, 2.25rem)',
+                    fontSize: 'clamp(1.5rem, 4.5svh, 1.75rem)',
                     backgroundImage:
                       'linear-gradient(to bottom, #ffffff 40%, #99f6e4)',
                     backgroundSize: '100% 1.2em',
@@ -641,7 +646,7 @@ const ProfileCardComponent = ({
                   }}
                 >
                   {name}
-                </h3>
+                </p>
                 <p
                   className="m-0 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80"
                   style={{

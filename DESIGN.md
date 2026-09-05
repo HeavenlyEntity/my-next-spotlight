@@ -6,24 +6,26 @@ Transcribed from `src/styles/storefront.css` and the landing template grammar on
 
 All tokens live on `.amw` and only resolve inside it. Anything portaled out of the page (Radix Select, Dialog, Sheet, Tooltip) must carry `className="amw"` itself.
 
-| Token                                                  | Light                  | Dark                    | Use                                                           |
-| ------------------------------------------------------ | ---------------------- | ----------------------- | ------------------------------------------------------------- |
-| `--amw-accent`                                         | `#14bbac`              | `#3ce8ce`               | the one accent: primary CTA fill, selected states, band fills |
-| `--amw-accent-ink`                                     | `#0d857a`              | `#5eead4`               | accent as text or 1px edges                                   |
-| `--amw-accent-soft`                                    | `rgba(20,187,172,.12)` | `rgba(60,232,206,.12)`  | selected chip / segment background, figure band fill          |
-| `--amw-line`                                           | `rgba(24,24,27,.10)`   | `rgba(255,255,255,.10)` | hairlines, card borders, disclosures                          |
-| `--amw-line-strong`                                    | `rgba(24,24,27,.16)`   | `rgba(255,255,255,.18)` | input borders, secondary buttons                              |
-| `--amw-grid`                                           | `rgba(24,24,27,.045)`  | `rgba(255,255,255,.05)` | background grids                                              |
-| `--amw-card`                                           | `#ffffff`              | `#0b0b0f`               | raised surfaces: rail, inputs, link cards                     |
-| `--amw-card-2`                                         | `#fafafa`              | `#101015`               | chip background                                               |
-| `--amw-muted`                                          | `#f4f4f5`              | dark card-2 family      | soft section panels (the template's `rounded-2xl` panels)     |
-| `--amw-page`                                           | `#ffffff`              | dark                    | the page surface                                              |
-| `--amw-ink`                                            | `#18181b`              | light                   | text and the offer marker                                     |
-| `--amw-mut`                                            | `#71717a`              | zinc-400 family         | muted text                                                    |
-| `--amw-paper`, `--amw-paper-edge`, `--amw-paper-light` | warm stock             | dark stock              | the About story cards only                                    |
-| `--amw-mono`                                           | `var(--font-nav-code)` | same                    | kickers, eyebrows, numbers                                    |
+| Token               | Light                  | Dark                    | Use                                                           |
+| ------------------- | ---------------------- | ----------------------- | ------------------------------------------------------------- |
+| `--amw-accent`      | `#14bbac`              | `#3ce8ce`               | the one accent: primary CTA fill, selected states, band fills |
+| `--amw-accent-ink`  | `#0d857a`              | `#5eead4`               | accent as text or 1px edges                                   |
+| `--amw-accent-soft` | `rgba(20,187,172,.12)` | `rgba(60,232,206,.12)`  | selected chip / segment background, figure band fill          |
+| `--amw-line`        | `rgba(24,24,27,.10)`   | `rgba(255,255,255,.10)` | hairlines, card borders, disclosures                          |
+| `--amw-line-strong` | `rgba(24,24,27,.16)`   | `rgba(255,255,255,.18)` | input borders, secondary buttons                              |
+| `--amw-grid`        | `rgba(24,24,27,.045)`  | `rgba(255,255,255,.05)` | background grids                                              |
+| `--amw-card`        | `#ffffff`              | `#0b0b0f`               | raised surfaces: rail, inputs, link cards                     |
+| `--amw-card-2`      | `#fafafa`              | `#101015`               | chip background                                               |
+| `--amw-muted`       | `#f4f4f5`              | dark card-2 family      | soft section panels (the template's `rounded-2xl` panels)     |
+| `--amw-page`        | `#ffffff`              | dark                    | the page surface                                              |
+| `--amw-ink`         | `#18181b`              | light                   | text and the offer marker                                     |
+| `--amw-mut`         | `#71717a`              | zinc-400 family         | muted text                                                    |
+| `--amw-holo-cool`   | `#5b7285`              | `#93a9bb`               | the About story deck's glass only: the cool end of its shift  |
+| `--amw-mono`        | `var(--font-nav-code)` | same                    | kickers, eyebrows, numbers                                    |
 
 Teal budget: selected controls, the primary CTA of a page, figure bands and their edges, one live status dot. Nowhere else. Body text and headings stay zinc.
+
+The About story deck is **holographic glass**, not the warm paper stock this table used to describe (changed 2026-09-05; `--amw-paper*` are gone). It is a translucent pane over a blur with a fixed specular corner and a fixed iridescent coating. The coating shifts between `--amw-accent` and `--amw-holo-cool` and nothing else — an earlier build reached for violet and rose, which broke the do/don't rule below and put four accent families on one page. `--amw-holo-cool` is a desaturated cool tone, not a second brand colour: it exists so the hue can travel far enough to read as glass while staying in the accent's family. The blend modes differ by theme by necessity — `screen` reads on a charcoal pane and is a no-op on a white one — so light multiplies and dark screens.
 
 ## Type
 

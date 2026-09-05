@@ -166,7 +166,9 @@ export default function AboutContent() {
                 status="Engineering the Future"
                 iconUrl={amwareLogo.src}
                 behindGlowEnabled
-                behindGlowColor="rgba(125, 190, 255, 0.67)"
+                /* Teal, not the template's blue: a fourth accent family
+                   behind a card that already sits on a teal system. */
+                behindGlowColor="rgba(20, 187, 172, 0.55)"
                 showUserInfo={false}
                 cardHeightMobile="62svh"
                 cardMaxHeightMobile="460px"

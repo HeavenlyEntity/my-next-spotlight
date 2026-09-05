@@ -229,9 +229,7 @@ export function StackRecord() {
 
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-        Stack
-      </h3>
+      <h3 className="amw-kicker">Stack</h3>
 
       {showStatic ? (
         <div className="border-[var(--amw-line)] bg-[color-mix(in_srgb,var(--amw-card-2)_70%,transparent)] rounded-2xl border p-3">

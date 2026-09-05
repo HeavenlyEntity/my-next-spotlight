@@ -56,9 +56,9 @@ const socialLinks = [
 function LinkColumn({ title, links, delay }) {
   return (
     <motion.div {...fadeInUp} transition={{ ...fadeInUp.transition, delay }}>
-      <h4 className="amw-mono text-zinc-950/60 mb-4 text-xs font-semibold uppercase tracking-[0.14em]">
+      <h3 className="amw-mono text-zinc-950/60 mb-4 text-xs font-semibold uppercase tracking-[0.14em]">
         {title}
-      </h4>
+      </h3>
       <ul className="space-y-3">
         {links.map((link) => (
           <li key={link.label}>
@@ -131,7 +131,7 @@ function FooterCard() {
               transition={{ ...fadeInUp.transition, delay: 0.1 }}
             >
               <div>
-                <h4 className="mb-1 font-semibold">Phoenix, Arizona</h4>
+                <h3 className="mb-1 font-semibold">Phoenix, Arizona</h3>
                 <p className="text-zinc-950/70">
                   Fractional CTO, engineer, and founder
                   <br />
