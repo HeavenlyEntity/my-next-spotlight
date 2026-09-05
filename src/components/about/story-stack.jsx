@@ -167,7 +167,18 @@ export function StoryStack({ chapters }) {
   return (
     <div
       className="flex flex-col gap-6 pb-24"
-      style={{ perspective: 1400, perspectiveOrigin: '50% 0%' }}
+      style={{
+        perspective: 1400,
+        perspectiveOrigin: '50% 0%',
+        /* The deal tilt and the perspective both widen a card's painted box
+           past the column. On a phone that becomes real horizontal scroll, so
+           the deck clips its own overflow. `clip`, never `hidden`: hidden makes
+           an ancestor a scroll container and `position: sticky` stops working,
+           which is the entire stacking effect. `clip` does not, and leaving the
+           y axis visible keeps the lifted cast shadow. */
+        overflowX: 'clip',
+        overflowY: 'visible',
+      }}
     >
       {chapters.map((chapter, index) => (
         <StoryCard

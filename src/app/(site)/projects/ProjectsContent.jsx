@@ -614,7 +614,12 @@ export default function ProjectsContent() {
   )
 
   return (
-    <div className="amw">
+    /* BorderGlow paints a decorative glow 5px outside each card. In a
+       single-column phone layout that lands past the viewport and turns into
+       real horizontal scroll. Clipping here is lossless: the section's own
+       24px gutter is far wider than the glow, so it still renders in full.
+       `clip` rather than `hidden` so nothing becomes a scroll container. */
+    <div className="amw overflow-x-clip">
       {/* Header */}
       <section className="px-6 pt-16 md:pt-24">
         <motion.div className="mx-auto max-w-6xl text-center" {...fadeInUp}>
