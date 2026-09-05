@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { SectionEyebrow } from './section-eyebrow'
 import imageGearz from '@/images/projects/gearz-cover.webp'
 import imageKingdomKode from '@/images/photos/kingdom-kode-port.webp'
-import imageMipi from '@/images/photos/MiPi-example.webp'
+import imageMipi from '@/images/photos/MiPi-mockup.webp'
 
 /* Ported from the "minimal" landing template (components/features.tsx):
    sticky intro column on the left, numbered split cards scrolling on the
