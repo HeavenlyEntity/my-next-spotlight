@@ -9,23 +9,55 @@ import {
   useTransform,
   useReducedMotion,
 } from 'motion/react'
-import image1 from '@/images/photos/image-1.jpg'
-import image2 from '@/images/photos/image-2.jpg'
-import image3 from '@/images/photos/image-3.jpg'
-import image4 from '@/images/photos/image-4.jpg'
-import image5 from '@/images/photos/image-5.jpg'
+import atTheDesk from '@/images/photos/at-the-desk.jpg'
+import cappuccino from '@/images/photos/cappuccino.jpg'
+import waterfall from '@/images/photos/image-3.jpg'
+import coworking from '@/images/photos/coworking.jpg'
+import sunset from '@/images/photos/image-5.jpg'
 
 /* Polaroid strip format ported from the RBP portfolio template
    (github.com/DavidHDev/rbp-portfolio): tilted cards drop in from above
    and follow the pointer with a small magnetic spring. Ours holds real
    photos instead of the template's dotted placeholders. */
 
+/* THE PERSON LEADS. This strip is on a page whose only job is to make a
+   stranger believe in someone, and it used to be five landscapes and a car -
+   a stock lifestyle pack that could have belonged to anyone. He is now the
+   first frame, and two of the others show the actual work.
+
+   Each photo carries real alt text rather than alt="". The strip is content
+   here, not decoration: it is the evidence for the sentence above it. */
 const PHOTOS = [
-  { id: 'a', image: image1, rotate: -8 },
-  { id: 'b', image: image2, rotate: 6 },
-  { id: 'c', image: image3, rotate: -4 },
-  { id: 'd', image: image4, rotate: 7 },
-  { id: 'e', image: image5, rotate: -6 },
+  {
+    id: 'a',
+    image: atTheDesk,
+    rotate: -8,
+    alt: 'Alec at his desk mid-thought, editor open behind him and guitars on the wall',
+  },
+  {
+    id: 'b',
+    image: cappuccino,
+    rotate: 6,
+    alt: 'A cappuccino on a bar counter',
+  },
+  {
+    id: 'c',
+    image: waterfall,
+    rotate: -4,
+    alt: 'A waterfall falling into a bright blue pool between canyon rocks',
+  },
+  {
+    id: 'd',
+    image: coworking,
+    rotate: 7,
+    alt: 'A laptop running code beside a copy of $100M Leads and a notebook, in the window light of a co-working space',
+  },
+  {
+    id: 'e',
+    image: sunset,
+    rotate: -6,
+    alt: 'Desert scrub under a long orange sunset',
+  },
 ]
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -75,7 +107,7 @@ function PolaroidCard({ photo, index, reduce }) {
       <div className="relative h-full w-full overflow-hidden rounded-xl">
         <Image
           src={photo.image}
-          alt=""
+          alt={photo.alt}
           fill
           sizes="10rem"
           className="object-cover"
