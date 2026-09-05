@@ -11,7 +11,7 @@ import coverGearz from '@/images/projects/gearz-cover.webp'
 import coverCelestial from '@/images/projects/celestial-cover.png'
 import portKingdomKode from '@/images/photos/kingdom-kode-port.webp'
 import coverConventionSuite from '@/images/projects/conventionsuite-cover-v4.png'
-import coverMipi from '@/images/projects/mipi-cover.png'
+import mockupMipi from '@/images/photos/MiPi-mockup.webp'
 import coverPortalGen from '@/images/projects/portalgen-cover.png'
 import coverNeatsuite from '@/images/projects/neatsuite-cover.png'
 import coverAuthjs from '@/images/projects/authjs-cover.png'
@@ -37,7 +37,7 @@ const cardData = [
   { label: 'Celestial Studio Salon', image: coverCelestial },
   { label: 'Kingdom Kode', image: portKingdomKode },
   { label: 'ConventionSuite', image: coverConventionSuite },
-  { label: 'MiPi', image: coverMipi },
+  { label: 'MiPi', image: mockupMipi },
   { label: 'PortalGen', image: coverPortalGen },
   { label: '@neatsuite/http', image: coverNeatsuite },
   { label: 'Auth.js NetSuite', image: coverAuthjs },
