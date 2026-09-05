@@ -1,8 +1,6 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
-import { motion, useReducedMotion } from 'motion/react'
 import KingdomKodeMark from '@/components/brand/kingdom-kode-mark'
 import logoMipi from '@/images/logos/mipi.svg'
 import logoNewgen from '@/images/logos/newgen.png'
@@ -15,6 +13,11 @@ import logoRlcanning from '@/images/logos/rlcanning-logo.png'
    collapsible Experience list with a blur fade, pill skills, and a stack
    chip wall. Restyled to amw tokens; physics stack omitted (no matter-js). */
 
+/* `prior` marks the roles that carry OUTSIDE credibility and gives each its
+   short form. The founder rows are his own companies and prove something
+   different, so they are deliberately unmarked. The hero's proof strip reads
+   from this, which means a rename here cannot leave the first viewport
+   claiming an employer the record below no longer lists. */
 const EXPERIENCE = [
   {
     company: 'Kingdom Kode',
@@ -33,12 +36,14 @@ const EXPERIENCE = [
     role: 'Senior Lead Software Engineer',
     period: '2021 - 2025',
     logo: logoNewgen,
+    prior: 'NewGen',
   },
   {
     company: 'Charles Schwab',
     role: 'Software Engineer',
     period: '2019 - 2021',
     logo: logoSchwab,
+    prior: 'Charles Schwab',
   },
   {
     company: 'Dot Com Development',
@@ -51,6 +56,7 @@ const EXPERIENCE = [
     role: 'Automation Programmer',
     period: '2017 - 2020',
     logo: logoRlcanning,
+    prior: 'Honeywell',
   },
 ]
 
@@ -65,19 +71,13 @@ const SKILLS = [
   'E-Commerce Builds',
 ]
 
+/** Short names of the employers that carry outside credibility, in record
+    order (most recent first). */
+export const PRIOR_EMPLOYERS = EXPERIENCE.filter((e) => e.prior).map(
+  (e) => e.prior
+)
+
 const ROW_HEIGHT = 64
-/* WHOLE ROWS ONLY, AND COUNTED NOT MEASURED.
-
-   This was 2.5 rows of a hardcoded 64px, which failed twice. The half row left
-   a sliver the toggle then sat on top of, covering 48px of a live row: at 375px
-   "show more" was drawn straight across "Founder & CEO · 2022 - present". And
-   64px is a desktop row; at 375px the role and its period wrap and a row runs
-   about 97px, so a pixel height cut whole rows off regardless of the fraction.
-
-   Slicing the array instead means the collapsed box is always exactly N rows
-   tall at any text wrap, in any language, and the button's count can never
-   disagree with what is on screen. */
-const COLLAPSED_COUNT = 3
 
 function RecordPanel({ label, children, padded = true }) {
   return (
@@ -130,53 +130,29 @@ function RecordRow({ logo, mark: Mark, title, subtitle, meta }) {
   )
 }
 
+/* NO LONGER COLLAPSIBLE. Six rows is not enough content to justify hiding half
+   of it, and what it hid was the single strongest credential on a page whose
+   whole job is to be believed: Charles Schwab sat behind a tap, 5.4 viewports
+   down. The collapse saved about 290px on a 7,580px page - four percent - and
+   cost the reader the proof. Showing all six also removes a state, an effect, a
+   motion and a tap target from a page that was running about eleven motion
+   systems against a budget of two to three. */
 export function ExperienceRecord() {
-  const [open, setOpen] = useState(false)
-  const reduce = useReducedMotion()
-  const visible = open ? EXPERIENCE : EXPERIENCE.slice(0, COLLAPSED_COUNT)
-  const hiddenCount = EXPERIENCE.length - COLLAPSED_COUNT
-
   return (
-    <div className="flex flex-col gap-3">
-      <h3 className="amw-kicker">Experience</h3>
-      <div className="border-[var(--amw-line)] bg-[color-mix(in_srgb,var(--amw-card-2)_70%,transparent)] rounded-2xl border p-2 sm:p-3">
-        <motion.div
-          className="relative overflow-hidden"
-          initial={false}
-          animate={{ height: 'auto' }}
-          transition={
-            reduce
-              ? { duration: 0 }
-              : { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
-          }
-        >
-          <ul className="flex flex-col gap-2">
-            {visible.map((entry) => (
-              <RecordRow
-                key={entry.company}
-                logo={entry.logo}
-                mark={entry.mark}
-                title={entry.company}
-                subtitle={entry.role}
-                meta={entry.period}
-              />
-            ))}
-          </ul>
-        </motion.div>
-
-        {/* In normal flow, always. Absolute positioning is what let this land
-            on a row; a real row of its own cannot. 44px minimum because it is
-            a touch target and the system already requires that. */}
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          className="amw-mono hover:text-[var(--amw-accent-ink)] min-h-11 relative mt-2 flex w-full cursor-pointer items-center justify-center gap-1.5 bg-transparent text-xs font-semibold uppercase tracking-[0.14em] text-zinc-700 transition dark:text-zinc-200"
-        >
-          {open ? 'show less ↑' : `show ${hiddenCount} more ↓`}
-        </button>
-      </div>
-    </div>
+    <RecordPanel label="Experience">
+      <ul className="flex flex-col gap-2">
+        {EXPERIENCE.map((entry) => (
+          <RecordRow
+            key={entry.company}
+            logo={entry.logo}
+            mark={entry.mark}
+            title={entry.company}
+            subtitle={entry.role}
+            meta={entry.period}
+          />
+        ))}
+      </ul>
+    </RecordPanel>
   )
 }
 

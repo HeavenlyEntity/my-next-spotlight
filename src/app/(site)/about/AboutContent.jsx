@@ -18,6 +18,7 @@ import {
   ExperienceRecord,
   EducationRecord,
   SkillsRecord,
+  PRIOR_EMPLOYERS,
 } from '@/components/about/service-records'
 import { StackRecord } from '@/components/about/stack-record'
 import { StoryStack } from '@/components/about/story-stack'
@@ -134,6 +135,14 @@ export default function AboutContent() {
             <p className="mx-auto mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
               I am Alec Mingione, in Phoenix, Arizona. I build the systems, and
               the businesses on top of them.
+            </p>
+            {/* The proof, in the first viewport. It used to live 5.4 viewports
+                down, inside a collapsed panel: a visitor deciding whether to
+                hire a fractional CTO wants one fact, and the page made them
+                scroll most of its length to find it. Read from the record
+                below, so the two can never disagree. */}
+            <p className="amw-kicker mt-5">
+              Previously {PRIOR_EMPLOYERS.join(' · ')}
             </p>
           </motion.div>
           <motion.div
@@ -314,13 +323,11 @@ export default function AboutContent() {
               href: '/projects',
               title: 'See the work',
               copy: 'Products, platforms, and client builds, shipped and in production.',
-              label: 'All projects',
             },
             {
               href: '/contact',
-              title: 'Start a conversation',
+              title: 'Work With Me',
               copy: 'A question, a proposal, or just a hello. I answer every message myself.',
-              label: 'Get in touch',
             },
           ].map((card) => (
             <Link
@@ -334,9 +341,6 @@ export default function AboutContent() {
                 </h3>
                 <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                   {card.copy}
-                </p>
-                <p className="text-[var(--amw-accent-ink)] mt-3 text-sm font-medium">
-                  {card.label}
                 </p>
               </div>
               <span className="bg-[var(--amw-accent)] text-zinc-950 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all duration-300 group-hover:scale-110 motion-reduce:group-hover:scale-100">
