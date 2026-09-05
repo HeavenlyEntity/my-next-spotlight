@@ -11,18 +11,24 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
    this port pins with CSS sticky and reads scroll with Motion's
    useScroll, so it needs no smooth-scroll library.
 
-   The paper is built in layers, all scroll-linked:
-   - surface: warm stock (--amw-paper) with fractal grain, a top-light
-     sheen, an inset top highlight and a darker bottom lip for thickness;
-   - 3D: the deck sits in a perspective; a card arrives tipped 12deg away
-     (rotateX) with a slight rotateZ tilt and lays flat as it lands on its
-     pin line, then leans back a couple of degrees once the next sheet
-     covers it;
-   - light: a large cast shadow while the sheet is in the air collapses to
-     a tight contact shadow on landing; a teal glint sweeps the sheet as it
-     arrives, the one "futuristic" note against otherwise honest paper.
-   Sheets are fully opaque. Reduced motion keeps the stacking (positional)
-   and renders every sheet in its resting state. */
+   GLASS, NOT PAPER. The deck reads as stacked holographic panes:
+   - surface: a translucent pane over whatever sits behind it, blurred and
+     saturated so the card underneath diffuses instead of showing through
+     as readable text;
+   - light: a fixed specular sheen off the top-left corner and a fixed
+     iridescent wash. FIXED is the point. This used to sweep a teal
+     gradient across each card as it was dealt, and a highlight that
+     travels independently of the light source reads as a smear rather
+     than as reflection;
+   - edge: a bright hairline along the top where a real pane catches the
+     light, and a hairline ring for the pane's thickness;
+   - 3D: unchanged. The deck sits in a perspective; a card arrives tipped
+     12deg away (rotateX) with a slight rotateZ tilt, lays flat as it
+     lands on its pin line, then leans back a couple of degrees once the
+     next pane covers it. A large cast shadow while it is in the air
+     collapses to a tight contact shadow on landing.
+   Reduced motion keeps the stacking (positional) and renders every pane
+   in its resting state. */
 
 const PIN_TOP = 96
 const STACK_GAP = 14
@@ -36,13 +42,14 @@ const SETTLE_PITCH = -2.5
 const GRAIN =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")"
 
-/* Inset highlight + bottom lip are constant; the two outer shadows are
-   what change between "in the air" and "resting on the pile". */
+/* The pane's own edges are constant; the two outer shadows are what change
+   between "in the air" and "resting on the pile". White at low alpha reads as
+   a lit glass edge in both themes, so this needs no light/dark branch. */
 const EDGE =
-  'inset 0 1px 0 var(--amw-paper-light), inset 0 -3px 0 var(--amw-paper-edge)'
+  'inset 0 1px 0 rgba(255,255,255,0.5), inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 -1px 0 rgba(255,255,255,0.12)'
 /* Same layer count as the resting shadow so Motion can tween between them. */
-const SHADOW_LIFTED = `${EDGE}, 0 2px 4px rgba(0,0,0,0.06), 0 -12px 30px -22px rgba(0,0,0,0), 0 48px 72px -28px rgba(0,0,0,0.5)`
-const SHADOW_RESTING = `${EDGE}, 0 1px 2px rgba(0,0,0,0.08), 0 -12px 30px -22px rgba(0,0,0,0.45), 0 14px 28px -20px rgba(0,0,0,0.35)`
+const SHADOW_LIFTED = `${EDGE}, 0 2px 4px rgba(0,0,0,0.05), 0 -12px 30px -22px rgba(0,0,0,0), 0 48px 72px -28px rgba(0,0,0,0.45)`
+const SHADOW_RESTING = `${EDGE}, 0 1px 2px rgba(0,0,0,0.07), 0 -12px 30px -22px rgba(0,0,0,0.4), 0 14px 28px -20px rgba(0,0,0,0.3)`
 
 function StoryCard({ chapter, index, total, cardRef, nextRef, reduce }) {
   const pinTop = PIN_TOP + index * STACK_GAP
@@ -82,7 +89,6 @@ function StoryCard({ chapter, index, total, cardRef, nextRef, reduce }) {
     [0, 0.85, 1],
     [SHADOW_LIFTED, SHADOW_LIFTED, SHADOW_RESTING]
   )
-  const glintX = useTransform(arrive, [0.15, 1], ['-140%', '140%'])
 
   const style = reduce
     ? { top: pinTop, boxShadow: SHADOW_RESTING }
@@ -99,34 +105,19 @@ function StoryCard({ chapter, index, total, cardRef, nextRef, reduce }) {
     <motion.article
       ref={cardRef}
       style={style}
-      className="bg-[var(--amw-paper)] ring-[var(--amw-line-strong)] sticky overflow-hidden rounded-xl p-6 ring-1 will-change-transform md:p-8"
+      className="amw-holo-pane border-[var(--amw-line-strong)] sticky overflow-hidden rounded-2xl border p-6 will-change-transform md:p-8"
     >
-      {/* Paper surface: grain, then a top-light sheen. */}
+      {/* The coating, in storefront.css because the blend modes have to differ
+          by theme: `screen` reads on a charcoal pane and does nothing on a
+          white one. All four layers are fixed to the pane. */}
+      <span aria-hidden="true" className="amw-holo-tint" />
+      <span aria-hidden="true" className="amw-holo-shift" />
+      <span aria-hidden="true" className="amw-holo-specular" />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-multiply dark:opacity-[0.1] dark:mix-blend-screen"
+        className="amw-holo-grain"
         style={{ backgroundImage: GRAIN }}
       />
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'linear-gradient(180deg, var(--amw-paper-light) 0%, transparent 38%)',
-        }}
-      />
-      {/* Teal glint that sweeps the sheet as it is dealt. */}
-      {!reduce && (
-        <motion.span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 -left-1/2 w-full"
-          style={{
-            x: glintX,
-            background:
-              'linear-gradient(105deg, transparent 42%, color-mix(in srgb, var(--amw-accent) 22%, transparent) 50%, transparent 58%)',
-          }}
-        />
-      )}
 
       {/* Index-card header: number on the left, deck position on the
           right, ruled off with an accent line that fades out to the edge. */}

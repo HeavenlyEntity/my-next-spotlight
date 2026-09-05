@@ -517,18 +517,94 @@
   }
 }
 
-/* ---- paper stock (about story deck) --------------------------------------- */
-/* Warm off-white sheet in light mode, charcoal stock in dark; the edge
-   token draws the sheet's thickness along its bottom lip. */
+/* ---- holographic glass (about story deck) --------------------------------- */
+/*
+ * The story deck is stacked glass, not paper. The iridescence has to be
+ * defined per theme rather than inline, because a blend mode that reads on a
+ * charcoal pane is a no-op on a white one: `screen` over near-white returns
+ * near-white. Light multiplies (the coating tints the pane), dark screens (the
+ * coating glows off it).
+ *
+ * Two hues besides the brand teal, crossing at different angles, because a
+ * single gradient gives a wash and iridescence needs a hue SHIFT.
+ */
 .amw {
-  --amw-paper: #fbfaf6;
-  --amw-paper-edge: rgba(24, 24, 27, 0.14);
-  --amw-paper-light: rgba(255, 255, 255, 0.75);
+  --amw-holo-violet: #7c6cff;
+  --amw-holo-rose: #ff7ad9;
 }
 :where(.dark) .amw {
-  --amw-paper: #16161b;
-  --amw-paper-edge: rgba(0, 0, 0, 0.6);
-  --amw-paper-light: rgba(255, 255, 255, 0.06);
+  --amw-holo-violet: #8b7cff;
+  --amw-holo-rose: #ff8fe0;
+}
+
+.amw-holo-pane {
+  background: color-mix(in srgb, var(--amw-card) 68%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+}
+
+.amw-holo-tint,
+.amw-holo-shift,
+.amw-holo-specular,
+.amw-holo-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.amw-holo-tint {
+  background: linear-gradient(
+    125deg,
+    color-mix(in srgb, var(--amw-accent) 30%, transparent) 0%,
+    transparent 40%,
+    transparent 60%,
+    color-mix(in srgb, var(--amw-holo-violet) 26%, transparent) 100%
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+:where(.dark) .amw-holo-tint {
+  mix-blend-mode: screen;
+  opacity: 0.85;
+}
+
+.amw-holo-shift {
+  background: linear-gradient(
+    210deg,
+    transparent 28%,
+    color-mix(in srgb, var(--amw-holo-rose) 20%, transparent) 55%,
+    transparent 80%
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.4;
+}
+:where(.dark) .amw-holo-shift {
+  mix-blend-mode: overlay;
+  opacity: 0.7;
+}
+
+/* The corner the light comes from. Fixed to the pane, never travelling. */
+.amw-holo-specular {
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.1) 20%,
+    transparent 44%
+  );
+}
+:where(.dark) .amw-holo-specular {
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.05) 22%,
+    transparent 45%
+  );
+}
+
+/* Purely to stop the gradients banding on wide panes. */
+.amw-holo-grain {
+  opacity: 0.05;
+  mix-blend-mode: overlay;
 }
 
 /* ---- Founders' Desk ------------------------------------------------------ */
