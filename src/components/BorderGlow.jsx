@@ -108,9 +108,11 @@ const BorderGlow = ({
 }) => {
   const cardRef = useRef(null)
   const [isHovered, setIsHovered] = useState(false)
-  const [cursorAngle, setCursorAngle] = useState(45)
+  /* 110deg is where the intro sweep starts; seeding it here rather than from
+     the effect body means the first painted frame is already correct. */
+  const [cursorAngle, setCursorAngle] = useState(animated ? 110 : 45)
   const [edgeProximity, setEdgeProximity] = useState(0)
-  const [sweepActive, setSweepActive] = useState(false)
+  const [sweepActive, setSweepActive] = useState(animated)
 
   const getCenterOfElement = useCallback((el) => {
     const { width, height } = el.getBoundingClientRect()
@@ -162,8 +164,6 @@ const BorderGlow = ({
     if (!animated) return
     const angleStart = 110
     const angleEnd = 465
-    setSweepActive(true)
-    setCursorAngle(angleStart)
 
     animateValue({ duration: 500, onUpdate: (v) => setEdgeProximity(v / 100) })
     animateValue({

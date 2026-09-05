@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { motion, useMotionValue, useSpring } from 'motion/react'
 import { cn } from '@/lib/utils'
+import { useMounted } from '@/hooks/use-client-value'
 
 /* Ported verbatim from the "minimal" landing template
    (components/rotating-cards.tsx); types dropped, surfaces mapped to amw
@@ -29,8 +30,12 @@ const RotatingCards = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
-  const [loaded, setLoaded] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
+  /* Which `cards` array we have finished preloading. Deriving `loaded` from it
+     means the no-images case and the reset-on-change case need no setState in
+     the effect body at all; only the async completion writes, and writing from
+     a callback is what effects are for. */
+  const [loadedFor, setLoadedFor] = useState(null)
+  const isMounted = useMounted()
 
   const containerRef = useRef(null)
   const rotationRef = useRef(initialRotation)
@@ -63,18 +68,10 @@ const RotatingCards = ({
   }, [cards, radius, initialRotation])
 
   const hasImages = cards.some((card) => card.image)
+  const loaded = !hasImages || loadedFor === cards
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!hasImages) {
-      setLoaded(true)
-      return
-    }
-
-    setLoaded(false)
+    if (!hasImages) return undefined
     let cancelled = false
 
     const preloadImages = async () => {
@@ -95,7 +92,7 @@ const RotatingCards = ({
       } catch (error) {
         console.error('Failed to load images', error)
       } finally {
-        if (!cancelled) setLoaded(true)
+        if (!cancelled) setLoadedFor(cards)
       }
     }
 

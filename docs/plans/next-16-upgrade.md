@@ -114,13 +114,42 @@ Neither is ours, which is exactly the case the guide's "Good to know" covers. Bo
 
 ## Task list
 
-- [ ] **U1** — bump `next`, `eslint-config-next`, `@next/mdx`, `eslint`; run `pnpm dlx @next/codemod@canary upgrade latest`; inspect the diff
-- [ ] **U2** — lint migration: flat config, `package.json` script, `AGENTS.md` + plan docs, fix new violations
-- [ ] **U3** — build strategy: pick `--turbopack`, drop the redundant `dev --turbopack`, confirm a clean production build
-- [ ] **U4** — verify `experimental.scrollRestoration` is still valid; adjust `next.config.mjs`
+- [x] **U1** — DONE — bump `next`, `eslint-config-next`, `@next/mdx`, `eslint`; run `pnpm dlx @next/codemod@canary upgrade latest`; inspect the diff
+- [x] **U2** — DONE — lint migration: flat config, `package.json` script, `AGENTS.md` + plan docs, fix new violations
+- [x] **U3** — DONE — build strategy: pick `--turbopack`, drop the redundant `dev --turbopack`, confirm a clean production build
+- [x] **U4** — DONE (still a valid key; no change needed) — verify `experimental.scrollRestoration` is still valid; adjust `next.config.mjs`
 - [ ] **U5** — full verification pass incl. the manual Payload admin exercise
-- [ ] **U6** — retire the "no build while dev server runs" rule in `AGENTS.md` and memory
+- [x] **U6** — DONE — retire the "no build while dev server runs" rule in `AGENTS.md` and memory
 
 ## Not in scope
 
 Opt-in features this upgrade makes available but does not require: `cacheComponents` (PPR), `reactCompiler`, `updateTag`/`refresh` cache APIs, React 19.2 View Transitions / `useEffectEvent` / `Activity`. All are separate decisions.
+
+## What actually happened (2026-09-04)
+
+Landed on **16.3.4**. Two things the scope did not predict, both caught by the
+first production build rather than by tests or lint:
+
+1. **The RSS feed could not be prerendered.** `buildFeed.js` renders each
+   article with `renderToStaticMarkup`, and every article's default export wraps
+   `ArticleLayout`, which was a `'use client'` module. From the server that is a
+   client _reference_, not a function, so calling it throws. Next 16 enforces
+   this during prerender. Fixed by splitting the page chrome into
+   `ArticleLayoutFull.jsx` and leaving `ArticleLayout` server-callable — it
+   already had an `isRssFeed` branch that needs no client features.
+2. **Two archived articles imported `next/image` directly**, which cannot be
+   server-rendered for the feed either. Swapped for a plain `<img>` off the
+   static import's `.src`, which keeps the feed shipping full article HTML.
+
+Also fixed while here: a latent `tsc` error in `catalog-cards.jsx` where
+`description = null` made TypeScript infer the prop type as `null`. It had gone
+unnoticed because the earlier verification loop pointed `tsc` at a
+non-existent `jsconfig.json` and silently passed.
+
+The ESLint migration surfaced 21 errors from the React Compiler rule set that
+`eslint-config-next@16` enables. All fixed rather than downgraded: `useMounted`
+/ `useMediaQuery` / `useRootTheme` in `src/hooks/use-client-value.js` replace
+six hand-rolled mount-and-subscribe effects, four "reset state when a prop
+changes" effects became render-time comparisons, one redundant effect was
+deleted outright, and the WebGL crown carries a file-scoped exemption because
+react-three-fiber mutates by design.

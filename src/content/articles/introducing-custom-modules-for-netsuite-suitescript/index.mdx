@@ -1,5 +1,4 @@
 import { ArticleLayout } from '@/components/ArticleLayout'
-import Image from 'next/image'
 import amdModuleSystem from './custom-modules-amd-suitescript-vert.png'
 import lodashInPackages from './lodash-package-location.png'
 
@@ -17,7 +16,7 @@ Most NetSuite developers are familiar with the **SuiteScript** *modules* that Ne
 
 
 > **Note:** This article assumes you are familiar with the basics of SuiteScript and the AMD engine. If you are not, I recommend reading the [SuiteScript 2.x Modules](https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/chapter_4220488571.html#SuiteScript-2.x-Modules) and [SuiteScript 2.0 AMD](https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_4340365862.html#Asynchronous-Module-Definitions-(AMD)-and-RequireJS) articles on the NetSuite developer docs.
-<Image src={amdModuleSystem} alt="" />
+<img src={amdModuleSystem.src} alt="" />
 
 ## 🔧 What Is AMD?
 AMD stands for *Asynchronous Module Definition*. It is a module system for JavaScript that allows you to load modules asynchronously. This is useful for loading modules in the browser, but it is also useful for loading modules in NetSuite. The AMD engine is built into NetSuite, and it is used to load the modules that NetSuite provides.
@@ -68,7 +67,7 @@ In this section, we will go over how to use **lodash** in our SuiteApp/Account C
 5. ### Lodash is ready to use! 🥧
     Now the library is in our `packages` folder it can be referenced by the AMD engine - Next stop using it in our SuiteScript files!
     > **After Inital Setup**: Your `packages` folder should look like this:
-    > <Image src={lodashInPackages} alt="" />
+    > <img src={lodashInPackages.src} alt="" />
 
 ## Using lodash in SuiteScript (any AMD library)
 In this section, we will go over how to use **lodash** in our SuiteScript files. We will also go over how to use **lodash** in our SuiteApp/Account Customization Project.

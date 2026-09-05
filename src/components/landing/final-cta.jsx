@@ -5,6 +5,7 @@ import { motion } from 'motion/react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
+import { useMediaQuery } from '@/hooks/use-client-value'
 
 const DitherCursor = dynamic(() => import('./dither-cursor'), { ssr: false })
 
@@ -15,26 +16,10 @@ const DitherCursor = dynamic(() => import('./dither-cursor'), { ssr: false })
 const easeOut = [0.16, 1, 0.3, 1]
 
 export function FinalCTA() {
-  const [isMobile, setIsMobile] = useState(true)
-  const [reduceMotion, setReduceMotion] = useState(true)
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReduceMotion(mq.matches)
-    const onChange = (e) => setReduceMotion(e.matches)
-    mq.addEventListener('change', onChange)
-
-    return () => {
-      window.removeEventListener('resize', checkMobile)
-      mq.removeEventListener('change', onChange)
-    }
-  }, [])
+  /* Server assumes the conservative case (small screen, reduced motion) and
+     the client corrects on its first post-hydration render. */
+  const isMobile = useMediaQuery('(max-width: 767px)', true)
+  const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)', true)
 
   return (
     <section className="px-6 py-24 md:py-36">

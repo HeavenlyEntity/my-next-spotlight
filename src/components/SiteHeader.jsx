@@ -270,10 +270,15 @@ export function SiteHeader() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  /* Close on route change and on Escape; return focus to the button. */
-  useEffect(() => {
+  /* Close on route change and on Escape; return focus to the button. The route
+     half is done during render (React's documented way to reset state when a
+     prop changes) so navigation never paints one frame with the menu still
+     open. */
+  const [prevPathname, setPrevPathname] = useState(pathname)
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname)
     setIsMenuOpen(false)
-  }, [pathname])
+  }
 
   useEffect(() => {
     if (!isMenuOpen) return

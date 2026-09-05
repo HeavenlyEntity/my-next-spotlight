@@ -10,6 +10,7 @@ import {
 } from 'motion/react'
 
 import { cn } from '@/lib/utils'
+import { useMounted } from '@/hooks/use-client-value'
 
 /* Ported from 21st.dev "Animate Digits" by unlumen (id 20071) to plain JS.
    A string of digits where only the digits that change blur-slide to their
@@ -36,8 +37,7 @@ function DigitCell({
   const [exitQueue, setExitQueue] = useState([])
   /* Motion-value styles are attached only after mount so the server and
      the first client render agree byte for byte (no hydration diff). */
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  const mounted = useMounted()
   const prevCharRef = useRef(char)
   const isFirstRender = useRef(true)
 

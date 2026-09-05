@@ -18,7 +18,6 @@ async function run() {
       continue
     }
     // Files are trusted (our own content); meta is a plain object literal.
-    // eslint-disable-next-line no-new-func
     const meta = new Function(`return (${match[1]})`)() as {
       title: string
       date: string

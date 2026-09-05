@@ -23,6 +23,7 @@ import logoSchwab from '@/images/logos/charles-schwab.png'
 import logoNewgen from '@/images/logos/newgen.png'
 import { ArrowDown, ArrowUpRight, Briefcase, Mail, PenLine } from 'lucide-react'
 import { formatDate } from '@/lib/formatDate'
+import { useMediaQuery } from '@/hooks/use-client-value'
 
 const ContourField = dynamic(
   () => import('@/components/shaders/contour-field'),
@@ -72,15 +73,7 @@ function SocialLink({ icon: Icon, ...props }) {
 }
 
 function Hero() {
-  const [reducedMotion, setReducedMotion] = useState(true)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mq.matches)
-    const onChange = (e) => setReducedMotion(e.matches)
-    mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
-  }, [])
+  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)', true)
 
   return (
     <div className="relative isolate overflow-x-clip">

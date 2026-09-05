@@ -29,9 +29,14 @@ export const DotFlow = ({
   const safeIndex = items.length > 0 ? index % items.length : 0
   const currentItem = items[safeIndex]
 
-  useEffect(() => {
+  /* Reset to the first item when the list itself changes. Done during render,
+     which React supports for exactly this case, rather than committing a stale
+     render and correcting it from an effect. */
+  const [prevItems, setPrevItems] = useState(items)
+  if (items !== prevItems) {
+    setPrevItems(items)
     setIndex(0)
-  }, [items])
+  }
 
   const next = useCallback(() => {
     if (items.length === 0) return

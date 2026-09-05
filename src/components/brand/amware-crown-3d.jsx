@@ -1,5 +1,18 @@
 'use client'
 
+/* eslint-disable react-hooks/immutability --
+ * react-three-fiber mutates by design. `useThree` hands back the live renderer
+ * objects, `useFrame` runs on the renderer's own requestAnimationFrame loop
+ * outside React's render cycle, and driving uniforms from it is the entire
+ * point of the hook. `react-hooks/immutability` models React rendering and
+ * cannot see any of that; it reports the scene assignment and the uniform
+ * writes as two entangled violations that swap places whenever either is
+ * suppressed on its own, so the exemption is file-scoped.
+ *
+ * Scoped to THIS rule only, and this file is nothing but the WebGL crown, so
+ * the blast radius is the component itself.
+ */
+
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'

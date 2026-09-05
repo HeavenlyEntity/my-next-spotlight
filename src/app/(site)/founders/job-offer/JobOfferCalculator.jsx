@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 
 import { DeskEyebrow } from '@/components/founders/desk-eyebrow'
 import { WizardShell } from '@/components/founders/wizard-shell'
@@ -40,6 +40,10 @@ import {
  * Step index is local, since it is nobody else's business.
  */
 
+/* Stable identity: `useSyncExternalStore` compares snapshots, so this must not
+   be a fresh closure on every render. */
+const serverNotHydrated = () => false
+
 /* Fixed geometry so nothing shifts when the real values land. */
 function LadderSkeleton() {
   return (
@@ -63,21 +67,20 @@ function LadderSkeleton() {
 }
 
 export default function JobOfferCalculator() {
-  const [step, setStep] = useState(1)
-  /* MUST start false on BOTH sides, never `useState(() => hasHydrated())`.
-     That reads client-only state during render and answers differently in the
-     two places: on the server there is no sessionStorage, so `persist` never
-     hydrates and it returns false; in the browser sessionStorage is
-     synchronous, so the store is already hydrated by the time React renders
-     and it returns true. The server then paints the skeleton, the client's
-     first render paints the wizard, and React throws away the whole server
-     tree as a hydration mismatch. Starting false everywhere and flipping in an
-     effect keeps the two first renders identical, because effects never run on
-     the server. */
-  const [hydrated, setHydrated] = useState(false)
-  /* True only for the paint immediately after hydration: those values arrived,
-     they did not change, so nothing should animate up to them. */
-  const [justHydrated, setJustHydrated] = useState(false)
+  /* null means "wherever the answers say"; a number means the reader moved. */
+  const [stepOverride, setStepOverride] = useState(null)
+  /* `useSyncExternalStore` is the API for exactly this shape of problem: a
+     value that differs between the server and the client, where the hydrating
+     render MUST use the server's answer. React renders `getServerSnapshot`
+     first, matches the server HTML, then re-renders with the client value.
+     Doing it by hand with `useState` + an effect is what caused the hydration
+     mismatch this replaced, and setting state from an effect to track an
+     external store is what `react-hooks/set-state-in-effect` warns about. */
+  const hydrated = useSyncExternalStore(
+    onHydrated,
+    hasHydrated,
+    serverNotHydrated
+  )
   /* The outcome the plot models. Conservative by default: the reader should
      meet the modest case first, not the one that flatters the offer. */
   const [scenarioId, setScenarioId] = useState('conservative')
@@ -87,33 +90,29 @@ export default function JobOfferCalculator() {
   const setInputs = useOfferStore((s) => s.set)
   const clear = useOfferStore((s) => s.clear)
 
-  useEffect(() => {
-    /* The synchronous branch is the normal one in a browser: sessionStorage
-       had the answers before the first paint. That is still an arrival, so it
-       suppresses the count-up exactly like the async branch does (DD5). */
-    if (hasHydrated()) {
-      setHydrated(true)
-      setJustHydrated(true)
-      return undefined
-    }
-    return onHydrated(() => {
-      setHydrated(true)
-      setJustHydrated(true)
-    })
-  }, [])
+  /* Someone arriving from the equity read lands straight on the ask, and
+     their numbers do not count up: those values arrived, they did not change
+     (DD5).
 
-  /* Drop the suppression after one paint so later changes animate normally. */
-  useEffect(() => {
-    if (!justHydrated) return undefined
-    const id = requestAnimationFrame(() => setJustHydrated(false))
-    return () => cancelAnimationFrame(id)
-  }, [justHydrated])
+     THIS HAS TO BE LATCHED, NOT DERIVED. `!isPristine()` is true the moment the
+     reader answers the first question too, so deriving it during render would
+     teleport a first-time user to the results as soon as they tapped a chip.
+     What matters is whether answers were ALREADY there when hydration finished,
+     which is a one-shot observation of an external event.
 
-  /* Someone arriving from the equity read lands straight on the ask. */
+     `set-state-in-effect` is disabled for exactly that reason: the rule's
+     alternatives are "derive during render" (wrong, see above) and
+     `useSyncExternalStore` (wrong too, because the snapshot would keep changing
+     as the reader types). Latching an external one-shot in a mount effect is
+     the correct pattern here, and it runs once. */
+  const [arrivedPrefilled, setArrivedPrefilled] = useState(false)
   useEffect(() => {
     if (!hydrated) return
-    if (!useOfferStore.getState().isPristine()) setStep(OFFER_STEPS.length)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setArrivedPrefilled(!useOfferStore.getState().isPristine())
   }, [hydrated])
+
+  const step = stepOverride ?? (arrivedPrefilled ? OFFER_STEPS.length : 1)
 
   const read = useMemo(() => computeRead(inputs()), [inputs, store])
   const ask = useMemo(
@@ -162,17 +161,17 @@ export default function JobOfferCalculator() {
                 .join(' · ')}
             </p>
 
-            <AskLadder ask={ask} suppressCount={justHydrated} />
+            <AskLadder ask={ask} suppressCount={arrivedPrefilled} />
 
             {/* Actions before the plot, not after it. The plot is evidence the
                 reader may or may not scroll to; the action on the ask cannot
                 sit below it (design review DD3, screen order). */}
             <AskActions
               ask={ask}
-              onEdit={() => setStep(1)}
+              onEdit={() => setStepOverride(1)}
               onClear={() => {
                 clear()
-                setStep(1)
+                setStepOverride(1)
               }}
             />
 
@@ -183,8 +182,10 @@ export default function JobOfferCalculator() {
             step={step}
             steps={OFFER_STEPS}
             lead={OFFER_STEPS[step - 1]?.lead}
-            onBack={() => setStep((s) => Math.max(1, s - 1))}
-            onNext={() => setStep((s) => Math.min(OFFER_STEPS.length, s + 1))}
+            onBack={() => setStepOverride(Math.max(1, step - 1))}
+            onNext={() =>
+              setStepOverride(Math.min(OFFER_STEPS.length, step + 1))
+            }
           >
             {step === 1 && <SeatStep inputs={store} onChange={setInputs} />}
             {step === 2 && <CompanyStep inputs={store} onChange={setInputs} />}

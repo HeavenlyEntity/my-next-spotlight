@@ -1,6 +1,12 @@
 'use client'
 
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+  useSyncExternalStore,
+} from 'react'
 
 import { DeskEyebrow } from '@/components/founders/desk-eyebrow'
 import { WizardShell } from '@/components/founders/wizard-shell'
@@ -83,6 +89,11 @@ function reducer(state, action) {
        marking them touched would arm the live announcer and start the
        write-back effect against a store that already holds them. */
     case 'seed':
+      /* Never land on top of something the user is part-way through typing.
+         The guard lives here because the reducer always sees current state;
+         mirroring `touched` into a ref meant writing that ref during render,
+         which breaks under concurrent rendering. */
+      if (state.touched) return state
       return { ...state, inputs: { ...state.inputs, ...action.patch } }
     /* Back to a blank wizard. The caller empties the shared store first; this
        drops the local half, which the store never held. */
@@ -141,6 +152,10 @@ function reducer(state, action) {
   }
 }
 
+/* Stable identity: `useSyncExternalStore` compares snapshots, so this must not
+   be a fresh closure on every render. */
+const serverNotHydrated = () => false
+
 /* The wizard card's geometry, held while persisted answers land, so a chip row
    never flips under someone a beat after it renders. */
 function WizardSkeleton() {
@@ -171,17 +186,16 @@ export default function EquityCalculator() {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
   const { step, inputs, overrides, touched } = state
   /* Gate the render so a chip row cannot flip under the user a beat after it
-     paints (DD5). MUST start false on BOTH sides, never
-     `useState(() => hasHydrated())`: that reads client-only state during
-     render and answers false on the server (no sessionStorage, so `persist`
-     never hydrates) and true in the browser (sessionStorage is synchronous, so
-     the store is hydrated before React renders). The server would paint the
-     skeleton and the client's first render the wizard, which is a hydration
-     mismatch and costs a full client re-render of the tree. */
-  const [hydrated, setHydrated] = useState(false)
-  /* Read inside a one-shot effect, so it must be a ref rather than a dep. */
-  const touchedRef = useRef(touched)
-  touchedRef.current = touched
+     paints (DD5). `useSyncExternalStore` is the API for a value that differs
+     between the server and the client: React renders `getServerSnapshot`
+     first so the hydrating render matches the server HTML, then re-renders
+     with the client value. Reading `hasHydrated()` during render instead is
+     what caused the hydration mismatch this replaced. */
+  const hydrated = useSyncExternalStore(
+    onHydrated,
+    hasHydrated,
+    serverNotHydrated
+  )
 
   /* Pull the shared fields in, once, when persisted state lands. Guarded on
      `isPristine()` so an untouched store never overwrites this wizard's own
@@ -189,28 +203,18 @@ export default function EquityCalculator() {
      it can never land on top of something the user is part-way through
      typing. */
   useEffect(() => {
-    const take = () => {
-      const store = useOfferStore.getState()
-      if (store.isPristine()) return
-      const patch = {}
-      for (const key of ENGINE_KEYS) {
-        if (key in INITIAL_INPUTS) patch[key] = store[key]
-      }
-      dispatch({ type: 'seed', patch })
+    if (!hydrated) return
+    const store = useOfferStore.getState()
+    if (store.isPristine()) return
+    const patch = {}
+    for (const key of ENGINE_KEYS) {
+      if (key in INITIAL_INPUTS) patch[key] = store[key]
     }
-    if (hasHydrated()) {
-      if (!touchedRef.current) take()
-      setHydrated(true)
-      return undefined
-    }
-    return onHydrated(() => {
-      if (!touchedRef.current) take()
-      setHydrated(true)
-    })
-    /* Once, on hydration. Re-running on every input change would fight the
-       user's own edits with the store's copy of them. */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    /* The reducer drops this on the floor once the user has typed anything,
+       so the guard lives with the state it guards rather than in a ref
+       mirrored during render. */
+    dispatch({ type: 'seed', patch })
+  }, [hydrated])
 
   /* Push the shared fields into the store so the job offer calculator and the
      contact form see the same answers. Only the keys both tools own; the step,

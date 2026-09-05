@@ -31,10 +31,6 @@ export function SliderField({
   const [text, setText] = useState(String(value ?? ''))
   const [editing, setEditing] = useState(false)
 
-  useEffect(() => {
-    if (!editing) setText(String(value ?? ''))
-  }, [value, editing])
-
   const pinned = value > track.max
   const sliderValue = Math.min(
     Math.max(value ?? track.min, track.min),

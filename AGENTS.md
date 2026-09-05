@@ -2,7 +2,7 @@
 
 ## Tech Stack
 
-- **Next.js 15** (Pages Router) + **React 19** + **JavaScript**
+- **Next.js 16** (App Router) + **React 19** + **JavaScript**
 - **Supabase** (Postgres, Auth, Storage)
 - **Tailwind CSS 4** + Shadcn UI
 - **pnpm** as package manager
@@ -10,18 +10,25 @@
 ## Essential Commands
 
 ```bash
-pnpm dev                          # Start development (TurboPack)
-pnpm build                        # Production build
-pnpm lint                         # Lint (no lint:fix script exists)
+pnpm dev                          # Start development (Turbopack, now the default)
+pnpm build                        # Production build (Turbopack)
+pnpm lint                         # eslint . (no lint:fix script exists)
+npx eslint <file>                 # Lint one file
 npx prettier --write <file>       # Format a file (no format:fix script exists)
 ```
 
 ## Verification
 
 After implementation, always run:
-1. `pnpm lint`
+
+1. `npx eslint <changed files>` (`next lint` was removed in Next 16)
 2. `npx prettier --write` on changed files
-3. Run code quality reviewer agent
+3. `npx tsc --noEmit`
+4. Run code quality reviewer agent
+
+Since Next 16, `next dev` writes to `.next/dev` and `next build` to `.next`, with
+a lockfile preventing duplicate instances, so **`pnpm build` while the dev server
+runs is now safe.** The old rule against it no longer applies.
 
 ## Learned User Preferences
 
@@ -29,6 +36,7 @@ After implementation, always run:
 - `motion` imported from `motion/react`, never `framer-motion`; only use in client components
 - When fixing imports or patterns, apply the change across ALL files in the project
 - Never start a dev server
+- Lint with the ESLint CLI, never `next lint`; flat config lives in `eslint.config.mjs`
 - Loading skeletons cover only the main content area, not the nav sidebar
 - Graceful error handling on public pages (loadError prop, fallback UI with refresh); throw on staff pages
 - Card UIs should be minimal at rest; show supplementary details (status, expanded info) on hover/interaction only

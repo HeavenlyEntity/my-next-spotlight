@@ -202,6 +202,14 @@ export function CourseCard({ course, index = 0 }) {
 
 /* ---- service: plan card -------------------------------------------------- */
 
+/**
+ * @param {object} props
+ * @param {any} props.service
+ * @param {number} [props.index]
+ * @param {import('react').ReactNode} [props.description] rendered rich text;
+ *   without the annotation TS infers the `null` default as the whole type and
+ *   rejects every real caller.
+ */
 export function ServiceCard({ service, index = 0, description = null }) {
   const { reduce, ...reveal } = useReveal(index)
   const icon = mediaUrl(service.icon)

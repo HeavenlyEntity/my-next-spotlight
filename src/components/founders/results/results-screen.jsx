@@ -16,6 +16,7 @@ import { trackCta } from '@/components/founders/analytics'
 import { REVIEW_HREF } from '@/lib/founders/tools'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
+import { useMounted } from '@/hooks/use-client-value'
 
 /* Step 4 in three layers: Verdict, Evidence, Consequences; then quiet
    utilities, a repeated CTA, and sources in a disclosure. Wrapped in
@@ -31,12 +32,18 @@ export function ResultsScreen({ read, overrides, onOverride }) {
   const declared = read.preselectedPath
   const [path, setPath] = useState(declared)
   const [mathOpen, setMathOpen] = useState(false)
-  const [href, setHref] = useState('')
 
-  useEffect(() => setPath(declared), [declared])
-  useEffect(() => {
-    setHref(window.location.host + window.location.pathname)
-  }, [])
+  /* Follow the engine's preselected path when the read changes, during render
+     rather than from an effect. */
+  const [prevDeclared, setPrevDeclared] = useState(declared)
+  if (declared !== prevDeclared) {
+    setPrevDeclared(declared)
+    setPath(declared)
+  }
+
+  /* Only the print header uses this, and it does not exist on the server. */
+  const mounted = useMounted()
+  const href = mounted ? window.location.host + window.location.pathname : ''
 
   const hasOffer = read.offer.pct !== null
   const today = new Date().toISOString().slice(0, 10)

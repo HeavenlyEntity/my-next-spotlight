@@ -18,6 +18,7 @@ import coverAuthjs from '@/images/projects/authjs-cover.png'
 import coverChamoji from '@/images/projects/chamoji-cover.png'
 import coverWindstone from '@/images/projects/windstone-cover.png'
 import coverFuriousFroth from '@/images/projects/furiousfroth-cover.png'
+import { useMediaQuery } from '@/hooks/use-client-value'
 
 const DitherCursor = dynamic(() => import('./dither-cursor'), { ssr: false })
 
@@ -83,26 +84,12 @@ export function Hero() {
   const [isVisible, setIsVisible] = useState(false)
   const [shouldRender, setShouldRender] = useState(false)
   const [opacity, setOpacity] = useState(0)
-  const [isMobile, setIsMobile] = useState(true)
-  const [reduceMotion, setReduceMotion] = useState(true)
+  /* Server assumes the conservative case (small screen, reduced motion) and
+     the client corrects on its first post-hydration render. */
+  const isMobile = useMediaQuery('(max-width: 767px)', true)
+  const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)', true)
   const opacityRef = useRef(0)
   const animationRef = useRef(null)
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReduceMotion(mq.matches)
-    const onChange = (e) => setReduceMotion(e.matches)
-    mq.addEventListener('change', onChange)
-
-    return () => {
-      window.removeEventListener('resize', checkMobile)
-      mq.removeEventListener('change', onChange)
-    }
-  }, [])
 
   useEffect(() => {
     const headline = headlineRef.current

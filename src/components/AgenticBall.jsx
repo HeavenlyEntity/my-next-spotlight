@@ -8,7 +8,7 @@ import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 function cn(...inputs) {
-    return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs))
 }
 
 const vertSrc = `
@@ -116,142 +116,141 @@ void main() {
 `
 
 const Scene = ({
-    speed,
-    complexity,
-    swirl,
-    zoom,
-    tintRgb,
-    hueRotation,
-    saturation,
-    brightness,
-    bgRgb,
-    opacity,
+  speed,
+  complexity,
+  swirl,
+  zoom,
+  tintRgb,
+  hueRotation,
+  saturation,
+  brightness,
+  bgRgb,
+  opacity,
 }) => {
-    const meshRef = useRef(null)
-    const { size, viewport } = useThree()
+  const meshRef = useRef(null)
+  const { size, viewport } = useThree()
 
-    const uniforms = useMemo(
-        () => ({
-            uTime: { value: 0 },
-            uRes: { value: new THREE.Vector2() },
-            uSpeed: { value: speed },
-            uComplexity: { value: complexity },
-            uSwirl: { value: swirl },
-            uZoom: { value: zoom },
-            uTint: { value: new THREE.Vector3(...tintRgb) },
-            uHueRotation: { value: hueRotation },
-            uSaturation: { value: saturation },
-            uBrightness: { value: brightness },
-            uBg: { value: new THREE.Vector3(...bgRgb) },
-            uAlpha: { value: opacity },
-        }),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
+  const uniforms = useMemo(
+    () => ({
+      uTime: { value: 0 },
+      uRes: { value: new THREE.Vector2() },
+      uSpeed: { value: speed },
+      uComplexity: { value: complexity },
+      uSwirl: { value: swirl },
+      uZoom: { value: zoom },
+      uTint: { value: new THREE.Vector3(...tintRgb) },
+      uHueRotation: { value: hueRotation },
+      uSaturation: { value: saturation },
+      uBrightness: { value: brightness },
+      uBg: { value: new THREE.Vector3(...bgRgb) },
+      uAlpha: { value: opacity },
+    }),
+    []
+  )
+
+  useFrame((state) => {
+    const mat = meshRef.current?.material
+    if (!mat) return
+    mat.uniforms.uTime.value = state.clock.elapsedTime
+    mat.uniforms.uRes.value.set(
+      size.width * viewport.dpr,
+      size.height * viewport.dpr
     )
+    mat.uniforms.uSpeed.value = speed
+    mat.uniforms.uComplexity.value = complexity
+    mat.uniforms.uSwirl.value = swirl
+    mat.uniforms.uZoom.value = zoom
+    mat.uniforms.uTint.value.set(...tintRgb)
+    mat.uniforms.uHueRotation.value = hueRotation
+    mat.uniforms.uSaturation.value = saturation
+    mat.uniforms.uBrightness.value = brightness
+    mat.uniforms.uBg.value.set(...bgRgb)
+    mat.uniforms.uAlpha.value = opacity
+  })
 
-    useFrame((state) => {
-        const mat = meshRef.current?.material
-        if (!mat) return
-        mat.uniforms.uTime.value = state.clock.elapsedTime
-        mat.uniforms.uRes.value.set(
-            size.width * viewport.dpr,
-            size.height * viewport.dpr
-        )
-        mat.uniforms.uSpeed.value = speed
-        mat.uniforms.uComplexity.value = complexity
-        mat.uniforms.uSwirl.value = swirl
-        mat.uniforms.uZoom.value = zoom
-        mat.uniforms.uTint.value.set(...tintRgb)
-        mat.uniforms.uHueRotation.value = hueRotation
-        mat.uniforms.uSaturation.value = saturation
-        mat.uniforms.uBrightness.value = brightness
-        mat.uniforms.uBg.value.set(...bgRgb)
-        mat.uniforms.uAlpha.value = opacity
-    })
-
-    return (
-        <mesh ref={meshRef}>
-            <planeGeometry args={[2, 2]} />
-            <shaderMaterial
-                vertexShader={vertSrc}
-                fragmentShader={fragSrc}
-                uniforms={uniforms}
-                transparent
-            />
-        </mesh>
-    )
+  return (
+    <mesh ref={meshRef}>
+      <planeGeometry args={[2, 2]} />
+      <shaderMaterial
+        vertexShader={vertSrc}
+        fragmentShader={fragSrc}
+        uniforms={uniforms}
+        transparent
+      />
+    </mesh>
+  )
 }
 
 const hexToRgb = (hex) => {
-    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return m
-        ? [
-            parseInt(m[1], 16) / 255,
-            parseInt(m[2], 16) / 255,
-            parseInt(m[3], 16) / 255,
-        ]
-        : [0, 0, 0]
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return m
+    ? [
+        parseInt(m[1], 16) / 255,
+        parseInt(m[2], 16) / 255,
+        parseInt(m[3], 16) / 255,
+      ]
+    : [0, 0, 0]
 }
 
 const AgenticBall = ({
-    width = '100%',
-    height = '100%',
-    className,
-    children,
-    speed = 0.5,
-    complexity = 3,
-    swirl = 2.0,
-    zoom = 1.75,
-    color = '#FFFFFF',
-    hueRotation = 4.3,
-    saturation = 0,
-    brightness = 2.0,
-    backgroundColor = '#000000',
-    opacity = 1,
+  width = '100%',
+  height = '100%',
+  className,
+  children,
+  speed = 0.5,
+  complexity = 3,
+  swirl = 2.0,
+  zoom = 1.75,
+  color = '#FFFFFF',
+  hueRotation = 4.3,
+  saturation = 0,
+  brightness = 2.0,
+  backgroundColor = '#000000',
+  opacity = 1,
 }) => {
-    const tintRgb = useMemo(() => hexToRgb(color), [color])
-    const bgRgb = useMemo(() => hexToRgb(backgroundColor), [backgroundColor])
+  const tintRgb = useMemo(() => hexToRgb(color), [color])
+  const bgRgb = useMemo(() => hexToRgb(backgroundColor), [backgroundColor])
 
-    return (
-        <div
-            className={cn('relative overflow-hidden', className)}
-            style={{
-                width,
-                height,
-            }}
-        >
-            <Canvas
-                orthographic
-                camera={{
-                    position: [0, 0, 1],
-                    zoom: 1,
-                    left: -1,
-                    right: 1,
-                    top: 1,
-                    bottom: -1,
-                }}
-                gl={{ antialias: true, alpha: true }}
-                style={{ width, height }}
-                className="!absolute top-0 left-0"
-            >
-                <Scene
-                    speed={speed}
-                    complexity={complexity}
-                    swirl={swirl}
-                    zoom={zoom}
-                    tintRgb={tintRgb}
-                    hueRotation={hueRotation}
-                    saturation={saturation}
-                    brightness={brightness}
-                    bgRgb={bgRgb}
-                    opacity={opacity}
-                />
-            </Canvas>
-            {children && (
-                <div className="z-1 pointer-events-none relative">{children}</div>
-            )}
-        </div>
-    )
+  return (
+    <div
+      className={cn('relative overflow-hidden', className)}
+      style={{
+        width,
+        height,
+      }}
+    >
+      <Canvas
+        orthographic
+        camera={{
+          position: [0, 0, 1],
+          zoom: 1,
+          left: -1,
+          right: 1,
+          top: 1,
+          bottom: -1,
+        }}
+        gl={{ antialias: true, alpha: true }}
+        style={{ width, height }}
+        className="!absolute top-0 left-0"
+      >
+        <Scene
+          speed={speed}
+          complexity={complexity}
+          swirl={swirl}
+          zoom={zoom}
+          tintRgb={tintRgb}
+          hueRotation={hueRotation}
+          saturation={saturation}
+          brightness={brightness}
+          bgRgb={bgRgb}
+          opacity={opacity}
+        />
+      </Canvas>
+      {children && (
+        <div className="z-1 pointer-events-none relative">{children}</div>
+      )}
+    </div>
+  )
 }
 
 AgenticBall.displayName = 'AgenticBall'

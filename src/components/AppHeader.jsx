@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react'
 import PillNav from '@/components/PillNav'
 import { REVIEW_HREF, liveTools } from '@/lib/founders/tools'
 import amwareLogo from '@/images/logos/Amware-icon-mono.svg'
+import { useRootTheme } from '@/hooks/use-client-value'
 
 function SunIcon(props) {
   return (
@@ -125,22 +126,7 @@ export function AppHeader() {
   let pathname = usePathname()
   let isHomePage = pathname === '/'
 
-  const [theme, setTheme] = useState('light')
-
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark')
-    setTheme(isDark ? 'dark' : 'light')
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          const isDarkNow = document.documentElement.classList.contains('dark')
-          setTheme(isDarkNow ? 'dark' : 'light')
-        }
-      })
-    })
-    observer.observe(document.documentElement, { attributes: true })
-    return () => observer.disconnect()
-  }, [])
+  const theme = useRootTheme()
 
   let headerRef = useRef()
   let avatarRef = useRef()
