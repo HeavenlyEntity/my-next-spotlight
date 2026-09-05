@@ -34,7 +34,7 @@ import logoConventionSuite from '@/images/logos/ConventionSuite.png'
 import KingdomKodeMark from '@/components/brand/kingdom-kode-mark'
 import logoCelestial from '@/images/logos/dark-celestial-square.svg'
 import logoGearz from '@/images/logos/gearz-icon.svg'
-import coverMipi from '@/images/projects/mipi-cover.png'
+import mockupMipi from '@/images/photos/MiPi-mockup.webp'
 import coverWindstone from '@/images/projects/windstone-cover.png'
 import coverAuthjs from '@/images/projects/authjs-cover.png'
 import coverNeatsuite from '@/images/projects/neatsuite-cover.png'
@@ -142,7 +142,7 @@ const projects = [
       'Creating technology to empower artists and creators to build their own communities, and build wealth.',
     link: { href: 'http://i.mipi.io', label: 'i.mipi.io' },
     logo: logoMipi,
-    cover: coverMipi,
+    cover: mockupMipi,
     status: 'development',
     whatHappened:
       'Early development SaaS with customer market fit and growing! Associated with my OneDay Program.',
