@@ -17,7 +17,7 @@ import coverNeatsuite from '@/images/projects/neatsuite-cover.png'
 import coverAuthjs from '@/images/projects/authjs-cover.png'
 import coverChamoji from '@/images/projects/chamoji-cover.png'
 import coverWindstone from '@/images/projects/windstone-cover.png'
-import coverFuriousFroth from '@/images/projects/furiousfroth-cover.png'
+import siteFuriousFroth from '@/images/photos/furious-froth-site.webp'
 import { useMediaQuery } from '@/hooks/use-client-value'
 
 const DitherCursor = dynamic(() => import('./dither-cursor'), { ssr: false })
@@ -43,7 +43,7 @@ const cardData = [
   { label: 'Auth.js NetSuite', image: coverAuthjs },
   { label: 'Chamoji', image: coverChamoji },
   { label: 'Windstone', image: coverWindstone },
-  { label: 'Furious Froth', image: coverFuriousFroth },
+  { label: 'Furious Froth', image: siteFuriousFroth },
 ]
 
 const carouselCards = cardData.map((card, index) => ({
