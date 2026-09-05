@@ -93,8 +93,11 @@ describe('copy the ask (plan test 30g)', () => {
     expect(area.value).toContain(
       `$${ask.target.cash.toLocaleString('en-US')} base`
     )
-    /* Focused and selected, so the user's next keystroke is a copy. */
-    expect(document.activeElement).toBe(area)
+    /* Focused and selected, so the user's next keystroke is a copy. The
+       element appearing and the focus landing are two different ticks: focus is
+       applied by an effect after the state change, so `findByLabelText` above
+       can resolve before it. Wait on the focus itself. */
+    await waitFor(() => expect(document.activeElement).toBe(area))
   })
 })
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 
 import CountUp from '@/components/react-bits/count-up'
 
@@ -29,7 +29,9 @@ describe('CountUp', () => {
   it('calls onStart once it is in view', async () => {
     const onStart = vi.fn()
     render(<CountUp to={8} onStart={onStart} />)
-    await new Promise((resolve) => setTimeout(resolve, 20))
-    expect(onStart).toHaveBeenCalled()
+    /* Wait on the callback, not the clock. A fixed 20ms sleep passes alone and
+       fails under the full suite, where 37 workers share the CPU and the
+       in-view callback can land later than that. */
+    await waitFor(() => expect(onStart).toHaveBeenCalled())
   })
 })
