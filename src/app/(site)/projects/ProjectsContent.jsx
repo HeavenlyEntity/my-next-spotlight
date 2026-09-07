@@ -50,7 +50,7 @@ import coverChamoji from '@/images/projects/chamoji-cover.png'
 import coverVrsa from '@/images/projects/vrsa-cover.png'
 import coverVbRemoteSat from '@/images/projects/vbremotesat-cover.png'
 import coverCelestial from '@/images/projects/celestial-cover.png'
-import coverGearz from '@/images/projects/gearz-cover.webp'
+import coverGearz from '@/images/projects/gearz-io-dashboard.webp'
 
 /* Projects page in the "minimal" landing template's grammar: a centred
    header, the three newest builds as the template's numbered split
