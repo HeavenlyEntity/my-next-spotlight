@@ -5,7 +5,7 @@ import { motion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { SectionEyebrow } from './section-eyebrow'
-import imageGearz from '@/images/projects/gearz-io-dashboard.webp'
+import imageGearz from '@/images/projects/gearz-cover-1.webp'
 import imageKingdomKode from '@/images/photos/kingdom-kode-port.webp'
 import imageMipi from '@/images/photos/MiPi-mockup.webp'
 
