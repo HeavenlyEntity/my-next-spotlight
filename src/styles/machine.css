@@ -53,6 +53,11 @@
   background: var(--bg);
   color: var(--base);
   font-family: var(--machine-font), ui-monospace, monospace;
+  /* THE character cell. A terminal has one, and every glyph on this screen
+     sits in it, so nothing below may set a font-size. Rank is carried by
+     case, weight and colour instead -- headings are uppercase, not larger.
+     The one exception is .machine-glyph, which is a picture made of
+     characters rather than text. */
   font-size: 15px;
   line-height: 1.75;
   min-height: 100dvh;
@@ -131,7 +136,7 @@
   text-decoration: none;
   color: var(--base);
 }
-.machine-glyph {
+.machine .machine-glyph {
   margin: 0;
   /* NOT the page face. JetBrains Mono is served here as a latin subset, which
      has no U+2500-U+259F, so every block and box character fell back to the
@@ -158,7 +163,6 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
 }
 .machine-nav {
   display: flex;
@@ -183,13 +187,37 @@
   border-color: transparent;
   padding: 0 7px;
 }
+/* Every element the UA stylesheet sizes on its own is pulled back into the
+   cell. Headings, code, form controls and small all carry a built-in size
+   that has nothing to do with this design. */
+.machine
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    pre,
+    code,
+    kbd,
+    samp,
+    small,
+    button,
+    input,
+    select,
+    textarea
+  ) {
+  font-size: inherit;
+}
 .machine main {
   min-width: 0;
 }
 .machine h1 {
-  font-size: clamp(21px, 2.3vw, 28px);
-  line-height: 1.4;
-  letter-spacing: -0.03em;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
   margin: 0 0 10px;
   overflow-wrap: anywhere;
 }
@@ -198,7 +226,6 @@
   align-items: center;
   gap: 12px;
   margin: 34px 0 16px;
-  font-size: 15px;
   line-height: 1.5;
   letter-spacing: 0.08em;
   color: var(--bright);
@@ -225,9 +252,10 @@
 }
 .machine h3,
 .machine h4 {
-  font-size: 15px;
   margin: 20px 0 6px;
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--bright);
 }
 .machine p {
@@ -253,7 +281,6 @@
   padding: 18px 20px;
   max-width: 100%;
   overflow-x: auto;
-  font-size: 13px;
   /* Code never gets tight leading; wrapped tokens need the air. */
   line-height: 1.65;
 }
@@ -262,7 +289,6 @@
   border: 1px solid var(--line);
   border-radius: 2px;
   padding: 1px 5px;
-  font-size: 0.92em;
   color: var(--base);
 }
 .machine code {
@@ -305,7 +331,6 @@
   flex-wrap: wrap;
   gap: 12px 24px;
   color: var(--dim);
-  font-size: 13px;
 }
 .machine-pagination {
   margin-top: 32px;
@@ -327,7 +352,6 @@
   margin-top: 40px;
   padding-top: 12px;
   color: var(--dim);
-  font-size: 12px;
 }
 .machine-notice {
   border: 1px solid var(--line);
@@ -372,10 +396,8 @@
 .machine-cursor {
   display: block;
   /* One character cell, square-cornered: a block cursor fills the cell it
-     sits in, which is why 1ch by ~1.15em rather than a round dot or a fixed
-     pixel size. Sized up slightly from the body face so it carries on an
-     otherwise empty screen. */
-  font-size: 1.35rem;
+     sits in. No font-size of its own -- on a single-cell screen it would be
+     the only glyph out of grid. */
   width: 1ch;
   height: 1.15em;
   margin: 30px 0;
@@ -426,16 +448,10 @@
     gap: 8px;
     padding-bottom: 14px;
   }
-  .machine .machine-wordmark {
-    font-size: 42px;
-  }
   .machine-nav {
     column-gap: 18px;
     row-gap: 0;
     margin-bottom: 24px;
-  }
-  .machine-nav a {
-    font-size: 13px;
   }
   .machine h2 {
     margin-top: 28px;
@@ -497,9 +513,6 @@
     grid-template-columns: 1fr;
     gap: 0;
     margin-bottom: 12px;
-  }
-  .machine-facts dt {
-    font-size: 12px;
   }
 }
 
