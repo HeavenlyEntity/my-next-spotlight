@@ -24,8 +24,10 @@ import { SectionEyebrow } from './section-eyebrow'
 
    TODO(alec): still outstanding, and deliberately NOT written as placeholder
    text -- send the actual wording and they go straight in:
-     - Mark Schilling (no wording, role or company supplied; nothing
-       public found on the web either, so it cannot be sourced here)
+     - Mark Schilling: the supplied wording breaks off mid-sentence at
+       "was nothing short of". The card summarises only the complete part;
+       the closing clause and his practice name are still needed, and are
+       required before this could ever be shown as a direct quotation.
      - Tavarse Green, Managing Partner, EdenKode
      - Intch verified reviews (login-walled, cannot be fetched)
      - LinkedIn recommendations (login-walled, cannot be fetched) */
@@ -33,6 +35,13 @@ import { SectionEyebrow } from './section-eyebrow'
 const easeOut = [0.16, 1, 0.3, 1]
 
 const testimonials = [
+  {
+    title: 'A Brand Foundation, Not a Website',
+    description:
+      'Came in with a clear vision for a new architecture design practice and no route to putting it online. The engagement went past building a site into shaping the practice\u2019s brand: listening first, then translating his values and aesthetic into the digital experience.',
+    name: 'Mark Schilling',
+    role: 'Founder, architecture design practice',
+  },
   {
     title: 'Protection That Runs Itself',
     description:
@@ -132,8 +141,8 @@ export function Testimonials() {
             {/* Carries what the per-card source label used to: it says where
                 the quotes come from, so nothing has to be inferred. */}
             <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-              Architecture, security, and platform decisions I own end to end,
-              in the words of the people whose work depends on them.
+              Architecture, security, and platform decisions I own end to end -
+              summarised from what the people relying on them have said.
             </p>
           </div>
 
