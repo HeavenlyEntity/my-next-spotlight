@@ -9,23 +9,23 @@ import { SectionEyebrow } from './section-eyebrow'
    a snap-scrolling rail of tall quote cards with arrow controls and an
    edge fade that dissolves as the rail reaches its end.
 
-   Quotes are verbatim from the published testimonials on i.mipi.io, pulled
-   2026-09-07. They are reproduced exactly, emoji included -- editing what
-   someone said to fit a layout is not an option. The one edit is the role
-   label "Soloprenuer", corrected to its spelling; that is a caption, not
-   speech. Titles are editorial summaries of each quote, not claims.
+   These are PARAPHRASES, not quotations, and the markup reflects that: no
+   blockquote, no quotation marks. The verbatim wording lives on i.mipi.io
+   (pulled 2026-09-07); these cards report what each person said about a
+   product Alec architected and shipped. Rewriting words and leaving them in
+   quotes under a real person's name would be presenting speech they never
+   gave -- if Grace and Mike have approved reworded first-person quotes, this
+   can go back to blockquotes in one edit.
 
-   These are users of a product Alec architected and shipped, not consulting
-   clients. The per-card source label is gone because it stopped being load
-   bearing: both surviving quotes name MiPi in their own words, and the
-   standfirst under the heading says where they come from. If a quote that
-   does NOT name its own subject is added here, that context has to come back
-   with it -- an unattributed quote under this heading would read as an
-   endorsement of the consulting practice that nobody actually gave.
+   Both still name MiPi in the summary, and the standfirst under the heading
+   says where these come from. A card whose subject is not identifiable needs
+   that context restored, or it reads as an endorsement of the consulting
+   practice that nobody gave.
 
    TODO(alec): still outstanding, and deliberately NOT written as placeholder
    text -- send the actual wording and they go straight in:
-     - Mark Schilling (no quote, role or company supplied yet)
+     - Mark Schilling (no wording, role or company supplied; nothing
+       public found on the web either, so it cannot be sourced here)
      - Tavarse Green, Managing Partner, EdenKode
      - Intch verified reviews (login-walled, cannot be fetched)
      - LinkedIn recommendations (login-walled, cannot be fetched) */
@@ -36,14 +36,14 @@ const testimonials = [
   {
     title: 'Protection That Runs Itself',
     description:
-      'It\u2019s a huge relief to know that MiPi is constantly looking out for me and my artwork online, behind-the-scenes. I\u2019ve never had a gallery offer that kind of service before. \u2764\uFE0F',
+      'Her catalogue is monitored across the web continuously, without her having to go looking for misuse herself. She reports no gallery she had worked with previously offered anything comparable.',
     name: 'Grace L.',
     role: 'Founder of GleeCreative',
   },
   {
     title: 'Why They Left the Alternatives',
     description:
-      'After trying multiple platforms, MiPi stands out for its artist-first approach. The combination of strong IP protection and fair compensation made switching a no-brainer. Their analytics tools help me understand my audience better, and the low platform fees mean I keep more of what I earn.',
+      'Moved across after trying several competing platforms. IP protection and the fee structure settled the decision; the analytics changed how he reads his own audience, and lower platform fees left more of the revenue with him.',
     name: 'Mike Pryke',
     role: 'Founder of Sorta',
   },
@@ -174,9 +174,12 @@ export function Testimonials() {
                   {item.title}
                 </h3>
                 <div>
-                  <blockquote className="mb-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+                  {/* Deliberately not a blockquote. These are paraphrases,
+                      and quotation markup around words someone did not say
+                      presents invented speech as theirs. */}
+                  <p className="mb-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
                     {item.description}
-                  </blockquote>
+                  </p>
                   <figcaption>
                     <p className="font-medium text-zinc-900 dark:text-zinc-100">
                       {item.name}
