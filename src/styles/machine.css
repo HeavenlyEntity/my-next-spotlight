@@ -643,3 +643,49 @@
     }
   }
 }
+
+/* ---- Raster paint -------------------------------------------------------
+ * The document paints top to bottom in discrete bands when it renders, the
+ * way a tube fills a frame.
+ *
+ * steps(), not a smooth transition: a CRT does not fade a frame in, it lays
+ * down scan bands. The stepping is the whole effect -- with linear timing
+ * this reads as a generic reveal.
+ *
+ * The text is NOT animated, only clipped. Every fact, answer and link is in
+ * the initial HTML exactly as before; a crawler, an agent, or a reader with
+ * animations off gets the finished document with no reveal to wait through.
+ * That distinction is why this is a clip-path and not a per-character script.
+ *
+ * NO fill mode. There is no animation-delay here, so backwards fill bought
+ * nothing -- but it pins the first keyframe, a full clip, any time the
+ * animation is applied and not running. That is a blank document one browser
+ * quirk away. With no fill the resting style wins in every state that is not
+ * mid-animation, and the resting style has no clip-path at all.
+ *
+ * There is no beam riding the leading edge. One was built and cut: inside the
+ * article it sat exactly on the clip boundary and was clipped away by the
+ * animation it was meant to lead, and a 2px bright line that strands mid-page
+ * on an interrupted animation looks like a fault, not a feature.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .machine main > article {
+    animation: machine-paint 700ms steps(24, end);
+  }
+}
+@keyframes machine-paint {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+/* Print engines do not reliably run animations, and a backwards fill left
+   standing would print a fully clipped -- that is, blank -- document. */
+@media print {
+  .machine main > article {
+    animation: none;
+    clip-path: none;
+  }
+}
