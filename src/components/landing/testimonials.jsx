@@ -17,7 +17,7 @@ import { SectionEyebrow } from './section-eyebrow'
 
    These are users of a product Alec architected and shipped, not consulting
    clients. The per-card source label is gone because it stopped being load
-   bearing: all three surviving quotes name MiPi in their own words, and the
+   bearing: both surviving quotes name MiPi in their own words, and the
    standfirst under the heading says where they come from. If a quote that
    does NOT name its own subject is added here, that context has to come back
    with it -- an unattributed quote under this heading would read as an
@@ -33,13 +33,6 @@ import { SectionEyebrow } from './section-eyebrow'
 const easeOut = [0.16, 1, 0.3, 1]
 
 const testimonials = [
-  {
-    title: 'Five Platforms Down to One',
-    description:
-      'Before MiPi, I had to manage multiple Instagram and Facebook accounts for different mediums across multiple platforms. Now, I can showcase all my work in one place while saving time to focus on creating. The Talent Layering has helped me catalog all my art forms, and I love how secure it also is at the same time.',
-    name: 'Brent Turner',
-    role: 'Founder of Thistle Dew Arts',
-  },
   {
     title: 'Protection That Runs Itself',
     description:
