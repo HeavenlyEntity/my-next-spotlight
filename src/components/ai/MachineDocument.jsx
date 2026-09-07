@@ -81,7 +81,13 @@ export function MachineUnavailable({ id }) {
 }
 /* Shown while a document's sources are being read. The navigation renders
    above it exactly as it does on a loaded page, so an agent or a person can
-   move on without waiting. Nothing here claims the document is empty. */
+   move on without waiting.
+
+   The body is a blinking block cursor rather than grey skeleton blocks.
+   Skeletons are a light-UI convention that mimes a layout the reader has not
+   seen yet; a terminal that is waiting shows a cursor and nothing else, and it
+   does not pretend to know the shape of what is coming. Nothing here claims
+   the document is empty. */
 export function MachineLoading({ current }) {
   return (
     <>
@@ -90,13 +96,7 @@ export function MachineLoading({ current }) {
         <p className="machine-sr" role="status">
           Loading document.
         </p>
-        <div aria-hidden="true">
-          <div className="machine-skeleton machine-skeleton--title" />
-          <div className="machine-skeleton machine-skeleton--line" />
-          <div className="machine-skeleton machine-skeleton--line machine-skeleton--short" />
-          <div className="machine-skeleton" />
-          <div className="machine-skeleton" />
-        </div>
+        <span className="machine-cursor" aria-hidden="true" />
       </main>
     </>
   )

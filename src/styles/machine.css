@@ -353,9 +353,11 @@
   top: 8px;
 }
 /* Loading placeholder. The nav and header render normally above it, so only
-   the document body is ever replaced. Deliberately static: the machine view
-   carries no continuous animation, and a pulsing block would be the only
-   thing moving on the page. */
+   the document body is ever replaced.
+
+   This is the one thing on the page allowed to move on its own. It earns it
+   by being a loading indicator: the blink IS the message, where the scanlines
+   and the raster tilt would only have been decoration. */
 .machine-sr {
   position: absolute;
   width: 1px;
@@ -367,27 +369,36 @@
   white-space: nowrap;
   border: 0;
 }
-.machine-skeleton {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  max-width: 650px;
-  height: 160px;
+.machine-cursor {
+  display: block;
+  /* One character cell, square-cornered: a block cursor fills the cell it
+     sits in, which is why 1ch by ~1.15em rather than a round dot or a fixed
+     pixel size. Sized up slightly from the body face so it carries on an
+     otherwise empty screen. */
+  font-size: 1.35rem;
+  width: 1ch;
+  height: 1.15em;
+  margin: 30px 0;
+  background: var(--base);
+  /* Lit phosphor, so it blooms the way the wordmark does. */
+  box-shadow: 0 0 11px color-mix(in srgb, var(--base) 55%, transparent);
 }
-.machine-skeleton + .machine-skeleton {
-  margin-top: 14px;
+/* A square wave, not a fade: a terminal cursor is on or off, and step-end is
+   what makes it read as hardware rather than as a pulsing UI element.
+   Under reduced motion the dot simply stays lit -- still a cursor, still
+   says "waiting", just not blinking. */
+@media (prefers-reduced-motion: no-preference) {
+  .machine-cursor {
+    animation: machine-cursor-blink 1.06s step-end infinite;
+  }
 }
-.machine-skeleton--title {
-  height: 34px;
-  max-width: 420px;
-  margin-bottom: 14px;
-}
-.machine-skeleton--line {
-  height: 15px;
-  max-width: 560px;
-}
-.machine-skeleton--short {
-  max-width: 300px;
+@keyframes machine-cursor-blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 @media (prefers-reduced-motion: no-preference) {
   .machine-wordmark {
