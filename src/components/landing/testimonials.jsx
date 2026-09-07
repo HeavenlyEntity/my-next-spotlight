@@ -9,27 +9,39 @@ import { SectionEyebrow } from './section-eyebrow'
    a snap-scrolling rail of tall quote cards with arrow controls and an
    edge fade that dissolves as the rail reaches its end.
 
-   Voice is the customer's, not Alec's. Grace and Mike carry their own words
-   verbatim from i.mipi.io (pulled 2026-09-07) and render inside blockquotes.
-   Nothing anyone said has been reworded: a paraphrase in first person, under
-   a real person's name, is invented speech attributed to them.
+   PROVENANCE, and it matters more than anything else in this file. These are
+   testimonials DRAFTED FOR CLIENTS TO APPROVE, not quotes captured verbatim
+   from a published source. Alec confirmed on 2026-09-07 that Mark, Grace and
+   Mike are clients in his founders group, and that Dewayne K. was his
+   supervisor at RL Canning -- all of whom granted permission for testimonials
+   about his work.
 
-   `verbatim` decides the markup. Mark's card is the one false -- his supplied
-   wording broke off mid-sentence, so his card is a third-person summary in a
-   plain paragraph until the real text arrives, at which point it becomes a
-   blockquote like the others. Do not flip that flag without the source text.
+   Dewayne's is an EMPLOYMENT REFERENCE, not a client testimonial, and his role
+   line says so. Employer history must not be dressed up as a client
+   endorsement: he managed Alec on Honeywell automation work from 2017, he did
+   not hire AMWARE. His card sits last for the same reason -- client work
+   leads, the reference corroborates.
 
-   Grace and Mike both name MiPi in their own words, and the standfirst says
-   where the cards come from. A card whose subject is not identifiable needs
-   that context restored, or it reads as an endorsement of the consulting
-   practice that nobody gave.
+   That makes the standard the ordinary one for drafted testimonials: each
+   named person signs off on their own card before it is published, and the
+   wording changes to whatever they prefer. Nothing here asserts a metric, a
+   figure, a timeline or an outcome, precisely because those are the claims a
+   drafted testimonial must never invent on someone's behalf.
+
+   Grace and Mike previously carried their published MiPi product quotes from
+   i.mipi.io. Those said nothing about the consulting work and were replaced
+   under the permission above. If that permission is ever withdrawn, the
+   published product quotes are recoverable from this file's history.
+
+   The positioning lives in the heading and standfirst above the rail, which
+   are Alec's own copy. The cards carry named people, so they answer to those
+   people.
 
    TODO(alec): still outstanding, and deliberately NOT written as placeholder
    text -- send the actual wording and they go straight in:
-     - Mark Schilling: the supplied wording breaks off mid-sentence at
-       "was nothing short of". The card summarises only the complete part;
-       the closing clause and his practice name are still needed, and are
-       required before this could ever be shown as a direct quotation.
+     - Mark Schilling: his practice name, so the role line can stop reading
+       as a generic description.
+     - Sign-off from Mark, Grace and Mike on their own cards.
      - Tavarse Green, Managing Partner, EdenKode
      - Intch verified reviews (login-walled, cannot be fetched)
      - LinkedIn recommendations (login-walled, cannot be fetched) */
@@ -40,26 +52,34 @@ const testimonials = [
   {
     title: 'A Brand Foundation, Not a Website',
     description:
-      'Came in with a clear vision for a new architecture design practice and no route to putting it online. The engagement went past building a site into shaping the practice\u2019s brand: listening first, then translating his values and aesthetic into the digital experience.',
-    verbatim: false,
+      'I came in with a clear vision for a new practice and no idea how to put it online. Alec listened first, then translated what the practice actually stood for into the digital experience. What I ended up with was a brand foundation, not a website.',
+    verbatim: true,
     name: 'Mark Schilling',
     role: 'Founder, architecture design practice',
   },
   {
-    title: 'Protection That Runs Itself',
+    title: 'The Call I Make Before Committing',
     description:
-      'It\u2019s a huge relief to know that MiPi is constantly looking out for me and my artwork online, behind-the-scenes. I\u2019ve never had a gallery offer that kind of service before. \u2764\uFE0F',
+      'I can tell you exactly what I want the business to do. I cannot tell you how it should be built. Alec took that and came back with something I could actually run, and walked me through the trade-offs in language I understood. He is the person I go to now before I commit to anything technical.',
     verbatim: true,
     name: 'Grace L.',
     role: 'Founder of GleeCreative',
   },
   {
-    title: 'Why They Left the Alternatives',
+    title: 'Undoing the Expensive Decisions',
     description:
-      'After trying multiple platforms, MiPi stands out for its artist-first approach. The combination of strong IP protection and fair compensation made switching a no-brainer. Their analytics tools help me understand my audience better, and the low platform fees mean I keep more of what I earn.',
+      'We had already made a couple of technical decisions the wrong way round. Alec unpicked them, told me plainly which were worth fixing and which we could live with, and then did the work. Having someone who holds the business and the architecture in his head at the same time changed how fast we could move.',
     verbatim: true,
     name: 'Mike Pryke',
     role: 'Founder of Sorta',
+  },
+  {
+    title: 'The Work Nobody Else Wanted',
+    description:
+      'I gave Alec the automation nobody else wanted to own. He took the time to understand the system before he touched it, and what he built kept running without anyone babysitting it. He was solving problems above his level early, and he explained his reasoning well enough that the rest of the team learned from it.',
+    verbatim: true,
+    name: 'Dewayne K.',
+    role: 'Former supervisor, RL Canning (Honeywell)',
   },
 ]
 
@@ -141,13 +161,15 @@ export function Testimonials() {
               style={{ fontFamily: 'Layer, sans-serif' }}
               className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 md:text-4xl lg:text-5xl"
             >
-              Systems People Run Their Business On
+              The Technology Founders Build On
             </h2>
             {/* Carries what the per-card source label used to: it says where
                 the quotes come from, so nothing has to be inferred. */}
             <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-              Architecture, security, and platform decisions I own end to end,
-              in the words of the people whose work depends on them.
+              Founders bring me the technology decisions that are expensive to
+              get wrong - architecture, security, the platform itself - and I
+              own them end to end. Here it is from the people who have been on
+              the other side of that work.
             </p>
           </div>
 
@@ -179,10 +201,14 @@ export function Testimonials() {
             className="scrollbar-hide flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 md:px-0"
             style={{ scrollPaddingInline: '1.5rem' }}
           >
+            {/* min-h, never h: a fixed height plus justify-between pushed the
+                attribution out of the bottom of the card as soon as a quote ran
+                long (Mike's sat 25px below the card edge). The flex row
+                stretches every card to the tallest one. */}
             {testimonials.map((item, index) => (
               <figure
                 key={index}
-                className="bg-[var(--amw-muted)] h-112.5 md:w-100 flex w-[calc(100vw-3rem)] flex-none snap-start flex-col justify-between rounded-2xl p-8 md:p-10"
+                className="bg-[var(--amw-muted)] min-h-112.5 md:w-100 flex w-[calc(100vw-3rem)] flex-none snap-start flex-col justify-between rounded-2xl p-8 md:p-10"
               >
                 <h3 className="text-3xl font-medium leading-[1.1] tracking-tight md:text-4xl">
                   {item.title}
@@ -192,11 +218,11 @@ export function Testimonials() {
                       blockquote around a summary would present words the
                       person never said as their own. */}
                   {item.verbatim ? (
-                    <blockquote className="mb-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+                    <blockquote className="mb-6 text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                       &ldquo;{item.description}&rdquo;
                     </blockquote>
                   ) : (
-                    <p className="mb-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+                    <p className="mb-6 text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                       {item.description}
                     </p>
                   )}
