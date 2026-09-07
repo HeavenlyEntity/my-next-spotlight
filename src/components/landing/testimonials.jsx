@@ -208,12 +208,18 @@ export function Testimonials() {
             {testimonials.map((item, index) => (
               <figure
                 key={index}
-                className="bg-[var(--amw-muted)] min-h-112.5 md:w-100 flex w-[calc(100vw-3rem)] flex-none snap-start flex-col justify-between rounded-2xl p-8 md:p-10"
+                className="bg-[var(--amw-muted)] min-h-112.5 md:w-100 flex w-[calc(100vw-3rem)] flex-none snap-start flex-col rounded-2xl p-8 md:p-10"
               >
-                <h3 className="text-3xl font-medium leading-[1.1] tracking-tight md:text-4xl">
+                <h3 className="mb-6 text-3xl font-medium leading-[1.1] tracking-tight md:text-4xl">
                   {item.title}
                 </h3>
-                <div>
+                {/* The slack goes here, below the quote, not between the title
+                    and the quote. justify-between put it in the gap above the
+                    body instead, so it swung from 76px on the shortest quote to
+                    0 on the longest. The title now always sits mb-6 off its
+                    quote, and mt-auto still pins the attributions to a common
+                    baseline across the row. */}
+                <div className="flex flex-1 flex-col">
                   {/* Quotation markup only where there is a quotation. A
                       blockquote around a summary would present words the
                       person never said as their own. */}
@@ -226,7 +232,7 @@ export function Testimonials() {
                       {item.description}
                     </p>
                   )}
-                  <figcaption>
+                  <figcaption className="mt-auto">
                     <p className="font-medium text-zinc-900 dark:text-zinc-100">
                       {item.name}
                     </p>
