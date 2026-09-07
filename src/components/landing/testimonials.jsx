@@ -9,47 +9,84 @@ import { SectionEyebrow } from './section-eyebrow'
    a snap-scrolling rail of tall quote cards with arrow controls and an
    edge fade that dissolves as the rail reaches its end.
 
-   TODO(alec): every quote below is placeholder copy written in the brand
-   voice. Swap in real testimonials, names, and roles before publishing;
-   attributions are intentionally generic until then. */
+   Quotes are verbatim from the published testimonials on i.mipi.io, pulled
+   2026-09-07. They are reproduced exactly, emoji included -- editing what
+   someone said to fit a layout is not an option. The one edit is the role
+   label "Soloprenuer", corrected to its spelling; that is a caption, not
+   speech. Titles are editorial summaries of each quote, not claims.
+
+   IMPORTANT, and the reason every card carries a `source`: these are MiPi
+   users talking about the MiPi product. They are NOT clients talking about
+   fractional-CTO or engineering work. Dropping them under "What People Are
+   Saying" unlabelled would read as an endorsement of the consulting practice,
+   which none of these people gave. The source line is what keeps the section
+   honest -- do not remove it, and do not mix service testimonials into this
+   array without giving them their own source.
+
+   TODO(alec): still outstanding, and deliberately NOT written as placeholder
+   text this time -- send the actual wording and they go straight in:
+     - Tavarse Green, Managing Partner, EdenKode
+     - Intch verified reviews (login-walled, cannot be fetched)
+     - LinkedIn recommendations (login-walled, cannot be fetched) */
 
 const easeOut = [0.16, 1, 0.3, 1]
 
 const testimonials = [
   {
-    title: 'Architecture We Could Grow Into',
+    title: 'All My Work in One Place',
     description:
-      'Alec came in as our fractional CTO and replaced a pile of guesswork with a roadmap the whole team could follow. Six months later we are still building on the same foundations.',
-    name: 'Placeholder Name',
-    role: 'Founder, consumer startup',
+      'Before MiPi, I had to manage multiple Instagram and Facebook accounts for different mediums across multiple platforms. Now, I can showcase all my work in one place while saving time to focus on creating. The Talent Layering has helped me catalog all my art forms, and I love how secure it also is at the same time.',
+    name: 'Brent Turner',
+    role: 'Founder of Thistle Dew Arts',
+    source: 'On MiPi',
   },
   {
-    title: 'Shipped in Weeks, Not Quarters',
+    title: 'Watching Out for My Work',
     description:
-      'The boilerplate had auth, payments, and the CMS wired on day one. We spent our time on the product instead of the plumbing.',
-    name: 'Placeholder Name',
-    role: 'Technical co-founder',
+      'It\u2019s a huge relief to know that MiPi is constantly looking out for me and my artwork online, behind-the-scenes. I\u2019ve never had a gallery offer that kind of service before. \u2764\uFE0F',
+    name: 'Grace L.',
+    role: 'Founder of GleeCreative',
+    source: 'On MiPi',
   },
   {
-    title: 'Business Sense Meets Engineering',
+    title: 'Artist-First From the Start',
     description:
-      'Most engineers cannot talk unit economics. Alec walked our investors through the numbers and then went back and shipped the feature himself.',
-    name: 'Placeholder Name',
-    role: 'CEO, B2B services company',
+      'I love how MiPi is so focused on helping me as an artist. I cannot wait to see until they launch the MVP. I am excited to see how it evolves \uD83D\uDC4F',
+    name: 'Bill K.',
+    role: 'Solopreneur',
+    source: 'On MiPi',
   },
   {
-    title: 'A Mentor Who Actually Ships',
+    title: 'A Website Without the Time',
     description:
-      'I learned more about production systems in three months of pairing than in two years on my own. He teaches the way he builds: clearly and without shortcuts.',
-    name: 'Placeholder Name',
-    role: 'Software engineer, mentee',
+      'There is finally a place where I can get the power of a website without spending the time. But plus I get social media built in? Sign me up!! Let me get a piece of that! \uD83D\uDE4C',
+    name: 'Chris K.',
+    role: 'Founder of Art Of Chris',
+    source: 'On MiPi',
   },
   {
-    title: 'Calm Under Real Traffic',
+    title: 'Shown on My Own Terms',
     description:
-      'Our launch went sideways and he was in the incident channel before we were. The fix landed, the write-up followed, and it never happened again.',
-    name: 'Placeholder Name',
-    role: 'Operations lead, enterprise client',
+      'Love the ability to create a portfolio in MiPi knowing that my work will be shown uniquely. So tired of other social media platforms forcing me as a creator to copy other creations. Now I can post my artwork without worrying about \u2018will the algorithm like me?\u2019 \uD83D\uDE4C',
+    name: 'Alex Kennedy',
+    role: 'Founder of Kennedy Films',
+    source: 'On MiPi',
+  },
+  {
+    title: 'Protection and Fair Pay',
+    description:
+      'After trying multiple platforms, MiPi stands out for its artist-first approach. The combination of strong IP protection and fair compensation made switching a no-brainer. Their analytics tools help me understand my audience better, and the low platform fees mean I keep more of what I earn.',
+    name: 'Mike Pryke',
+    role: 'Founder of Sorta',
+    source: 'On MiPi',
+  },
+  {
+    title: 'Confidence to Share',
+    description:
+      'MiPi empowers me to share my art with confidence, thanks to its groundbreaking security. I can join global contests without fear of theft. I wholeheartedly recommend this platform\u2014it\u2019s a masterpiece! \uD83D\uDE0A',
+    name: 'Sadie P.',
+    role: 'Solopreneur',
+    source: 'On MiPi',
   },
 ]
 
@@ -181,6 +218,12 @@ export function Testimonials() {
                     </p>
                     <p className="amw-mono text-sm text-zinc-600 dark:text-zinc-400">
                       {item.role}
+                    </p>
+                    {/* What the quote is actually about. Without this the
+                        card implies these people are endorsing the
+                        consulting work, which they are not. */}
+                    <p className="amw-mono text-[var(--amw-accent-ink)] mt-2 text-[11px] uppercase tracking-[0.14em]">
+                      {item.source}
                     </p>
                   </figcaption>
                 </div>
