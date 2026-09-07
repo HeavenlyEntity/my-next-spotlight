@@ -1,0 +1,621 @@
+/* Machine view: scoped document styles. Exactly two overlays, both inert
+ * (pointer-events: none, no a11y presence): the CRT scanlines and the glass
+ * vignette at the very bottom of this file.
+ *
+ * Dark is the design here, not a toggle. This surface is a terminal: the page
+ * is machine output, read by agents and by developers who live in one. It was
+ * previously a light palette with a dark override bolted on, which is why it
+ * rendered light for anyone whose system preference said so.
+ *
+ * Depth comes from three layered near-blacks and 1px hairlines, never shadows:
+ * a shadow on a #0a0b0d canvas is either invisible or reads as grime. Raised
+ * surfaces are LIGHTER than what they sit on. That lightness step is the
+ * elevation cue.
+ *
+ * The brand teal is the single leading accent. It carries links, the current
+ * nav item, focus rings, and section headers, and nothing else competes with
+ * it -- one accent, so it keeps meaning everywhere it appears.
+ */
+.machine {
+  /* The screen. A CRT's glass is never neutral, so the canvas carries a
+     trace of the phosphor rather than sitting at a flat #000. */
+  --bg: #000a0d;
+  --surface: #03161c;
+  --elevated: #052029;
+
+  /* One hue, three tiers. This is the whole palette: body copy, links,
+     headings and rules are all the same cyan at different lightness, the
+     way a monochrome terminal has exactly one colour of light to spend.
+     Nothing on this screen is neutral grey. */
+  /* Lifted from #3690a8 to buy headroom for the CRT overlays: they darken
+     text and background together, and at the old value the footer corner
+     measured 2.36:1 once the glass was on. */
+  --dim: #43a3bb;
+  --base: #4fd6ee;
+  --bright: #b6efff;
+  --ink: #000a0d;
+
+  /* CRT glass. Held as tokens so the whole effect dials from two numbers,
+     and so the contrast cost is a value you can read rather than guess. */
+  --scanline: 0.16;
+  --scanline-period: 3px;
+  /* Kept far weaker than it wants to be. The glass falloff is decoration;
+     the text under it is not. At 0.4 it pulled the left-hand text column to
+     3.86:1, so it now starts at 78% and tops out at 0.12. */
+  --vignette: 0.12;
+
+  /* Rules are the hue at low alpha, so even the hairlines are phosphor. */
+  --line: color-mix(in srgb, var(--base) 22%, transparent);
+  --line-strong: color-mix(in srgb, var(--base) 38%, transparent);
+
+  color-scheme: dark;
+  margin: 0;
+  background: var(--bg);
+  color: var(--base);
+  font-family: var(--machine-font), ui-monospace, monospace;
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100dvh;
+}
+/* Painted on the root as well so the pre-paint canvas never flashes light. */
+.machine-root {
+  color-scheme: dark;
+  background: #000a0d;
+}
+/* Browser surfaces belong to the design too. A terminal has its own selection
+   colour and a scrollbar that matches its chrome; leaving these at the UA
+   default is the cheapest tell that a page was assembled rather than built. */
+.machine ::selection {
+  background: color-mix(in srgb, var(--base) 26%, transparent);
+  color: var(--base);
+}
+.machine ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.machine ::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+.machine ::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 2px solid var(--bg);
+  border-radius: 6px;
+}
+.machine ::-webkit-scrollbar-thumb:hover {
+  background: var(--dim);
+}
+.machine {
+  scrollbar-color: var(--line-strong) var(--bg);
+}
+.machine *,
+.machine *::before,
+.machine *::after {
+  box-sizing: border-box;
+}
+.machine-shell {
+  max-width: 1280px;
+  margin: auto;
+  padding: 40px 56px 24px;
+}
+.machine a {
+  color: var(--base);
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1px;
+  overflow-wrap: anywhere;
+}
+.machine a:hover {
+  text-decoration-thickness: 2px;
+}
+.machine :focus-visible {
+  outline: 2px solid var(--base);
+  outline-offset: 5px;
+}
+.machine-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding-bottom: 22px;
+}
+/* The wordmark is drawn in the character cell: real box-drawing glyphs, so
+   it is selectable text at any zoom and needs no image and no WebGL. The
+   banner is 53 columns wide, which is what the font-size calc below solves
+   for -- it never wraps, because a wrapped ASCII banner is illegible.
+   The glyphs themselves carry the dimension: the shadow face puts the lit
+   edge in the block characters and the drop in the box-drawing ones, so the
+   two tiers below are the depth. */
+.machine .machine-wordmark {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  text-decoration: none;
+  color: var(--base);
+}
+.machine-glyph {
+  margin: 0;
+  /* NOT the page face. JetBrains Mono is served here as a latin subset, which
+     has no U+2500-U+259F, so every block and box character fell back to the
+     system mono while the spaces stayed in JetBrains -- 15.255px cells next
+     to 9.6px cells, and the banner came out as a smear. The system mono owns
+     all of these glyphs at one advance, so the grid holds. */
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas,
+    'DejaVu Sans Mono', monospace;
+  /* 53 columns at JetBrains Mono's 0.6em advance. Solved against the shell's
+     own width, not 100vw, so it never runs under the page padding. */
+  font-size: min(16px, calc((min(100vw, 1280px) - 130px) / 33));
+  /* Exactly 1: full-block characters have to tile vertically, and any gap
+     shows up as a stripe through the letterforms. */
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: pre;
+  color: var(--base);
+  /* A phosphor bloom, not a neon glow: just enough that the glyphs read as
+     lit rather than printed. Any stronger and the counters fill in. */
+  text-shadow: 0 0 7px color-mix(in srgb, var(--base) 30%, transparent);
+}
+.machine-return {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.machine-nav {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 25px;
+  row-gap: 4px;
+  border-bottom: 1px solid var(--line);
+  padding: 0 0 16px;
+  margin-bottom: 30px;
+}
+.machine-nav a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--base);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+.machine-nav a[aria-current] {
+  background: var(--base);
+  color: var(--ink);
+  border-color: transparent;
+  padding: 0 7px;
+}
+.machine main {
+  min-width: 0;
+}
+.machine h1 {
+  font-size: clamp(21px, 2.3vw, 28px);
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
+  overflow-wrap: anywhere;
+}
+.machine h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 34px 0 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  color: var(--bright);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+/* The rule is drawn with borders, never with box-drawing characters: a run
+   of them inside the heading would be read out letter by letter. */
+.machine h2::before,
+.machine h2::after {
+  content: '';
+  border-top: 1px solid var(--line-strong);
+}
+.machine h2::before {
+  width: 26px;
+  flex: none;
+}
+.machine h2::after {
+  flex: 1;
+  max-width: 640px;
+}
+.machine h1 {
+  color: var(--bright);
+}
+.machine h3,
+.machine h4 {
+  font-size: 15px;
+  margin: 20px 0 6px;
+  font-weight: 600;
+  color: var(--bright);
+}
+.machine p {
+  margin: 8px 0 15px;
+  max-width: 100ch;
+  overflow-wrap: anywhere;
+}
+.machine-prose > :first-child {
+  margin-top: 30px;
+}
+.machine-prose ul,
+.machine-prose ol {
+  padding-left: 24px;
+}
+.machine-prose li {
+  margin: 9px 0;
+  overflow-wrap: anywhere;
+}
+.machine-prose pre {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px 20px;
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: 13px;
+  /* Code never gets tight leading; wrapped tokens need the air. */
+  line-height: 1.65;
+}
+.machine :not(pre) > code {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 1px 5px;
+  font-size: 0.92em;
+  color: var(--base);
+}
+.machine code {
+  font-family: inherit;
+  overflow-wrap: anywhere;
+}
+.machine pre code {
+  overflow-wrap: normal;
+  white-space: pre;
+}
+.machine blockquote {
+  margin: 20px 0;
+  padding-left: 20px;
+  border-left: 2px solid var(--line-strong);
+  color: var(--dim);
+}
+.machine table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.machine th,
+.machine td {
+  text-align: left;
+  padding: 8px 16px 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.machine th {
+  color: var(--dim);
+  font-weight: 500;
+}
+/* The lead-in under the title reads as the comment at the top of a file. */
+.machine-document-header > p {
+  color: var(--dim);
+}
+.machine-meta,
+.machine-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  color: var(--dim);
+  font-size: 13px;
+}
+.machine-pagination {
+  margin-top: 32px;
+  align-items: center;
+}
+.machine-pagination a,
+.machine-footer a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+}
+.machine-footer {
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding-top: 12px;
+  color: var(--dim);
+  font-size: 12px;
+}
+.machine-notice {
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--base);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 24px 0;
+  background: var(--surface);
+}
+.machine-image-caption {
+  color: var(--dim);
+}
+.machine-skip {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  padding: 8px 16px;
+  background: var(--elevated);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+}
+.machine-skip:focus {
+  top: 8px;
+}
+/* Loading placeholder. The nav and header render normally above it, so only
+   the document body is ever replaced. Deliberately static: the machine view
+   carries no continuous animation, and a pulsing block would be the only
+   thing moving on the page. */
+.machine-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.machine-skeleton {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  max-width: 650px;
+  height: 160px;
+}
+.machine-skeleton + .machine-skeleton {
+  margin-top: 14px;
+}
+.machine-skeleton--title {
+  height: 34px;
+  max-width: 420px;
+  margin-bottom: 14px;
+}
+.machine-skeleton--line {
+  height: 15px;
+  max-width: 560px;
+}
+.machine-skeleton--short {
+  max-width: 300px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .machine-wordmark {
+    transition: transform 180ms ease-out;
+  }
+  .machine-wordmark:hover {
+    transform: translateY(-2px);
+  }
+  .machine a:active {
+    transform: translateY(1px);
+  }
+}
+@media (max-width: 767px) {
+  .machine {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .machine-shell {
+    width: 100%;
+    padding: 24px 20px;
+  }
+  .machine-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 14px;
+  }
+  .machine .machine-wordmark {
+    font-size: 42px;
+  }
+  .machine-nav {
+    column-gap: 18px;
+    row-gap: 0;
+    margin-bottom: 24px;
+  }
+  .machine-nav a {
+    font-size: 13px;
+  }
+  .machine h2 {
+    margin-top: 28px;
+  }
+  .machine pre {
+    padding: 14px;
+  }
+  .machine-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+@media (max-width: 359px) {
+  .machine-shell {
+    padding-inline: 16px;
+  }
+  .machine-nav {
+    column-gap: 14px;
+  }
+}
+.machine-facts {
+  margin: 12px 0 22px;
+}
+/* Dotted leaders, not a card grid. The label runs into a dotted rule that
+   carries the eye to a value in a fixed column -- the shape an index or a
+   machine record has always had on a terminal. The leader is a border, not
+   a run of period characters, so a screen reader never reads the dots. */
+.machine-facts > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 3px 0;
+}
+.machine-facts dt {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex: none;
+  width: 17ch;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.machine-facts dt::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px dotted var(--line-strong);
+  transform: translateY(-4px);
+}
+.machine-facts > div > dt {
+  color: var(--dim);
+}
+.machine-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 767px) {
+  .machine-facts > div {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-bottom: 12px;
+  }
+  .machine-facts dt {
+    font-size: 12px;
+  }
+}
+
+/* ---- CRT glass ----------------------------------------------------------
+ * Two fixed, inert layers over the whole screen. Both are pointer-events:
+ * none and neither is in the accessibility tree, so they cannot catch a
+ * click, block selection, or reach a screen reader.
+ *
+ * The scanlines are deliberately STATIC. A rolling or flickering line would
+ * be the only moving thing on a page whose entire content is text, and it
+ * would be moving forever -- that is a toy, not a terminal.
+ *
+ * They do cost contrast: a glyph pixel under a dark line loses 16% of its
+ * luminance. The tiers were chosen with that already spent, and the measured
+ * worst case still clears AA. Anyone who has asked their OS for more contrast
+ * or for forced colours gets the screen without the glass.
+ */
+.machine::before,
+.machine::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+.machine::after {
+  z-index: 9999;
+  /* Oversized and pushed back in Z so the raster reads as a projected plane
+     rather than a flat screen print: the line pitch tightens toward the far
+     edge the way a projector's raster does. The overscan keeps the rotated
+     plane's edges outside the viewport. */
+  inset: -25%;
+  transform: perspective(760px) rotateX(var(--crt-tilt, 1.6deg));
+  transform-origin: 50% 50%;
+  /* A repeating gradient used as a texture, not as a colour ramp: one dark
+     line every third pixel, which is close to the pitch of the thing it is
+     imitating and fine enough not to moire against 15px type. */
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--scanline-period) - 1px),
+    rgba(0, 0, 0, var(--scanline)) calc(var(--scanline-period) - 1px),
+    rgba(0, 0, 0, var(--scanline)) var(--scanline-period)
+  );
+}
+/* The falloff at the edge of the glass. Sits under the scanlines so the two
+   multiply the way they would on real hardware. */
+.machine::before {
+  z-index: 9998;
+  background: radial-gradient(
+    125% 105% at 50% 50%,
+    transparent 78%,
+    rgba(0, 0, 0, var(--vignette)) 100%
+  );
+}
+/* An overlay that reduces contrast is exactly wrong for someone who asked
+   the OS for more of it. */
+@media (prefers-contrast: more) {
+  .machine::before,
+  .machine::after {
+    display: none;
+  }
+}
+@media (forced-colors: active) {
+  .machine::before,
+  .machine::after {
+    display: none;
+  }
+}
+@media print {
+  .machine::before,
+  .machine::after {
+    display: none;
+  }
+}
+
+/* ---- Projected scroll ---------------------------------------------------
+ * The raster plane shifts as the page scrolls, so the document reads as an
+ * image being projected onto glass rather than a flat page moving under a
+ * static texture.
+ *
+ * This drives the OVERLAY, never the text. Rotating the content itself was
+ * the obvious first move and it is wrong twice: the column is several
+ * thousand pixels tall, so with the perspective origin at its centre a 1.5deg
+ * tilt throws the far ends hundreds of pixels off, and 3D-transformed text
+ * gets resampled and goes soft. Tilting the glass gives the same read at zero
+ * legibility cost.
+ *
+ * scroll() is a compositor timeline, so this costs no main-thread work and no
+ * scroll listener. Browsers without it keep the static raster, which is a
+ * complete design on its own.
+ *
+ * Scroll-linked 3D motion is a vestibular trigger, so the whole block sits
+ * behind prefers-reduced-motion and never runs for anyone who opted out.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .machine::after {
+      animation: machine-crt-sweep linear both;
+      animation-timeline: scroll(root block);
+    }
+    .machine::before {
+      animation: machine-crt-focus linear both;
+      animation-timeline: scroll(root block);
+    }
+    @keyframes machine-crt-sweep {
+      from {
+        transform: perspective(760px) rotateX(2.6deg) translateY(-0.6%);
+      }
+      50% {
+        transform: perspective(760px) rotateX(0deg) translateY(0);
+      }
+      to {
+        transform: perspective(760px) rotateX(-2.6deg) translateY(0.6%);
+      }
+    }
+    /* The glass focuses slightly at mid-scroll, the way a projector is
+       sharpest at the centre of its throw. */
+    @keyframes machine-crt-focus {
+      from {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.72;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  }
+}
