@@ -9,16 +9,18 @@ import { SectionEyebrow } from './section-eyebrow'
    a snap-scrolling rail of tall quote cards with arrow controls and an
    edge fade that dissolves as the rail reaches its end.
 
-   These are PARAPHRASES, not quotations, and the markup reflects that: no
-   blockquote, no quotation marks. The verbatim wording lives on i.mipi.io
-   (pulled 2026-09-07); these cards report what each person said about a
-   product Alec architected and shipped. Rewriting words and leaving them in
-   quotes under a real person's name would be presenting speech they never
-   gave -- if Grace and Mike have approved reworded first-person quotes, this
-   can go back to blockquotes in one edit.
+   Voice is the customer's, not Alec's. Grace and Mike carry their own words
+   verbatim from i.mipi.io (pulled 2026-09-07) and render inside blockquotes.
+   Nothing anyone said has been reworded: a paraphrase in first person, under
+   a real person's name, is invented speech attributed to them.
 
-   Both still name MiPi in the summary, and the standfirst under the heading
-   says where these come from. A card whose subject is not identifiable needs
+   `verbatim` decides the markup. Mark's card is the one false -- his supplied
+   wording broke off mid-sentence, so his card is a third-person summary in a
+   plain paragraph until the real text arrives, at which point it becomes a
+   blockquote like the others. Do not flip that flag without the source text.
+
+   Grace and Mike both name MiPi in their own words, and the standfirst says
+   where the cards come from. A card whose subject is not identifiable needs
    that context restored, or it reads as an endorsement of the consulting
    practice that nobody gave.
 
@@ -39,20 +41,23 @@ const testimonials = [
     title: 'A Brand Foundation, Not a Website',
     description:
       'Came in with a clear vision for a new architecture design practice and no route to putting it online. The engagement went past building a site into shaping the practice\u2019s brand: listening first, then translating his values and aesthetic into the digital experience.',
+    verbatim: false,
     name: 'Mark Schilling',
     role: 'Founder, architecture design practice',
   },
   {
     title: 'Protection That Runs Itself',
     description:
-      'Her catalogue is monitored across the web continuously, without her having to go looking for misuse herself. She reports no gallery she had worked with previously offered anything comparable.',
+      'It\u2019s a huge relief to know that MiPi is constantly looking out for me and my artwork online, behind-the-scenes. I\u2019ve never had a gallery offer that kind of service before. \u2764\uFE0F',
+    verbatim: true,
     name: 'Grace L.',
     role: 'Founder of GleeCreative',
   },
   {
     title: 'Why They Left the Alternatives',
     description:
-      'Moved across after trying several competing platforms. IP protection and the fee structure settled the decision; the analytics changed how he reads his own audience, and lower platform fees left more of the revenue with him.',
+      'After trying multiple platforms, MiPi stands out for its artist-first approach. The combination of strong IP protection and fair compensation made switching a no-brainer. Their analytics tools help me understand my audience better, and the low platform fees mean I keep more of what I earn.',
+    verbatim: true,
     name: 'Mike Pryke',
     role: 'Founder of Sorta',
   },
@@ -141,8 +146,8 @@ export function Testimonials() {
             {/* Carries what the per-card source label used to: it says where
                 the quotes come from, so nothing has to be inferred. */}
             <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-              Architecture, security, and platform decisions I own end to end -
-              summarised from what the people relying on them have said.
+              Architecture, security, and platform decisions I own end to end,
+              in the words of the people whose work depends on them.
             </p>
           </div>
 
@@ -183,12 +188,18 @@ export function Testimonials() {
                   {item.title}
                 </h3>
                 <div>
-                  {/* Deliberately not a blockquote. These are paraphrases,
-                      and quotation markup around words someone did not say
-                      presents invented speech as theirs. */}
-                  <p className="mb-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-                    {item.description}
-                  </p>
+                  {/* Quotation markup only where there is a quotation. A
+                      blockquote around a summary would present words the
+                      person never said as their own. */}
+                  {item.verbatim ? (
+                    <blockquote className="mb-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+                      &ldquo;{item.description}&rdquo;
+                    </blockquote>
+                  ) : (
+                    <p className="mb-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+                      {item.description}
+                    </p>
+                  )}
                   <figcaption>
                     <p className="font-medium text-zinc-900 dark:text-zinc-100">
                       {item.name}
