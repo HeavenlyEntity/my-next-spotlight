@@ -1,5 +1,6 @@
 'use client'
 
+import { identity } from '@/content/site/identity'
 import { ChevronRight } from 'lucide-react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
@@ -44,7 +45,7 @@ const socialLinks = [
   {
     label: 'Follow on LinkedIn',
     icon: LinkedInIcon,
-    href: 'https://www.linkedin.com/in/alec-mingione-90bb63aa/',
+    href: identity.linkedin,
   },
   {
     label: 'Follow on GitHub',
@@ -178,7 +179,7 @@ function FooterCard() {
         id="amware-creed"
         className="-mx-6 mt-8 scroll-mt-24 px-6 md:-mx-12 md:px-12 lg:-mx-20 lg:px-20"
       >
-        <AmwareCreed onAccent centered mark />
+        <AmwareCreed onAccent centered mark markHref="/ai/home" />
       </div>
     </div>
   )

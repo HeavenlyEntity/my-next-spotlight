@@ -142,8 +142,7 @@ function Crown({ animate, reduce }) {
     return s
   }, [gltf, holoUniforms])
 
-  /* No cursor change on hover: the crown is not a link, and a pointer
-     cursor would promise navigation. The hologram is its own feedback. */
+  /* The surrounding component owns navigation and its accessible link. */
 
   useFrame((state, delta) => {
     const group = groupRef.current
