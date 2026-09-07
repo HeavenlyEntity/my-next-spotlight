@@ -4,25 +4,22 @@ import {
   liveTools,
   soonTools,
 } from '@/lib/founders/tools'
+import { identity } from '@/content/site/identity'
 
 /* The site's navigation, shaped for the template's card menu: four cards,
    each one job. Live founder tools come from the desk registry so a tool
    promoted to live appears here without a second edit. */
 
-export const CONTACT_EMAIL = 'amware.develop@gmail.com'
+/* Identity comes from the shared content module, not a second copy. These
+   drifted once already: the LinkedIn URL here outlived the canonical one
+   long enough to disagree with the footer, the contact page, and the
+   Person schema. */
+export const CONTACT_EMAIL = identity.email
 
 export const SOCIAL_LINKS = [
-  { id: 'x', label: 'Follow on X', href: 'https://x.com/AmwareDotDev' },
-  {
-    id: 'linkedin',
-    label: 'Follow on LinkedIn',
-    href: 'https://www.linkedin.com/in/alec-mingione-90bb63aa/',
-  },
-  {
-    id: 'github',
-    label: 'Follow on GitHub',
-    href: 'https://github.com/HeavenlyEntity',
-  },
+  { id: 'x', label: 'Follow on X', href: identity.x },
+  { id: 'linkedin', label: 'Follow on LinkedIn', href: identity.linkedin },
+  { id: 'github', label: 'Follow on GitHub', href: identity.github },
 ]
 
 export function menuCards() {

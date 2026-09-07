@@ -1,3 +1,4 @@
+import { siteOrigin } from '@/lib/site-origin'
 import type { Metadata } from 'next'
 import { Geist, Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
@@ -34,26 +35,10 @@ const geist = Geist({
   display: 'swap',
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
-const canonicalSiteUrl = 'https://www.amware.dev'
-
-function getMetadataBase() {
-  if (!siteUrl) return new URL(canonicalSiteUrl)
-
-  try {
-    const url = new URL(siteUrl)
-    const isLocalProductionUrl =
-      process.env.NODE_ENV === 'production' &&
-      ['localhost', '127.0.0.1'].includes(url.hostname)
-
-    return isLocalProductionUrl ? new URL(canonicalSiteUrl) : url
-  } catch {
-    return new URL(canonicalSiteUrl)
-  }
-}
+const siteUrl = siteOrigin
 
 export const metadata: Metadata = {
-  metadataBase: getMetadataBase(),
+  metadataBase: new URL(siteOrigin),
   title: { default: 'Alec Mingione', template: '%s - Alec Mingione' },
   ...(siteUrl && {
     alternates: {

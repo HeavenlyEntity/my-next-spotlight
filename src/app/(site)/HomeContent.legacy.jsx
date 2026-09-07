@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { Container } from '@/components/Container'
+import { identity } from '@/content/site/identity'
 import { GitHubIcon, LinkedInIcon } from '@/components/SocialIcons'
 import StaggeredText from '@/components/react-bits/staggered-text'
 import AmwareCreed from '@/components/brand/amware-creed'
@@ -202,7 +203,7 @@ function Hero() {
                   icon={GitHubIcon}
                 />
                 <SocialLink
-                  href="https://www.linkedin.com/in/alec-mingione-90bb63aa/"
+                  href={identity.linkedin}
                   aria-label="Follow on LinkedIn"
                   icon={LinkedInIcon}
                 />
@@ -662,7 +663,7 @@ function ClosingCta() {
                     icon={GitHubIcon}
                   />
                   <SocialLink
-                    href="https://www.linkedin.com/in/alec-mingione-90bb63aa/"
+                    href={identity.linkedin}
                     aria-label="Follow on LinkedIn"
                     icon={LinkedInIcon}
                   />

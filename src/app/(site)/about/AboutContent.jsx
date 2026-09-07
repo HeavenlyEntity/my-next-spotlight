@@ -1,5 +1,7 @@
 'use client'
 
+import { identity } from '@/content/site/identity'
+import { chapters } from '@/content/site/about'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -41,34 +43,6 @@ const fadeInUp = {
   transition: { duration: 0.8, ease: easeOut },
 }
 
-const chapters = [
-  {
-    number: '01',
-    title: 'First program at eight',
-    copy: 'I have loved making things and being creative for as long as I can remember. I wrote my first program at eight, two weeks after my mom brought home the brand new eMachine I taught myself to type on.',
-  },
-  {
-    number: '02',
-    title: 'Cars, art, and taking things apart',
-    copy: 'The only thing I loved more than computers as a kid was cars, art, and taking things apart. At thirteen I started building PCs, chasing the biggest, baddest gaming rig. My first build was an ASUS with 4 GB of DDR2. A caveman these days.',
-  },
-  {
-    number: '03',
-    title: 'From factory floors to Schwab',
-    copy: 'That curiosity became a career. I started as an automation programmer at Honeywell, writing the scripts that kept industrial systems humming, moved into web engineering as a junior developer, then joined Charles Schwab and shipped production code for one of the largest brokerages in the world. Every role deepened the same instinct: figure out how the machine works, then make it work better.',
-  },
-  {
-    number: '04',
-    title: 'Designing the systems, not just the features',
-    copy: 'At NewGen Business Solutions I stepped into a Senior Lead role and the work shifted from writing features to designing the systems they lived in. I owned architecture, set technical direction, and mentored engineers through complex builds. The hardest problems were never in the code. They were in the gap between what the business needed and what the technology could deliver.',
-  },
-  {
-    number: '05',
-    title: 'Bridging the boardroom and the codebase',
-    copy: 'That realization led to an MBA, completed in February 2026: pitching real investors, stress-testing business models, learning the language of growth alongside the language of code. Today I am the founder of MiPi, co-founder of Kingdom Kode, and an on-demand CTO for teams who need someone who can whiteboard architecture in the morning and present unit economics in the afternoon.',
-  },
-]
-
 const socialLinks = [
   {
     label: 'Follow on X',
@@ -88,7 +62,7 @@ const socialLinks = [
   {
     label: 'Follow on LinkedIn',
     icon: LinkedInIcon,
-    href: 'https://www.linkedin.com/in/alec-mingione-90bb63aa/',
+    href: identity.linkedin,
   },
 ]
 
@@ -215,7 +189,7 @@ export default function AboutContent() {
               <ul className="space-y-2">
                 <li>
                   <a
-                    href="mailto:amware.develop@gmail.com"
+                    href={'mailto:' + identity.email}
                     className="hover:text-[var(--amw-accent-ink)] min-h-11 group flex items-center gap-3 text-sm font-medium text-zinc-800 no-underline transition-colors dark:text-zinc-200"
                   >
                     <span
@@ -224,7 +198,7 @@ export default function AboutContent() {
                     >
                       <Mail className="h-4 w-4" strokeWidth={1.75} />
                     </span>
-                    <span className="truncate">amware.develop@gmail.com</span>
+                    <span className="truncate">{identity.email}</span>
                   </a>
                 </li>
                 <li className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">

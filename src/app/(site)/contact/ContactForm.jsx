@@ -1,5 +1,6 @@
 'use client'
 
+import { identity } from '@/content/site/identity'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -56,7 +57,7 @@ const socialLinks = [
   {
     label: 'Follow on LinkedIn',
     icon: LinkedInIcon,
-    href: 'https://www.linkedin.com/in/alec-mingione-90bb63aa/',
+    href: identity.linkedin,
   },
   {
     label: 'Follow on GitHub',

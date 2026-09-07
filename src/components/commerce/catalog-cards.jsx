@@ -216,6 +216,7 @@ export function ServiceCard({ service, index = 0, description = null }) {
   const hasPrice = typeof service.startingPrice === 'number'
   return (
     <motion.li
+      id={service.slug}
       className="bg-[var(--amw-card)] border-[var(--amw-line)] hover:border-[var(--amw-accent)] flex flex-col rounded-2xl border p-6 transition-[border-color,box-shadow] duration-300 hover:shadow-lg md:p-8"
       whileHover={reduce ? undefined : { y: -4 }}
       {...reveal}
