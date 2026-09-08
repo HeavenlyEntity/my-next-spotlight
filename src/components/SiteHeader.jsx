@@ -147,12 +147,29 @@ function MenuCard({ card, pathname, onNavigate }) {
 
       {card.id === 'contact' && (
         <div className="mt-5 flex h-[calc(100%-2rem)] flex-col justify-between pb-2">
+          {/* break-all chopped the address mid-word: the xl grid is four up,
+              which leaves the card 223px while 20px type needs 269px, so it
+              rendered as "amware.develop@gmai / l.com". The size steps down
+              where the card narrows, and the only break opportunity is after
+              the @, so a longer address wraps somewhere a reader expects
+              instead of anywhere. <wbr> adds no characters, so copy and paste
+              still yields the plain address. */}
           <a
             href={`mailto:${card.email}`}
             onClick={onNavigate}
-            className="break-all text-lg font-semibold tracking-tight text-current no-underline transition-opacity hover:opacity-70 md:text-xl"
+            className="text-lg font-semibold tracking-tight text-current no-underline transition-opacity [overflow-wrap:anywhere] hover:opacity-70 md:text-xl xl:text-base"
           >
-            {card.email}
+            {(() => {
+              const at = card.email.indexOf('@')
+              if (at < 0) return card.email
+              return (
+                <>
+                  {card.email.slice(0, at + 1)}
+                  <wbr />
+                  {card.email.slice(at + 1)}
+                </>
+              )
+            })()}
           </a>
           <div className="mt-auto flex items-center gap-3 pt-8">
             {card.socials.map((social) => {
