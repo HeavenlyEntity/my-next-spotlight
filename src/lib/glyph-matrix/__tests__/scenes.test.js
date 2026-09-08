@@ -4,6 +4,7 @@ import {
   SCENES,
   phaseAt,
   CYCLE_MS,
+  INTRO_MS,
   drawScene,
   createDrawing,
   dreamerPose,
@@ -34,12 +35,25 @@ describe('animation lifecycle', () => {
       expect(drawing.pixels.has(y * 116 + right)).toBe(true)
     }
   })
-  it('provides standby, staggered entry, playback, exit and repeat', () => {
+  it('reveals once and loops playback without another fade or standby', () => {
     expect(phaseAt(0).stage).toBe('standby')
     expect(phaseAt(1500).stage).toBe('enter')
     expect(phaseAt(1900).time).toBe(0)
-    expect(phaseAt(14000).stage).toBe('exit')
-    expect(phaseAt(CYCLE_MS).stage).toBe('standby')
+    for (let cycle = 1; cycle <= 5; cycle++) {
+      const boundary = INTRO_MS + cycle * CYCLE_MS
+      expect(phaseAt(boundary)).toEqual({
+        stage: 'play',
+        time: 0,
+        reveal: 1,
+        exit: 0,
+      })
+      for (const offset of [-1, 1, 1200, 1500]) {
+        const phase = phaseAt(boundary + offset)
+        expect(phase.stage).toBe('play')
+        expect(phase.reveal).toBe(1)
+        expect(phase.exit).toBe(0)
+      }
+    }
     expect(phaseAt(50, true)).toEqual(phaseAt(9000, true))
     expect(phaseAt(0, true).time).toBeGreaterThan(9)
   })
@@ -74,23 +88,28 @@ describe('animation lifecycle', () => {
         })
         .sort((a, b) => a - b)
     expect(artwork(drawScene('builder', cols, rows, 7))).toEqual(
-      artwork(drawScene('builder', cols, rows, 10.5))
+      artwork(drawScene('builder', cols, rows, 8.5))
     )
     expect(
-      artwork(drawScene('builder', cols, rows, 10.5)).length
+      artwork(drawScene('builder', cols, rows, 8.5)).length
     ).toBeGreaterThan(20)
   })
 })
 
 describe('paper airplane return story', () => {
-  it('reaches the right edge, hits the back of the head, lands and resets', () => {
+  it('flies beyond the right edge, hits the back of the head, lands and resets', () => {
     for (const [columns, ground] of [
       [116, 92],
       [220, 63],
     ]) {
       const ready = dreamerPose(0, columns, ground)
       const edge = dreamerPose(4, columns, ground)
-      expect(edge.plane.x + 6).toBe(columns - 1)
+      expect(edge.plane.x - 6).toBeGreaterThan(columns - 1)
+      expect(edge.plane.hidden).toBe(true)
+      const returning = dreamerPose(5.2, columns, ground)
+      expect(returning.plane.x + 6).toBeLessThan(0)
+      expect(returning.plane.y).toBe(returning.y)
+      expect(dreamerPose(4.6, columns, ground).stage).toBe('offscreen')
       const impact = dreamerPose(6.5, columns, ground)
       expect(impact.plane.x + 6).toBe(impact.x - 4)
       expect(impact.plane.y).toBe(impact.y)
@@ -114,4 +133,36 @@ describe('paper airplane return story', () => {
       expect(Math.abs(before.bend - after.bend)).toBeLessThan(0.01)
     }
   })
+})
+
+describe('seamless scene boundaries', () => {
+  for (const [columns, rows] of [
+    [116, 101],
+    [220, 72],
+  ]) {
+    for (const scene of SCENES) {
+      it(`${scene} matches its opening frame at ${columns} columns`, () => {
+        const opening = drawScene(scene, columns, rows, 0)
+        expect(drawScene(scene, columns, rows, 12)).toEqual(opening)
+        const closing = drawScene(scene, columns, rows, 11.999)
+        expect(closing).toEqual(opening)
+        expect(drawScene(scene, columns, rows, 0.001)).toEqual(opening)
+      })
+    }
+  }
+})
+
+it('shows an app error after celebration and clears it when work resumes', () => {
+  const cols = 220,
+    rows = 72,
+    x = Math.floor(cols / 2) - 14,
+    y = rows - 9 - 22
+  const error = createDrawing(cols, rows)
+  error.text('ERR', x + 34, y - 1)
+  const broken = drawScene('builder', cols, rows, 10)
+  for (const pixel of error.pixels) expect(broken.has(pixel)).toBe(true)
+  expect(broken).not.toEqual(drawScene('builder', cols, rows, 8.5))
+  expect(drawScene('builder', cols, rows, 11.9)).toEqual(
+    drawScene('builder', cols, rows, 0)
+  )
 })

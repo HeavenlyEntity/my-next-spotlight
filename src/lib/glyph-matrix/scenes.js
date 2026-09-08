@@ -2,14 +2,15 @@
 export const SCENES = ['builder', 'raft', 'painter', 'dreamer']
 export const DESCRIPTIONS = {
   builder:
-    'A crowned builder thinks, types at a computer, reveals a finished creation, and celebrates. What if… One more detail. There it is. Worth the effort.',
+    'A crowned builder thinks, types at a computer, reveals a finished creation, and celebrates. Then the app errors, he says Of course, and goes back to work. What if… One more detail. There it is. Worth the effort.',
   raft: 'A crowned creator rests on a raft, bobbing on ocean waves and waving hello. Great work takes effort. Rest is part of it.',
   painter:
     'A crowned painter adds brush strokes to a canvas, reveals a mountain landscape, and admires the masterpiece.',
   dreamer:
-    'A crowned dreamer launches a paper airplane. It loops back, bonks the back of his head, and falls. He says Tough crowd, picks it up, and tries again.',
+    'A crowned dreamer launches a paper airplane. It disappears off the right edge, unexpectedly re-enters from the left, bonks the back of his head, and falls. He says Tough crowd, picks it up, and tries again.',
 }
-export const CYCLE_MS = 14400
+export const CYCLE_MS = 12000
+export const INTRO_MS = 1900
 export function chooseScene(previous, random = Math.random) {
   const choices = SCENES.filter((scene) => scene !== previous)
   return choices[
@@ -21,13 +22,17 @@ export function chooseScene(previous, random = Math.random) {
 }
 export function phaseAt(elapsed, reduced = false) {
   if (reduced) return { stage: 'play', time: 10.5, reveal: 1, exit: 0 }
-  const t = ((elapsed % CYCLE_MS) + CYCLE_MS) % CYCLE_MS
+  const t = Math.max(0, elapsed)
   if (t < 1200) return { stage: 'standby', time: 0, reveal: 0, exit: 0 }
-  if (t < 1900)
+  if (t < INTRO_MS)
     return { stage: 'enter', time: 0, reveal: (t - 1200) / 700, exit: 0 }
-  if (t < 13900)
-    return { stage: 'play', time: (t - 1900) / 1000, reveal: 1, exit: 0 }
-  return { stage: 'exit', time: 12, reveal: 1, exit: (t - 13900) / 500 }
+  // Only the scene clock loops. The introductory reveal never restarts.
+  return {
+    stage: 'play',
+    time: ((t - INTRO_MS) % CYCLE_MS) / 1000,
+    reveal: 1,
+    exit: 0,
+  }
 }
 
 const FONT = {
@@ -174,10 +179,16 @@ function landscape(d, x, y, w, h, progress = 1) {
   if (progress > 0.7) d.circle(x + w * 0.78, y + h * 0.15, 2)
 }
 
+function smoothStep(value) {
+  const p = Math.max(0, Math.min(1, value))
+  return p * p * (3 - 2 * p)
+}
+
 function builder(d, cx, ground, t) {
   const x = cx - 14,
     y = ground - 22,
-    celebrate = t >= 9
+    broken = t >= 9.8 && t < 11.2,
+    celebrate = t >= 8 ? 1 - smoothStep((t - 9.8) / 0.6) : 0
   d.head(x, y)
   d.path([
     [x, y + 5],
@@ -193,30 +204,20 @@ function builder(d, cx, ground, t) {
   ])
   d.line(x - 3, y + 18, x - 3, ground - 1)
   d.line(x - 8, ground, x + 2, ground)
-  const tap = Math.sin(t * 15) > 0 ? 1 : 0
-  if (celebrate) {
-    d.path([
-      [x, y + 7],
-      [x - 7, y + 1],
-      [x - 9, y - 6],
-    ])
-    d.path([
-      [x, y + 7],
-      [x + 7, y + 1],
-      [x + 10, y - 5],
-    ])
-  } else {
-    d.path([
-      [x, y + 7],
-      [x + 6, y + 11],
-      [x + 15, y + 10 + tap],
-    ])
-    d.path([
-      [x + 1, y + 8],
-      [x + 7, y + 13],
-      [x + 17, y + 11 - tap],
-    ])
-  }
+  const working = (t > 0.3 && t < 8) || (t >= 10.4 && t < 11.7)
+  const tap = working && Math.sin(t * 15) > 0 ? 1 : 0
+  const blend = (a, b) => a + (b - a) * celebrate
+  // Lower his hands back to the keyboard before the next idea begins.
+  d.path([
+    [x, y + 7],
+    [blend(x + 6, x - 7), blend(y + 11, y + 1)],
+    [blend(x + 15, x - 9), blend(y + 10 + tap, y - 6)],
+  ])
+  d.path([
+    [blend(x + 1, x), blend(y + 8, y + 7)],
+    [x + 7, blend(y + 13, y + 1)],
+    [blend(x + 17, x + 10), blend(y + 11 - tap, y - 5)],
+  ])
   d.line(x + 9, y + 14, x + 49, y + 14)
   d.line(x + 12, y + 14, x + 12, ground)
   d.line(x + 46, y + 14, x + 46, ground)
@@ -230,21 +231,31 @@ function builder(d, cx, ground, t) {
     [x + 55, y + 12],
     [x + 53, y + 12],
   ])
-  if (t >= 6) {
+  if (broken) {
+    // A stable error readout replaces the app; no flashing or whole-scene fade.
+    d.text('ERR', x + 34, y - 1)
+    d.path([
+      [x + 27, y - 5],
+      [x + 32, y - 3],
+      [x + 36, y - 5],
+      [x + 42, y - 3],
+    ])
+  } else if (t >= 6 && t < 9.8) {
     landscape(d, x + 26, y - 4, 17, 9)
     if (Math.sin(t * 4) > 0) d.spark(x + 48, y - 9)
-  } else {
+  } else if (t < 6) {
     for (let i = 0; i < Math.floor(t * 2) % 7; i++)
       d.line(x + 26, y - 4 + i * 2, x + 30 + (i % 3) * 3, y - 4 + i * 2)
   }
-  const lines =
-    t < 3
-      ? ['WHAT IF...']
-      : t < 6
-      ? ['ONE MORE', 'DETAIL.']
-      : t < 9
-      ? ['THERE IT IS.']
-      : ['WORTH THE', 'EFFORT.']
+  const lines = broken
+    ? ['OF COURSE.']
+    : t < 3 || t >= 11.2
+    ? ['WHAT IF...']
+    : t < 6
+    ? ['ONE MORE', 'DETAIL.']
+    : t < 8
+    ? ['THERE IT IS.']
+    : ['WORTH THE', 'EFFORT.']
   d.thought(lines, cx - 20, Math.max(2, y - 38))
   const px = x + 61
   d.path([
@@ -269,12 +280,15 @@ function builder(d, cx, ground, t) {
   ])
 }
 function raft(d, cx, ground, t, columns) {
-  const bob = Math.sin(t * 1.8) * 1.2,
+  // Settle briefly on the exact opening lattice, with zero velocity at both
+  // ends, so subpixel rounding cannot flicker the crown or raft at the seam.
+  const phase = t >= 11.9 ? 0 : smoothStep((t - 0.1) / 11.8) * Math.PI * 2
+  const bob = Math.sin(phase * 3) * 1.2,
     x = cx - 15,
     y = ground - 15 + bob
   for (let row = 0; row < 3; row++)
     for (let xx = 0; xx < columns; xx++)
-      d.dot(xx, ground + row * 5 + Math.sin(xx * 0.16 - t * 1.8 + row) * 1.8)
+      d.dot(xx, ground + row * 5 + Math.sin(xx * 0.16 - phase * 3 + row) * 1.8)
   d.head(x, y - 8)
   d.path([
     [x, y - 3],
@@ -285,7 +299,7 @@ function raft(d, cx, ground, t, columns) {
   d.path([
     [x + 1, y - 2],
     [x + 8, y - 6],
-    [x + 10 + Math.sin(t * 5) * 2, y - 13],
+    [x + 10 + Math.sin(phase * 9) * 2, y - 13],
   ])
   d.path([
     [x, y - 1],
@@ -336,7 +350,9 @@ function painter(d, cx, ground, t) {
     [x + 5, ground],
     [x + 8, ground],
   ])
-  const hand = t < 8 ? Math.sin(t * 3) * 4 : -6
+  const reset = smoothStep((t - 10.5) / 1.2)
+  const hand =
+    t < 0.3 ? 0 : t < 8 ? Math.sin((t - 0.3) * 3) * 4 : -6 * (1 - reset)
   d.path([
     [x, y + 6],
     [x + 7, y + 8],
@@ -349,14 +365,28 @@ function painter(d, cx, ground, t) {
     [x - 9, y + 7],
   ])
   d.circle(x - 9, y + 6, 3)
-  d.rect(cx + 1, y - 10, 27, 22)
+  // Turn the canvas over after admiring the finished picture. The easel
+  // stays put while the fresh side becomes the opening frame of the loop.
+  const flip = t < 10.5 ? 1 : Math.abs(1 - 2 * reset)
+  const canvasLeft = cx + 14.5 - 13.5 * flip
+  d.rect(canvasLeft, y - 10, 27 * flip, 22)
   d.line(cx - 2, y + 14, cx + 31, y + 14)
   d.line(cx + 7, y + 14, cx + 2, ground)
   d.line(cx + 22, y + 14, cx + 28, ground)
-  landscape(d, cx + 4, y - 6, 21, 14, Math.min(1, t / 6))
-  if (t > 7) d.spark(cx + 33, y - 12)
+  if (reset < 0.5)
+    landscape(
+      d,
+      cx + 14.5 - 10.5 * flip,
+      y - 6,
+      21 * flip,
+      14,
+      Math.min(1, t / 6)
+    )
+  if (t > 7 && t < 10.5) d.spark(cx + 33, y - 12)
   d.thought(
-    t < 7 ? ['MAKE IT', 'MEAN SOMETHING.'] : ['A LITTLE', 'MORE SOUL.'],
+    t < 7 || t >= 11.2
+      ? ['MAKE IT', 'MEAN SOMETHING.']
+      : ['A LITTLE', 'MORE SOUL.'],
     cx - 4,
     Math.max(2, y - 38)
   )
@@ -380,33 +410,19 @@ export function dreamerPose(t, columns, ground) {
     stage = 'outbound'
     const p = smooth((t - 1) / 3)
     plane = {
-      x: mix(ready.x, columns - 7, p),
+      x: mix(ready.x, columns + 8, p),
       y: mix(ready.y, y - 18, p) - Math.sin(p * Math.PI) * 5,
       angle: -0.2 * Math.sin(p * Math.PI),
     }
-  } else if (t >= 4 && t < 6.5) {
+  } else if (t >= 4 && t < 5.2) {
+    stage = 'offscreen'
+    // The entire turnaround happens outside the matrix, unseen by the figure.
+    plane = { x: columns + 8, y: y - 18, angle: 0, hidden: true }
+  } else if (t >= 5.2 && t < 6.5) {
     stage = 'return'
-    const p = clamp((t - 4) / 2.5)
-    // A cubic arc loops above the crown, then approaches from behind (left).
-    const points = [
-      [columns - 7, y - 18],
-      [columns - 7, y - 40],
-      [x - 35, y - 32],
-      [x - 10, y],
-    ]
-    const q = 1 - p
-    const px =
-      q * q * q * points[0][0] +
-      3 * q * q * p * points[1][0] +
-      3 * q * p * p * points[2][0] +
-      p * p * p * points[3][0]
-    const py =
-      q * q * q * points[0][1] +
-      3 * q * q * p * points[1][1] +
-      3 * q * p * p * points[2][1] +
-      p * p * p * points[3][1]
-    // Ease the nose back to the right as it reaches the back of his head.
-    plane = { x: px, y: py, angle: Math.PI * Math.sin(p * Math.PI) }
+    const p = clamp((t - 5.2) / 1.3)
+    // Re-enter from the left at head height, still flying nose-first right.
+    plane = { x: mix(-8, x - 10, p), y, angle: 0 }
   } else if (t >= 6.5 && t < 8.5) {
     stage = 'bonk'
     recoil = Math.sin(clamp((t - 6.5) / 0.6) * Math.PI) * 3
@@ -493,34 +509,32 @@ function dreamer(d, cx, ground, t, columns) {
     [6, 0],
     [-3, 0],
   ]
-  d.path(
-    shape.map(([xx, yy]) => [
-      plane.x + xx * Math.cos(plane.angle) - yy * Math.sin(plane.angle),
-      plane.y + xx * Math.sin(plane.angle) + yy * Math.cos(plane.angle),
-    ])
-  )
+  if (!plane.hidden)
+    d.path(
+      shape.map(([xx, yy]) => [
+        plane.x + xx * Math.cos(plane.angle) - yy * Math.sin(plane.angle),
+        plane.y + xx * Math.sin(plane.angle) + yy * Math.cos(plane.angle),
+      ])
+    )
   // Short trailing blips follow the moving plane without drawing across him.
   if (stage === 'outbound' || stage === 'return') {
     for (let delay = 0.12; delay < 0.6; delay += 0.12) {
-      const previous = dreamerPose(
-        Math.max(1, t - delay),
-        columns,
-        ground
-      ).plane
-      d.dot(previous.x, previous.y)
+      const previous = dreamerPose(Math.max(1, t - delay), columns, ground)
+      if (previous.stage === stage) d.dot(previous.plane.x, previous.plane.y)
     }
   }
   const words =
     stage === 'bonk' || stage === 'pickup'
       ? ['TOUGH', 'CROWD.']
-      : stage === 'return'
-      ? ['WAIT...']
+      : stage === 'return' || stage === 'offscreen'
+      ? ['LOOK AT', 'IT GO.']
       : stage === 'outbound'
       ? ['LOOK AT', 'IT GO.']
       : ['WHAT IF', 'IT FLIES?']
-  if (stage !== 'return') d.thought(words, cx - 22, Math.max(2, y - 38))
+  d.thought(words, cx - 22, Math.max(2, y - 38))
 }
 export function drawScene(scene, columns, rows, time) {
+  time = ((time % 12) + 12) % 12
   const d = createDrawing(columns, rows),
     cx = Math.floor(columns / 2),
     ground = rows - 9
