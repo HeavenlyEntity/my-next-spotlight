@@ -4,6 +4,7 @@ import { identity } from '@/content/site/identity'
 import { ChevronRight } from 'lucide-react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import AmwareCreed from '@/components/brand/amware-creed'
 import { GitHubIcon, LinkedInIcon, TwitterIcon } from '@/components/SocialIcons'
 
@@ -186,8 +187,12 @@ function FooterCard() {
 }
 
 export function Footer() {
+  const pathname = usePathname()
   return (
-    <footer className="amw mt-32" data-print="hide">
+    <footer
+      className={`amw ${pathname === '/' ? '' : 'mt-32'}`}
+      data-print="hide"
+    >
       <FooterCard />
     </footer>
   )

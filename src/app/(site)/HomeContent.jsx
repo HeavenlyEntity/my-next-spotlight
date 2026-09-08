@@ -6,6 +6,7 @@ import { Testimonials } from '@/components/landing/testimonials'
 import { Pricing } from '@/components/landing/pricing'
 import { FAQ } from '@/components/landing/faq'
 import { FinalCTA } from '@/components/landing/final-cta'
+import { MasterpieceInterlude } from '@/components/landing/glyph-matrix/masterpiece-interlude'
 
 /* Homepage sequencing ported verbatim from the "minimal" landing
    template (app/page.tsx): Hero, How It Works, Features, Stats,
@@ -26,6 +27,7 @@ export default function HomeContent() {
       <Pricing />
       <FAQ />
       <FinalCTA />
+      <MasterpieceInterlude />
     </div>
   )
 }

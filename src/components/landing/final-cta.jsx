@@ -4,7 +4,6 @@ import { ChevronRight } from 'lucide-react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react'
 import { useMediaQuery } from '@/hooks/use-client-value'
 
 const DitherCursor = dynamic(() => import('./dither-cursor'), { ssr: false })
@@ -22,7 +21,7 @@ export function FinalCTA() {
   const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)', true)
 
   return (
-    <section className="px-6 py-24 md:py-36">
+    <section className="px-6 pt-24 md:pt-36">
       <motion.div
         className="bg-[var(--amw-accent)] text-zinc-950 md:rounded-4xl relative mx-auto max-w-6xl overflow-hidden rounded-3xl px-6 py-12 text-center md:px-12 md:py-24"
         initial={{ opacity: 0, y: 40 }}
