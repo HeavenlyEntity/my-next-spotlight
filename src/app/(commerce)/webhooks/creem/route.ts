@@ -14,6 +14,26 @@ const COLLECTION = {
   service: 'services',
 }
 
+/* Subscription lifecycle. Creem sends these for retainers; a one-time sale
+   only ever produces checkout.completed. Paths per Creem's webhook reference:
+   object.id is the subscription, object.status its state,
+   object.customer.email the buyer, object.product.id the product, and
+   object.last_transaction_id the individual payment inside the subscription. */
+const SUBSCRIPTION_STATES = new Set([
+  'subscription.active',
+  'subscription.trialing',
+  'subscription.past_due',
+  'subscription.scheduled_cancel',
+  'subscription.canceled',
+  'subscription.expired',
+])
+
+/* A retainer is a standing engagement. There is nothing to download and no
+   access link to sign, so its fulfillment is complete the moment it is
+   recorded -- sending an access-token email for one would be wrong. */
+const isEngagement = (itemType: string, item: any) =>
+  itemType === 'service' || item?.type === 'service-package'
+
 export async function POST(req) {
   const raw = await req.text()
   if (raw.length > 65536) {
@@ -29,10 +49,156 @@ export async function POST(req) {
   } catch {
     return new Response('Bad JSON', { status: 400 })
   }
-  if (event?.eventType !== 'checkout.completed') {
-    return new Response('ignored', { status: 200 })
+
+  const type = event?.eventType
+  if (type === 'checkout.completed') return handleCheckout(event)
+  if (type === 'subscription.paid') return handleSubscriptionPaid(event)
+  if (SUBSCRIPTION_STATES.has(type)) return handleSubscriptionState(event)
+  return new Response('ignored', { status: 200 })
+}
+
+/* A payment inside a subscription. The first one arrives twice -- once as
+   checkout.completed carrying an order id, once here carrying a transaction
+   id -- so this reconciles onto the checkout row when that row has no
+   transaction yet, and only creates a new row for genuine renewals. Without
+   that, month one would be banked as two sales. */
+async function handleSubscriptionPaid(event) {
+  const obj = event.object || {}
+  const subscriptionId = obj.id
+  const transactionId = obj.last_transaction_id
+  const email = obj.customer?.email
+  const meta = obj.metadata || {}
+
+  if (!subscriptionId || !transactionId || !email) {
+    return new Response('ignored (missing fields)', { status: 200 })
   }
 
+  const payload = await getPayloadClient()
+
+  const seen = await payload.find({
+    collection: 'purchases',
+    where: { creemTransactionId: { equals: transactionId } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (seen.docs.length) {
+    return new Response('ok (duplicate)', { status: 200 })
+  }
+
+  const anchor = await payload.find({
+    collection: 'purchases',
+    where: {
+      and: [
+        { creemSubscriptionId: { equals: subscriptionId } },
+        { creemTransactionId: { exists: false } },
+      ],
+    },
+    limit: 1,
+    sort: 'createdAt',
+    overrideAccess: true,
+  })
+
+  if (anchor.docs.length) {
+    await payload.update({
+      collection: 'purchases',
+      id: anchor.docs[0].id,
+      overrideAccess: true,
+      data: { creemTransactionId: transactionId, subscriptionStatus: 'paid' },
+    })
+    return new Response('ok (first payment reconciled)', { status: 200 })
+  }
+
+  const itemType = meta.itemType
+  const itemId = meta.itemId
+  const collection =
+    itemType && Object.prototype.hasOwnProperty.call(COLLECTION, itemType)
+      ? COLLECTION[itemType]
+      : null
+  const item = collection
+    ? await payload
+        .findByID({ collection, id: itemId, depth: 0, overrideAccess: true })
+        .catch(() => null)
+    : null
+
+  try {
+    await payload.create({
+      collection: 'purchases',
+      overrideAccess: true,
+      data: {
+        email,
+        item: item ? { relationTo: collection, value: item.id } : undefined,
+        itemType: itemType || undefined,
+        creemProductId: obj.product?.id,
+        // Renewals have no order of their own; the transaction is the order.
+        creemOrderId: transactionId,
+        creemSubscriptionId: subscriptionId,
+        creemTransactionId: transactionId,
+        amount: obj.last_transaction?.amount ?? obj.product?.price,
+        currency: obj.product?.currency,
+        status: 'paid',
+        subscriptionStatus: 'paid',
+        fulfillmentStatus: 'not_required',
+      },
+    })
+  } catch (err) {
+    const recheck = await payload.find({
+      collection: 'purchases',
+      where: { creemTransactionId: { equals: transactionId } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (recheck.docs.length) {
+      return new Response('ok (duplicate)', { status: 200 })
+    }
+    console.error('Renewal create failed for subscription', subscriptionId, err)
+    return new Response('error', { status: 500 })
+  }
+
+  return new Response('ok', { status: 200 })
+}
+
+/* State only: active, trialing, past_due, scheduled_cancel, canceled,
+   expired. These are not payments and must never create a purchase row. */
+async function handleSubscriptionState(event) {
+  const obj = event.object || {}
+  const subscriptionId = obj.id
+  if (!subscriptionId) {
+    return new Response('ignored (missing fields)', { status: 200 })
+  }
+
+  const state = String(event.eventType).slice('subscription.'.length)
+  const payload = await getPayloadClient()
+
+  const rows = await payload.find({
+    collection: 'purchases',
+    where: { creemSubscriptionId: { equals: subscriptionId } },
+    limit: 100,
+    overrideAccess: true,
+  })
+  if (!rows.docs.length) {
+    // The checkout may not have reached us yet. Creem retries; do not 500.
+    return new Response('ignored (unknown subscription)', { status: 200 })
+  }
+
+  await Promise.all(
+    rows.docs.map((row) =>
+      payload
+        .update({
+          collection: 'purchases',
+          id: row.id,
+          overrideAccess: true,
+          data: { subscriptionStatus: state },
+        })
+        .catch(() =>
+          console.error('Subscription state update failed', subscriptionId)
+        )
+    )
+  )
+
+  return new Response('ok', { status: 200 })
+}
+
+async function handleCheckout(event) {
   const obj = event.object || {}
   const orderId = obj.order?.id || obj.id
   const email = obj.customer?.email
@@ -43,6 +209,8 @@ export async function POST(req) {
   const itemType = meta.itemType
   const itemId = meta.itemId
   const githubUsername = meta.githubUsername
+  // Present when the purchase started a retainer; absent on one-time sales.
+  const subscriptionId = obj.subscription?.id || obj.subscription
 
   if (!orderId || !email || !itemType || !itemId) {
     return new Response('ignored (missing fields)', { status: 200 })
@@ -73,6 +241,7 @@ export async function POST(req) {
   }
 
   const isBoilerplate = itemType === 'product' && item?.type === 'boilerplate'
+  const engagement = isEngagement(itemType, item)
   const itemName = item?.name || item?.title || 'your purchase'
 
   const productMismatch =
@@ -96,8 +265,15 @@ export async function POST(req) {
         amount,
         currency,
         githubUsername: githubUsername || undefined,
+        creemSubscriptionId:
+          typeof subscriptionId === 'string' ? subscriptionId : undefined,
         status: 'paid',
-        fulfillmentStatus: isBoilerplate ? 'pending_invite' : 'pending',
+        subscriptionStatus: subscriptionId ? 'active' : undefined,
+        fulfillmentStatus: isBoilerplate
+          ? 'pending_invite'
+          : engagement
+          ? 'not_required'
+          : 'pending',
       },
     })
   } catch (err) {
@@ -129,6 +305,9 @@ export async function POST(req) {
         data: { fulfillmentStatus: 'failed' },
       })
       .catch(() => {})
+  } else if (engagement) {
+    // A retainer needs no delivery. It was recorded, which is the whole job;
+    // the engagement itself is scheduled with the client out of band.
   } else if (isBoilerplate) {
     // Confirmation email is best-effort; the repo invite (Phase B3) is the real
     // fulfillment, so a failed confirmation must NOT flip the order to 'failed'.
