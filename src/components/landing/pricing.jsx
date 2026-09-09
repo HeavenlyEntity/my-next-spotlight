@@ -155,7 +155,7 @@ export function Pricing() {
             Two Ways In
           </h2>
           <p className="text-lg text-zinc-600 dark:text-zinc-400">
-            Start from my foundations, or bring me onto the team at the depth
+            Buy the foundation outright, or bring me onto the team at the depth
             you need.
           </p>
         </motion.div>
@@ -177,7 +177,7 @@ export function Pricing() {
             href="/services"
             className="bg-[var(--amw-accent)] text-zinc-950 group inline-flex w-full items-center justify-center gap-3 rounded-md py-3 pl-5 pr-3 font-medium no-underline transition-all duration-500 ease-out hover:rounded-[50px] hover:shadow-lg sm:w-auto"
           >
-            <span>Start an Engagement</span>
+            <span>Book an intro call</span>
             <span className="text-zinc-950 flex h-10 w-10 items-center justify-center rounded-full bg-white transition-all duration-300 group-hover:scale-110">
               <ChevronRight
                 className="relative left-px h-4 w-4"
@@ -185,6 +185,13 @@ export function Pricing() {
               />
             </span>
           </Link>
+          {/* Says the price of starting before the call, not after it. The
+              deposit is credited, so it is a commitment gate rather than an
+              extra cost, and saying so is what stops it reading as a fee. */}
+          <p className="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-400">
+            Retainers begin after an intro call, with a $1,500 deposit credited
+            in full against your first month.
+          </p>
           <Link
             href="/products"
             className="hover:text-[var(--amw-accent-ink)] min-h-11 inline-flex items-center text-sm text-zinc-600 no-underline transition-colors dark:text-zinc-400"
