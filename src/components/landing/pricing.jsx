@@ -6,12 +6,17 @@ import Link from 'next/link'
 import { SectionEyebrow } from './section-eyebrow'
 
 /* Ported from the "minimal" landing template (components/pricing.tsx):
-   two offset plan cards on a soft band, the highlighted plan framed in
-   the accent. Mapped to the two AMWARE modes: build on mine, or I build
-   it with you.
+   plan cards on a soft band, the recommended plan framed in the accent.
 
-   TODO(alec): prices and feature lists are placeholders. Sync with the
-   live Creem products and the /services rate card before publishing. */
+   Prices are the real ones as of 2026-09-09, confirmed by Alec: $249 for the
+   boilerplate and three monthly retainer tiers. They replace placeholders
+   ($149 and a single $3,500 tier) that had sat here behind a TODO. Anything
+   quoted here is also what Creem is told during merchant verification, so
+   these two must not drift apart -- update both together.
+
+   The template's two-card offset layout could not carry four plans, so the
+   grid is a plain four-up that steps down to two and then one. The offset
+   went with it: it only ever read as deliberate with exactly two cards. */
 
 const easeOut = [0.16, 1, 0.3, 1]
 
@@ -19,30 +24,56 @@ const plans = [
   {
     name: 'Boilerplate',
     tagline: 'Mode B: you build on mine',
-    price: '$149',
+    price: '$249',
     period: 'one time',
     features: [
-      'Next.js 15 + Payload CMS foundation',
+      'Next.js 16 + Payload CMS foundation',
       'Auth and payments wired (Creem)',
       'Postgres schema and deploy scripts',
+      'Private repository access',
       'Lifetime updates',
-      'Community support',
+    ],
+  },
+  {
+    name: 'Advisor',
+    tagline: 'Best for pre-seed',
+    price: '$3,000',
+    period: 'month',
+    note: 'about 10 hrs',
+    features: [
+      'Two strategy calls a month',
+      'Async Slack and email support',
+      'Architecture reviews',
+      'Technology roadmap input',
     ],
   },
   {
     name: 'Fractional CTO',
-    tagline: 'Mode A: I build it with you',
-    price: '$3,500',
+    tagline: 'Best for seed to Series A',
+    price: '$7,500',
     period: 'month',
+    note: 'about 20-25 hrs',
     highlighted: true,
     features: [
-      'Architecture and roadmap ownership',
-      'Hands-on shipping every week',
-      'Hiring and mentorship for your team',
-      'Vendor, infra, and cost decisions',
-      'Direct async access',
-      'Monthly strategy review',
-      'Cancel any time',
+      'Weekly strategy calls',
+      'Team mentoring and code review',
+      'Hiring support and interviews',
+      'Vendor negotiations',
+      'AI integration planning',
+    ],
+  },
+  {
+    name: 'Embedded CTO',
+    tagline: 'Best for Series A+ or M&A prep',
+    price: '$12,000',
+    period: 'month',
+    note: 'about 35-40 hrs',
+    features: [
+      'Near full-time commitment',
+      'Direct engineering leadership',
+      'Board and investor reporting',
+      'Technical due diligence',
+      'Fundraising support',
     ],
   },
 ]
@@ -71,13 +102,20 @@ function PlanCard({ plan }) {
         <p className="amw-kicker mt-1">{plan.tagline}</p>
       </div>
 
-      <div className="mb-8 flex items-baseline gap-1">
-        <span className="amw-price text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-5xl">
+      {/* Price on its own line, terms under it. Baseline-inline only worked
+          while every price was four characters: at the four-up width "/ month"
+          wrapped under $3,000, $7,500 and $12,000 but not under $249, so the
+          cards disagreed with each other. $12,000 at text-5xl is also about
+          230px inside a 222px content box, hence the step down at xl -- the
+          card width drives this, not the viewport. */}
+      <div className="mb-8">
+        <span className="amw-price block text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-5xl xl:text-4xl">
           {plan.price}
         </span>
-        <span className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           / {plan.period}
-        </span>
+          {plan.note ? ` \u00b7 ${plan.note}` : ''}
+        </p>
       </div>
 
       <ul className="space-y-3">
@@ -99,8 +137,6 @@ function PlanCard({ plan }) {
 }
 
 export function Pricing() {
-  const [starterPlan, ctoPlan] = plans
-
   return (
     <section className="bg-[var(--amw-muted)] px-6 py-16 md:py-32">
       <div className="mx-auto max-w-6xl">
@@ -119,18 +155,15 @@ export function Pricing() {
             Two Ways In
           </h2>
           <p className="text-lg text-zinc-600 dark:text-zinc-400">
-            Start from my foundations, or bring me onto the team.
+            Start from my foundations, or bring me onto the team at the depth
+            you need.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-8">
-          <div className="md:mt-16">
-            <PlanCard plan={starterPlan} />
-          </div>
-
-          <div>
-            <PlanCard plan={ctoPlan} />
-          </div>
+        <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          {plans.map((plan) => (
+            <PlanCard key={plan.name} plan={plan} />
+          ))}
         </div>
 
         <motion.div
