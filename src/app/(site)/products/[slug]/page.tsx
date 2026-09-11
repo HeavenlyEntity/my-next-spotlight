@@ -134,19 +134,6 @@ export default async function ProductPage({
               </section>
             )}
 
-            {stack.length > 0 && (
-              <section className="mt-12">
-                <StackLogos stack={stack} />
-                {/* The names in text as well as marks. A buyer scanning for
-                    "does this use Postgres" should not have to hover eight
-                    discs to find out, and the marks alone would leave the
-                    stack invisible to search. */}
-                <p className="amw-kicker mt-4 leading-relaxed">
-                  {stack.map((s) => s.tech).join(' · ')}
-                </p>
-              </section>
-            )}
-
             {features.length > 0 && (
               <section className="mt-12">
                 <p className="amw-eyebrow">{'// what’s included'}</p>
@@ -229,6 +216,13 @@ export default async function ProductPage({
                   <dd>{isBoilerplate ? 'GitHub invite' : 'instant link'}</dd>
                 </div>
               </dl>
+
+              {/* Directly under its own count row, in the card the buyer is
+                  already looking at. In the overview column it was competing
+                  with the prose for a glance it was never going to win. */}
+              {stack.length > 0 && (
+                <StackLogos stack={stack} onCard className="mt-5" />
+              )}
 
               {isFree && isBoilerplate ? (
                 <ClaimFreeKit slug={product.slug} />

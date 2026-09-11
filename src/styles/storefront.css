@@ -298,10 +298,12 @@
  * each disc tucked behind the one before it, so eight technologies occupy
  * roughly the width of four.
  *
- * The ring is the PAGE colour, not a border. That is what makes the overlap
- * legible: each disc punches a hole in the one behind it instead of stacking
- * two hairlines into a smudge. It also means the stack only works on the page
- * surface -- inside a card, --amw-page would be the wrong colour.
+ * The ring is the SURFACE colour, not a border. That is what makes the
+ * overlap legible: each disc punches a hole in the one behind it instead of
+ * stacking two hairlines into a smudge. Which surface it is matters, so it is
+ * a variable rather than a hardcoded token -- on the page it is --amw-page,
+ * inside the buy card it is --amw-card, and getting that wrong draws a halo
+ * of the wrong colour around every disc.
  *
  * Colour comes from `--logo`, set per item to the brand's own hex. The disc
  * is tinted with a little of it and the mark is drawn in full strength: a
@@ -310,9 +312,21 @@
  * given the ink token instead, so they do not vanish in dark mode.
  */
 .amw-logo-stack {
+  --ring: var(--amw-page);
+  --disc: 2.375rem;
   display: flex;
   align-items: center;
   padding: 2px 0;
+}
+
+/* Inside the buy card: the card is the surface the ring has to match, and at
+   330px there is less room, so the discs come down a size. Eight fit in
+   186px instead of 234px, which leaves headroom for a kit that lists more. */
+.amw-logo-stack--on-card {
+  --ring: var(--amw-card);
+  --disc: 2rem;
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
 }
 .amw-logo-stack > li {
   position: relative;
@@ -325,8 +339,8 @@
 .amw-logo {
   display: grid;
   place-items: center;
-  width: 2.375rem;
-  height: 2.375rem;
+  width: var(--disc, 2.375rem);
+  height: var(--disc, 2.375rem);
   border-radius: 999px;
   /* The mark is pulled toward the ink token, the disc keeps the true brand
      hue. At full strength React's #61dafb measured 1.52:1 against its own
@@ -358,11 +372,14 @@
 /* The name, on demand. Pointer users get it on hover, keyboard users on
    focus, and screen readers get the list regardless -- each item carries its
    name as text, so this label is decoration rather than the only route to it. */
+/* Left-aligned to its own disc rather than centred on it. The buy card sets
+   overflow:hidden for its scanline, so a tooltip centred on the first disc
+   would be clipped by the card edge; growing rightward from each disc keeps
+   every label inside the padding. */
 .amw-logo-name {
   position: absolute;
   bottom: calc(100% + 0.4rem);
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   padding: 0.25rem 0.5rem;
   border: 1px solid var(--amw-line);
   border-radius: 0.375rem;

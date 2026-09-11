@@ -136,15 +136,18 @@ export function StackChips({ stack = [], className = '' }) {
  * @param {{
  *   stack?: (string | { tech?: string | null } | null)[],
  *   className?: string,
+ *   onCard?: boolean,
  * }} props
  */
-export function StackLogos({ stack = [], className = '' }) {
+export function StackLogos({ stack = [], className = '', onCard = false }) {
   const items = names(stack)
   if (items.length === 0) return null
 
   return (
     <ul
-      className={`amw-logo-stack ${className}`}
+      className={`amw-logo-stack ${
+        onCard ? 'amw-logo-stack--on-card' : ''
+      } ${className}`}
       aria-label={`Built with ${items.join(', ')}`}
     >
       {items.map((tech, i) => {
