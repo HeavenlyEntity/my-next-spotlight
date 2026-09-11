@@ -23,6 +23,25 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
+    components: {
+      beforeDashboard: [
+        '@/components/admin/AmwareAdminBrand#AmwareAdminDashboard',
+      ],
+      beforeLogin: [
+        '@/components/admin/AmwareAdminBrand#AmwareAdminLoginIntro',
+      ],
+      beforeNav: ['@/components/admin/AmwareAdminBrand#AmwareAdminNavBrand'],
+      graphics: {
+        Icon: '@/components/admin/AmwareAdminBrand#AmwareAdminIcon',
+        Logo: '@/components/admin/AmwareAdminBrand#AmwareAdminLogo',
+      },
+    },
+    meta: {
+      icons: {
+        icon: '/favicon.ico',
+      },
+      titleSuffix: ' — Amware Admin',
+    },
     user: Users.slug,
   },
   collections: [
@@ -46,6 +65,22 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
+      /* Supabase's session-mode pooler (port 5432) caps the whole project at
+         15 client connections, shared by every process that connects.
+         node-postgres defaults to max 10 per pool, and `next build` fans out
+         one worker per core -- each with its own pool -- so the build asks
+         for several times the ceiling and dies with EMAXCONNSESSION part way
+         through prerendering. It gets worse with every page added to
+         generateStaticParams, which is a nasty way to find out.
+
+         Two is enough here: a request does its queries in sequence, and a
+         second connection only helps when two run concurrently in one
+         instance. Raise it with DATABASE_POOL_MAX if the pooler plan grows,
+         and keep workers x max under the ceiling. */
+      max: Number(process.env.DATABASE_POOL_MAX ?? 2),
+      // Hand connections back quickly rather than parking them while another
+      // build worker waits for one.
+      idleTimeoutMillis: 10_000,
     },
   }),
   sharp,

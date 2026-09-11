@@ -46,6 +46,12 @@ const nextConfig = {
   },
   experimental: {
     scrollRestoration: true,
+    /* Prerendering is database-bound here, not CPU-bound: most pages are one
+       Payload query. One worker per core would open more Postgres
+       connections than Supabase's session pooler allows in total, so the
+       cap is set by the database, not the machine. See the pool note in
+       payload.config.ts. */
+    cpus: 4,
   },
 }
 
