@@ -20,7 +20,7 @@ export const revalidate = 60
 export const metadata = {
   title: 'Pricing',
   description:
-    'WareKit pricing — free Lite kits, single-seat Pro licences and five-seat Team licences for the AMWARE NetSuite starter kits.',
+    'WareKit pricing: free Lite kits, single-seat Pro licences and five-seat Team licences for the AMWARE NetSuite starter kits.',
 }
 
 /* Everything commercial is read from Payload: prices, seats, bullets, which

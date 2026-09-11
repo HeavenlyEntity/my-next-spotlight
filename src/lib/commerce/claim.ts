@@ -108,7 +108,7 @@ export async function claimFreeKit(
   if (!item.githubRepo) {
     return fail(
       null,
-      'This kit has no repository attached yet, so there is nothing to give you access to. Nothing was recorded — try again later.'
+      'This kit has no repository attached yet, so there is nothing to give you access to. Nothing was recorded. Try again later.'
     )
   }
 
@@ -117,7 +117,7 @@ export async function claimFreeKit(
   if ((await githubAccountExists(username)) === false) {
     return fail(
       'githubUsername',
-      `GitHub has no account called “${username}”. Check the spelling — this is where access will be sent.`
+      `GitHub has no account called “${username}”. Check the spelling: this is where access will be sent.`
     )
   }
 
@@ -166,7 +166,7 @@ export async function claimFreeKit(
       if (!purchaseId) {
         return fail(
           null,
-          'Something went wrong recording that. Nothing was sent — please try again.'
+          'Something went wrong recording that. Nothing was sent. Please try again.'
         )
       }
     }

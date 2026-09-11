@@ -79,7 +79,7 @@ const TIERS = [
     summary: 'Best for pre-seed',
     description: [
       'Two strategy calls a month, async Slack and email between them, and someone senior reading the architecture before it calcifies.',
-      'For a founding team that is building and wants the decisions checked — the database you are about to pick, the auth you are about to write, the hire you are about to make.',
+      'For a founding team that is building and wants the decisions checked: the database you are about to pick, the auth you are about to write, the hire you are about to make.',
       'Architecture reviews and technology roadmap input. No standing meetings beyond the two calls.',
     ],
   },
@@ -105,7 +105,7 @@ const TIERS = [
     summary: 'Best for Series A+ or M&A prep',
     description: [
       'Near full-time commitment: direct engineering leadership, board and investor reporting, technical due diligence and fundraising support.',
-      'For a company where the technical story is about to be examined by people who do this for a living — an acquirer, a lead investor, a board.',
+      'For a company where the technical story is about to be examined by people who do this for a living: an acquirer, a lead investor, a board.',
       'Due diligence is easier to pass than to survive. This tier exists to make it the former.',
     ],
   },

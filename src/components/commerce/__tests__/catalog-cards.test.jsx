@@ -162,7 +162,10 @@ describe('catalog cards', () => {
       </ul>
     )
     expect(
-      screen.getByRole('button', { name: 'Purchase — $900' })
+      /* Was 'Purchase — $900'. The price sits directly above the button in
+         the same card, so repeating it bought nothing and the em-dash was
+         the AI tell it always is. */
+      screen.getByRole('button', { name: 'Purchase' })
     ).toBeInTheDocument()
     expect(screen.queryByRole('link')).toBeNull()
   })

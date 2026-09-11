@@ -35,7 +35,7 @@ export function usernameMessage(problem: UsernameProblem): string | null {
     case 'too-long':
       return `GitHub usernames are at most ${GITHUB_USERNAME_MAX} characters.`
     case 'malformed':
-      return 'Use letters, numbers and single hyphens only — no spaces, and not starting or ending with a hyphen.'
+      return 'Use letters, numbers and single hyphens only. No spaces, and not starting or ending with a hyphen.'
     default:
       return null
   }

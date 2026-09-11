@@ -6,6 +6,7 @@ import { inlineCode } from '@/components/site/inline-code'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { BuyButton } from '@/components/commerce/BuyButton'
 import { ClaimFreeKit } from '@/components/commerce/ClaimFreeKit'
+import { StackChips } from '@/components/commerce/StackChips'
 import { seatLine } from '@/lib/commerce/pricingTable'
 import { usd } from '@/lib/commerce/money'
 import { typeMeta } from '@/components/commerce/storefront'
@@ -133,6 +134,16 @@ export default async function ProductPage({
               </section>
             )}
 
+            {stack.length > 0 && (
+              <section className="mt-12">
+                {/* No eyebrow here on purpose: the page already carries one
+                    above the overview and one above what's included, and a
+                    label over a row of named chips tells the reader nothing
+                    the chips do not. */}
+                <StackChips stack={stack} />
+              </section>
+            )}
+
             {features.length > 0 && (
               <section className="mt-12">
                 <p className="amw-eyebrow">{'// what’s included'}</p>
@@ -185,13 +196,15 @@ export default async function ProductPage({
                   <dd>{t.label}</dd>
                 </div>
                 {stack.length > 0 && (
+                  /* A count, not the first three of eight with no ellipsis
+                     and no total -- that made an eight-item stack look like a
+                     three-item one, and the full list is now a row of chips
+                     in the column to the left. */
                   <div className="amw-spec">
                     <dt>stack</dt>
                     <dd>
-                      {stack
-                        .slice(0, 3)
-                        .map((s) => s.tech)
-                        .join(' · ')}
+                      {stack.length}{' '}
+                      {stack.length === 1 ? 'technology' : 'technologies'}
                     </dd>
                   </div>
                 )}
@@ -225,7 +238,7 @@ export default async function ProductPage({
                   isBoilerplate={isBoilerplate}
                   label={
                     typeof product.price === 'number'
-                      ? `Buy — ${usd(product.price)}`
+                      ? 'Buy this kit'
                       : 'Buy now'
                   }
                 />

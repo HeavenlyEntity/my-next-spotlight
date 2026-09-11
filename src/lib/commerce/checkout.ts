@@ -96,7 +96,7 @@ export async function createCheckout(
       error: {
         field: null,
         message:
-          'This item is not on sale yet. Nothing has been charged — check back shortly or get in touch.',
+          'This item is not on sale yet. Nothing has been charged. Check back shortly or get in touch.',
       },
     }
   }
@@ -123,7 +123,7 @@ export async function createCheckout(
       return {
         error: {
           field: 'githubUsername',
-          message: `GitHub has no account called "${githubUsername}". Check the spelling — this is where repository access will be sent.`,
+          message: `GitHub has no account called "${githubUsername}". Check the spelling: this is where repository access will be sent.`,
         },
       }
     }

@@ -54,7 +54,7 @@ export function ClaimFreeKit({ slug, label = 'Get free access' }) {
 
         {alreadyHadAccess ? (
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Nothing to accept — open{' '}
+            Nothing to accept. Open{' '}
             <a
               href={`https://github.com/${repo}`}
               target="_blank"
@@ -160,7 +160,7 @@ export function ClaimFreeKit({ slug, label = 'Get free access' }) {
       </button>
 
       <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-500">
-        Free. No card, no account — the kit arrives as a GitHub invitation.
+        Free. No card, no account. The kit arrives as a GitHub invitation.
       </p>
     </form>
   )

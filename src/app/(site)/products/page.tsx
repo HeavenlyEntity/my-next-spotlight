@@ -11,7 +11,7 @@ export const revalidate = 60
 export const metadata = {
   title: 'Products',
   description:
-    'Engineering-grade boilerplates and digital tooling for founders — wired, typed, and documented so you ship the product, not the plumbing.',
+    'Engineering-grade boilerplates and digital tooling for founders, wired, typed and documented so you ship the product, not the plumbing.',
 }
 
 export default async function ProductsPage() {
@@ -30,7 +30,7 @@ export default async function ProductsPage() {
         <StoreHero
           eyebrow="// AMWARE · ENGINEERING-GRADE TEMPLATES"
           title="Boilerplates built to ship, not to demo."
-          intro="Production starter kits and digital tooling — wired, typed, and documented so you can build the product instead of the plumbing."
+          intro="Production starter kits and digital tooling, wired, typed and documented so you can build the product instead of the plumbing."
           meta={
             <>
               <span className="amw-chip amw-chip--accent amw-chip--dot">

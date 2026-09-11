@@ -283,9 +283,7 @@ export function ServiceCard({ service, index = 0, description = null }) {
           <BuyButton
             itemType="service"
             slug={service.slug}
-            label={
-              hasPrice ? `Purchase — ${usd(service.startingPrice)}` : 'Purchase'
-            }
+            label={'Purchase'}
           />
         ) : (
           /* A retainer does not start with a quote, it starts with a

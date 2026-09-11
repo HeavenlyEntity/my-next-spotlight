@@ -91,7 +91,7 @@ const KITS = [
       'The whole architecture, not a crippled demo',
       'Suitelet-served React app, same-origin with the session',
       'Both deploy modes and a generated SDF project',
-      'Offline mock mode — runs with no NetSuite account',
+      'Offline mock mode that runs with no NetSuite account',
       'End-to-end and unit tests',
       'Community support',
     ],
@@ -105,7 +105,7 @@ const KITS = [
     tagline:
       'Build React apps that run inside your NetSuite account. Served by a Suitelet, same-origin with the signed-in session.',
     description: [
-      'A blank, production-shaped starter — React 19, TypeScript, Tailwind v4, shadcn, TanStack Query, Playwright, oxlint and oxfmt — served to your users by a Suitelet out of the NetSuite File Cabinet. No separate hosting, no CORS proxy, and no API keys in the browser, because the app is same-origin with the session cookie and there is no token to leak.',
+      'A blank, production-shaped starter (React 19, TypeScript, Tailwind v4, shadcn, TanStack Query, Playwright, oxlint and oxfmt), served to your users by a Suitelet out of the NetSuite File Cabinet. No separate hosting, no CORS proxy, and no API keys in the browser, because the app is same-origin with the session cookie and there is no token to leak.',
       'It runs on `pnpm dev` right now, with no NetSuite account and no credentials, against built-in fixtures. Provision the account later. Endpoints resolve at runtime, so one build ships to every account without a rebuild, and `pnpm ns:push` uploads only what changed.',
       'Lite is the whole architecture, not a crippled demo. Everything in it works, is tested, and is yours to ship.',
     ],
@@ -115,7 +115,7 @@ const KITS = [
       'Both deploy modes, with a generated SDF project',
       'Offline mock mode and a single `pnpm check` gate',
       'End-to-end and unit tests that run without a NetSuite account',
-      'No session store to run — the NetSuite session cookie is the session',
+      'No session store to run: the NetSuite session cookie is the session',
       'Project identity in `.env`, so upstream updates never conflict',
       'Scaffolding through the open-source `warekit` CLI and MCP server',
     ],
@@ -138,7 +138,7 @@ const KITS = [
     popular: false,
     pricingHighlights: [
       'Everything in Lite',
-      'Licensing and entitlement — keys, seat metering, activation',
+      'Licensing and entitlement: keys, seat metering, activation',
       'Role mapping and a typed data layer',
       'Schema generator and bundle pipeline',
       'Admin center and observability',
@@ -162,13 +162,13 @@ const KITS = [
       'In development. The repository does not exist yet, so this stays a draft until it does.',
     ],
     features: [
-      'Licensing and entitlement — key validation, seat metering, per-account activation',
-      'Role mapping — NetSuite roles to app permissions, role-aware routing',
-      'Data layer — typed record CRUD, saved-search runner, governance-aware paging',
-      'Schema generator — typed definitions to SDF objects, with migrations',
-      'Bundle pipeline — packaging and publishing to customer accounts',
-      'Admin center — a SuiteApp tab for configuration and licence state',
-      'Observability — script log shipping, error tracking, governance telemetry',
+      'Licensing and entitlement: key validation, seat metering, per-account activation',
+      'Role mapping: NetSuite roles to app permissions, role-aware routing',
+      'Data layer: typed record CRUD, saved-search runner, governance-aware paging',
+      'Schema generator: typed definitions to SDF objects, with migrations',
+      'Bundle pipeline: packaging and publishing to customer accounts',
+      'Admin center: a SuiteApp tab for configuration and licence state',
+      'Observability: script log shipping, error tracking, governance telemetry',
       'Live-account E2E lane and SuiteScript unit tests',
     ],
     techStack: [
@@ -192,7 +192,7 @@ const KITS = [
       'The whole architecture, not a crippled demo',
       'OAuth 2 sign-in and machine-to-machine signing',
       'SDF project and RESTlets, generated and deployable',
-      'Offline mock mode — runs with no NetSuite account',
+      'Offline mock mode that runs with no NetSuite account',
       'Sessions in Postgres',
       'Community support',
     ],
@@ -206,9 +206,9 @@ const KITS = [
     tagline:
       'Build Next.js apps that talk to NetSuite. Hosted on Vercel, authenticated over OAuth 2, with the SuiteScript half deployed by SDF.',
     description: [
-      'The hybrid kit: a Next.js App Router frontend on Vercel that reaches NetSuite from its API routes — OAuth 2 for user sign-in, token-based auth for server-to-server calls — rather than running inside a Suitelet on the session cookie.',
+      'The hybrid kit: a Next.js App Router frontend on Vercel that reaches NetSuite from its API routes (OAuth 2 for user sign-in, token-based auth for server-to-server calls) rather than running inside a Suitelet on the session cookie.',
       'It runs on `pnpm dev` with no NetSuite account and no credentials, against built-in fixtures. NetSuite rejects http:// redirect URIs, so sign-in is the one flow that needs a tunnel; `pnpm dev:tunnel` starts one, prints the callback to paste into the integration record, and points AUTH_URL at it.',
-      'Lite keeps sessions in Postgres. That works, and on Vercel it means one more service to provision and pay for — which is the line Pro moves.',
+      'Lite keeps sessions in Postgres. That works, and on Vercel it means one more service to provision and pay for. That is the line Pro moves.',
     ],
     features: [
       'Next.js App Router app, deployed to Vercel',
@@ -240,7 +240,7 @@ const KITS = [
     popular: true,
     pricingHighlights: [
       'Everything in Lite',
-      'Sessions in NetSuite, not Postgres — one less service',
+      'Sessions in NetSuite, not Postgres, so one less service',
       'Concurrency-aware session reads that survive real traffic',
       'End-to-end and unit tests',
       'Lifetime updates',
@@ -252,7 +252,7 @@ const KITS = [
     featured: false,
     status: 'published',
     tagline:
-      'The hybrid kit with sessions in NetSuite instead of Postgres — one less service to provision, and a concurrency budget that survives real traffic.',
+      'The hybrid kit with sessions in NetSuite instead of Postgres: one less service to provision, and a concurrency budget that survives real traffic.',
     description: [
       'The same architecture as Lite, with session reads moved into a NetSuite custom record behind a single-purpose RESTlet. The record is the easy part. The reason it is Pro is the concurrency budget: NetSuite governs concurrent requests at the account level across every RESTlet and web services call, so a naive session read per HTTP request saturates it and starts returning 429s.',
       'Pro answers that with a per-instance cache, in-flight collapsing and N/cache, so session reads stop being a per-request cost.',
@@ -261,7 +261,7 @@ const KITS = [
     features: [
       'Everything in the Lite edition',
       'Session storage backed by a NetSuite custom record, not Postgres',
-      'Concurrency-aware session reads — per-instance cache, in-flight collapsing, `N/cache`',
+      'Concurrency-aware session reads: per-instance cache, in-flight collapsing, `N/cache`',
       'Next.js App Router app, deployed to Vercel',
       'OAuth 2 sign-in via Better Auth, with the userinfo RESTlet included',
       'OAuth 2 machine-to-machine signing, two-integration credential split',
@@ -299,18 +299,18 @@ const KITS = [
     price: 999,
     seats: 5,
     tagline:
-      'The Pro kit licensed for a team — up to five GitHub accounts on one repository, added whenever you hire.',
+      'The Pro kit licensed for a team: up to five GitHub accounts on one repository, added whenever you hire.',
     description: [
       'Everything in Next NetSuite (Pro), licensed for five people instead of one. Sessions live in a NetSuite custom record rather than Postgres, with the concurrency-aware reads that keeps a real traffic load under NetSuite’s account-level request budget.',
-      'Seats are filled after purchase, not at checkout — you get a link that adds a GitHub account to the licence whenever someone joins, and each one gets their own repository invitation. No account to create and no seat to pre-assign.',
+      'Seats are filled after purchase, not at checkout. You get a link that adds a GitHub account to the licence whenever someone joins, and each one gets their own repository invitation. No account to create and no seat to pre-assign.',
       'One payment. The licence does not lapse and neither does the repository access.',
     ],
     features: [
       'Everything in the Pro edition',
       'Up to 5 GitHub accounts on one licence',
-      'Add collaborators after purchase, from a link — no account needed',
+      'Add collaborators after purchase, from a link. No account needed',
       'Session storage backed by a NetSuite custom record, not Postgres',
-      'Concurrency-aware session reads — per-instance cache, in-flight collapsing, `N/cache`',
+      'Concurrency-aware session reads: per-instance cache, in-flight collapsing, `N/cache`',
       'Next.js App Router app, deployed to Vercel',
       'OAuth 2 sign-in via Better Auth, with the userinfo RESTlet included',
       'SDF project and RESTlets, generated and deployable',
@@ -348,7 +348,7 @@ const KITS = [
     price: 999,
     seats: 5,
     tagline:
-      'The Pro kit licensed for a team — up to five GitHub accounts on one repository.',
+      'The Pro kit licensed for a team: up to five GitHub accounts on one repository.',
     description: [
       'Everything in React NetSuite (Pro), licensed for five people instead of one: licensing and entitlement, role mapping, the typed data layer, the schema generator, the bundle pipeline and the admin center.',
       'Seats are filled after purchase from a link, each with its own repository invitation.',
@@ -357,12 +357,12 @@ const KITS = [
     features: [
       'Everything in the Pro edition',
       'Up to 5 GitHub accounts on one licence',
-      'Add collaborators after purchase, from a link — no account needed',
-      'Licensing and entitlement — key validation, seat metering, per-account activation',
-      'Role mapping — NetSuite roles to app permissions, role-aware routing',
-      'Data layer — typed record CRUD, saved-search runner, governance-aware paging',
-      'Schema generator — typed definitions to SDF objects, with migrations',
-      'Admin center — a SuiteApp tab for configuration and licence state',
+      'Add collaborators after purchase, from a link. No account needed',
+      'Licensing and entitlement: key validation, seat metering, per-account activation',
+      'Role mapping: NetSuite roles to app permissions, role-aware routing',
+      'Data layer: typed record CRUD, saved-search runner, governance-aware paging',
+      'Schema generator: typed definitions to SDF objects, with migrations',
+      'Admin center: a SuiteApp tab for configuration and licence state',
     ],
     techStack: [
       'React 19',
@@ -455,14 +455,14 @@ describe('seed the WareKit catalogue', () => {
         eyebrow: 'pricing',
         heading: 'One payment. The kit is yours.',
         intro:
-          'Start on Lite for nothing — it is the whole architecture, not a demo. Move up when you are shipping to other people’s NetSuite accounts.',
+          'Start on Lite for nothing. It is the whole architecture, not a demo. Move up when you are shipping to other people’s NetSuite accounts.',
         footnote:
           'Prices are in USD and charged once. Amware is the merchant of record through Creem. Repository access arrives as a GitHub invitation to the account you confirm at checkout, and Lite needs no card and no account.',
         faqs: [
           {
             question: 'What does a seat actually mean?',
             answer:
-              'One GitHub account with access to the kit’s repository. Pro covers one — you. Team covers five, and you add them whenever someone joins, from a link you get at purchase. Nobody has to create an account here.',
+              'One GitHub account with access to the kit’s repository. Pro covers one: you. Team covers five, and you add them whenever someone joins, from a link you get at purchase. Nobody has to create an account here.',
           },
           {
             question: 'Is Lite a trial?',

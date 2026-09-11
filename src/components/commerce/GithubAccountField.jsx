@@ -45,20 +45,33 @@ export function GithubAccountField({ serverError, inputRef, onGateChange }) {
   const ref = inputRef || localRef
 
   const login = value.trim()
-  const formatProblem = value ? checkGithubUsername(value) : null
-  const formatError = formatProblem ? usernameMessage(formatProblem) : null
+
+  /* One question, asked once: is this name worth a lookup? The effect below
+     bails on exactly this value, so status and behaviour cannot disagree.
+     They used to: `formatProblem` was computed as `value ? check(value) : null`,
+     which returned null for an empty field -- no problem, therefore not idle,
+     therefore "checking". So an untouched field on every product page
+     announced "Checking GitHub…" forever, while the effect's own guard meant
+     nothing was being checked and never would be. */
+  const problem = checkGithubUsername(login)
+
+  /* An untouched field is not a wrong field. The "enter a username" message
+     is real, but it belongs to a submit, not to a page load, so it is held
+     back until there is something to correct. */
+  const formatError = value ? usernameMessage(problem) : null
   // A server error outranks a client one: it is the newer verdict.
-  const shownError =
-    serverError || (formatProblem !== 'empty' ? formatError : null)
+  const shownError = serverError || (problem !== 'empty' ? formatError : null)
 
   const current = result && result.forLogin === login ? result : null
-  const status = formatProblem ? 'idle' : current ? current.status : 'checking'
+  const status = problem ? 'idle' : current ? current.status : 'checking'
   const profile = current?.profile ?? null
   /* Confirmation is tied to the account it was given for, so changing the
      username withdraws it without an effect having to reset anything. */
   const confirmed = Boolean(profile) && confirmedFor === profile.login
 
   useEffect(() => {
+    // Same question as `problem` above, and that is the point: the status
+    // shown and the lookup performed are decided by one rule.
     if (checkGithubUsername(login)) return undefined
 
     let cancelled = false
@@ -163,7 +176,7 @@ export function GithubAccountField({ serverError, inputRef, onGateChange }) {
         {status === 'unknown' && (
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
             Could not reach GitHub to confirm this account. You can still
-            continue — the username will be checked again at checkout.
+            continue. The username is checked again at checkout.
           </p>
         )}
 
@@ -195,7 +208,7 @@ export function GithubAccountField({ serverError, inputRef, onGateChange }) {
             {profile.isOrg && (
               <p className="mt-2 text-sm text-amber-700 dark:text-amber-400">
                 That is an organisation, not a person. Repository invitations go
-                to user accounts — use your own username.
+                to user accounts, so use your own username.
               </p>
             )}
 
