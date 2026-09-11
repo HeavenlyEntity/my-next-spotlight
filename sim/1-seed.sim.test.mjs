@@ -130,9 +130,12 @@ const KITS = [
     githubRepo: `${ORG}/warekit-react-netsuite`,
     order: 2,
     featured: false,
-    // Draft on purpose: this repository does not exist yet, so there is
-    // nothing an invitation could be sent to.
-    status: 'draft',
+    /* Published, but never purchasable: it carries no Creem product, so the
+       pricing page renders it "In development" and no checkout can start.
+       Hiding it made the React stack look half-finished and hid the roadmap;
+       selling it would promise a repository that does not exist. Published
+       and purchasable are different things. */
+    status: 'published',
     tagline:
       'Everything in Lite, plus what a commercial SuiteApp needs once you are selling it into other people’s accounts.',
     description: [
@@ -320,8 +323,9 @@ const KITS = [
     githubRepo: `${ORG}/warekit-react-netsuite`,
     order: 6,
     featured: false,
-    // Draft for the same reason as React Pro: that repository does not exist.
-    status: 'draft',
+    // Same as React Pro: published so the tier is visible, unpurchasable
+    // because there is no Creem product and no repository behind it.
+    status: 'published',
     price: 999,
     seats: 5,
     tagline:
@@ -487,10 +491,17 @@ describe('seed the WareKit catalogue', () => {
     expect(doc.status).toBe('draft')
   })
 
-  /* Every kit must name a repository. Without one the confirmation email
-     promises an invitation with no address to send it to, which is the
-     failure this whole column exists to prevent. */
-  it('no boilerplate is published without a repository to invite people to', async () => {
+  /* Anything someone can actually obtain must name a repository -- free kits
+     and anything with a Creem product behind it. Without one the confirmation
+     email promises an invitation with no address to send it to, which is the
+     failure this whole column exists to prevent.
+   *
+   * Deliberately scoped to obtainable kits rather than published ones. A tier
+   * shown as "In development" is published on purpose, so the roadmap is
+   * visible, and its repository does not exist yet by definition. Requiring
+   * one there would mean either hiding the tier or creating an empty repo to
+   * satisfy a test. */
+  it('nothing obtainable lacks a repository to invite people to', async () => {
     const { docs } = await payload.find({
       collection: 'products',
       where: {
@@ -502,13 +513,15 @@ describe('seed the WareKit catalogue', () => {
       limit: 100,
       overrideAccess: true,
     })
-    const orphans = docs.filter((d) => !d.githubRepo)
-    if (orphans.length) {
-      console.log(
-        'published boilerplates with no githubRepo:',
-        orphans.map((d) => `${d.id}:${d.slug}`).join(', ')
-      )
-    }
+    const obtainable = docs.filter((d) => d.price === 0 || d.creemProductId)
+    const orphans = obtainable.filter((d) => !d.githubRepo)
+    console.log(
+      `obtainable: ${obtainable.map((d) => d.slug).join(', ')}` +
+        ` · in development: ${docs
+          .filter((d) => !obtainable.includes(d))
+          .map((d) => d.slug)
+          .join(', ')}`
+    )
     expect(orphans.map((d) => d.slug)).toEqual([])
   })
 })

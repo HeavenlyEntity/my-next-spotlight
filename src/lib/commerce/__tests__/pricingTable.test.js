@@ -64,20 +64,32 @@ describe('cta', () => {
     expect(cta(kit({ price: 0, creemProductId: null }))).toEqual({
       label: 'Get it free',
       live: true,
+      soon: false,
     })
   })
 
-  it('refuses to show Buy on a paid kit with nothing behind it', () => {
-    // The checkout could not complete, and a dead button is worse than a
-    // label that tells the truth.
+  it('marks a paid kit with nothing behind it as in development', () => {
+    /* It still belongs on the table -- hiding it makes the stack look
+       half-finished -- but the checkout could not complete and there is no
+       repository to invite anyone to, so it must never say Buy. */
     expect(cta(kit({ creemProductId: null }))).toEqual({
-      label: 'Not yet available',
+      label: 'In development',
       live: false,
+      soon: true,
     })
   })
 
   it('offers a paid kit that has a product', () => {
-    expect(cta(kit()).live).toBe(true)
+    expect(cta(kit())).toEqual({
+      label: 'Buy this kit',
+      live: true,
+      soon: false,
+    })
+  })
+
+  it('never marks a free kit as coming soon, product or not', () => {
+    // Free needs nothing to charge against; it is claimable today.
+    expect(cta(kit({ price: 0, creemProductId: null })).soon).toBe(false)
   })
 })
 

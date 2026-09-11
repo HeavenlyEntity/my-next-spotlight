@@ -40,7 +40,11 @@ const payload = TOKEN ? await getPayload({ config }) : null
 
 /* Every repository the catalogue can actually invite someone to. Read from
    the products collection rather than a list here, so adding a kit brings it
-   into the preflight automatically. */
+   into the preflight automatically.
+ *
+ * Obtainable, not merely published: a tier shown as "In development" is on
+ * the pricing page on purpose and its repository does not exist yet, so
+ * demanding admin on it would fail the preflight for a kit nobody can buy. */
 const repos = payload
   ? [
       ...new Set(
@@ -52,7 +56,12 @@ const repos = payload
             overrideAccess: true,
           })
         ).docs
-          .filter((d) => d.status === 'published' && d.githubRepo)
+          .filter(
+            (d) =>
+              d.status === 'published' &&
+              d.githubRepo &&
+              (d.price === 0 || d.creemProductId)
+          )
           .map((d) => d.githubRepo)
       ),
     ]

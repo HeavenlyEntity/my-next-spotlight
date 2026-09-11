@@ -101,16 +101,23 @@ export default async function PricingPage() {
                       highlighted
                         ? 'border-[var(--amw-accent)] ring-[var(--amw-accent)] ring-1'
                         : ''
-                    }`}
+                    } ${action.soon ? 'opacity-75' : ''}`}
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">
                         {kit.name}
                       </h2>
-                      {highlighted && (
-                        <span className="amw-chip amw-chip--accent amw-chip--dot shrink-0">
-                          popular
-                        </span>
+                      {action.soon ? (
+                        /* Said on the card, not only on the button. Someone
+                           scanning three prices reads the chip long before
+                           they reach the call to action. */
+                        <span className="amw-chip shrink-0">soon</span>
+                      ) : (
+                        highlighted && (
+                          <span className="amw-chip amw-chip--accent amw-chip--dot shrink-0">
+                            popular
+                          </span>
+                        )
                       )}
                     </div>
 
@@ -155,7 +162,9 @@ export default async function PricingPage() {
                           {action.label}
                         </Link>
                       ) : (
-                        <p className="amw-kicker text-center">{action.label}</p>
+                        <p className="amw-kicker border-[var(--amw-line)] rounded-md border border-dashed px-4 py-2 text-center">
+                          {action.label}
+                        </p>
                       )}
                     </div>
                   </div>

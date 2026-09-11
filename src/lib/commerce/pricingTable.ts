@@ -56,12 +56,25 @@ export function seatLine(kit: PricingKit): string {
   return n === 1 ? 'Access for 1 user (only you)' : `Up to ${n} collaborators`
 }
 
-/* A kit with no Creem product cannot complete a checkout, so the button says
-   so rather than leading somewhere that fails. Free needs no product. */
-export function cta(kit: PricingKit): { label: string; live: boolean } {
-  if (kit.price === 0) return { label: 'Get it free', live: true }
-  if (!kit.creemProductId) return { label: 'Not yet available', live: false }
-  return { label: 'Buy this kit', live: true }
+/* Published and purchasable are different things, and the page has to say
+   which. A tier still being built belongs on the pricing table -- leaving it
+   out makes the stack look half-finished and hides the roadmap -- but it must
+   never carry a Buy button, because the checkout could not complete and the
+   repository does not exist to invite anyone to.
+ *
+ * The absence of a Creem product is what marks it, rather than a flag someone
+ * has to remember to unset: a kit becomes buyable at the moment there is
+ * something to charge against, and not before. Free kits need no product. */
+export function cta(kit: PricingKit): {
+  label: string
+  live: boolean
+  soon: boolean
+} {
+  if (kit.price === 0) return { label: 'Get it free', live: true, soon: false }
+  if (!kit.creemProductId) {
+    return { label: 'In development', live: false, soon: true }
+  }
+  return { label: 'Buy this kit', live: true, soon: false }
 }
 
 export function highlights(kit: PricingKit): string[] {
