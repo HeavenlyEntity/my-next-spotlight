@@ -15,7 +15,8 @@
     "seed:articles": "tsx --env-file=.env.local scripts/seed-articles.ts",
     "reset:password": "node scripts/reset-user-password.mjs",
     "test": "vitest run",
-    "refresh:comp": "node scripts/refresh-company-comp.mjs"
+    "refresh:comp": "node scripts/refresh-company-comp.mjs",
+    "sim": "vitest run --config vitest.sim.config.mjs"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
