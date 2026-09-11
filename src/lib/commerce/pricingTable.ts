@@ -51,7 +51,11 @@ export function periodLabel(kit: PricingKit): string {
 /* Generated from the same field the seat page enforces, never typed into the
    bullets by hand -- a pricing page promising six seats on a five-seat
    licence is a refund, not a typo. */
-export function seatLine(kit: PricingKit): string {
+/* Takes only the field it reads, not a whole PricingKit: the product page
+   needs this line too, and a licence is a licence whether it is being
+   compared on the pricing table or bought on the product page. Asking for
+   the full shape would have meant faking an id and a name to get a string. */
+export function seatLine(kit: { seats?: number | null }): string {
   const n = typeof kit.seats === 'number' && kit.seats >= 1 ? kit.seats : 1
   return n === 1 ? 'Access for 1 user (only you)' : `Up to ${n} collaborators`
 }

@@ -6,6 +6,8 @@ import { inlineCode } from '@/components/site/inline-code'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { BuyButton } from '@/components/commerce/BuyButton'
 import { ClaimFreeKit } from '@/components/commerce/ClaimFreeKit'
+import { seatLine } from '@/lib/commerce/pricingTable'
+import { usd } from '@/lib/commerce/money'
 import { typeMeta } from '@/components/commerce/storefront'
 
 export const revalidate = 60
@@ -153,18 +155,25 @@ export default async function ProductPage({
 
           {/* ---- spec / buy rail ---- */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="amw-card amw-ticks p-6">
+            {/* --static: this card holds a form, so it must not move when the
+                pointer crosses it on the way to the input. See storefront.css. */}
+            <div className="amw-card amw-card--static amw-ticks p-6">
               <p className="amw-eyebrow">{'// datasheet'}</p>
-              <p className="amw-price mt-3 text-3xl font-bold text-zinc-900 dark:text-zinc-50">
+
+              {/* The plan-card treatment from the minimal template: price on
+                  its own line, terms beneath it, never inline. At this width
+                  "one-time · USD" wrapped under a four-character price but not
+                  under "Free", so the two states disagreed with each other. */}
+              <p className="amw-price mt-4 text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 md:text-5xl">
                 {isFree
                   ? 'Free'
                   : typeof product.price === 'number'
-                  ? `$${product.price.toFixed(2)}`
+                  ? usd(product.price)
                   : 'Soon'}
               </p>
-              <p className="amw-kicker mt-1">
+              <p className="amw-kicker mt-2">
                 {isFree
-                  ? 'the whole architecture, not a demo'
+                  ? 'no card required'
                   : `${product.priceLabel || 'one-time'} · ${
                       product.currency || 'USD'
                     }`}
@@ -192,6 +201,15 @@ export default async function ProductPage({
                     <dd>{features.length} items</dd>
                   </div>
                 )}
+                {isBoilerplate && (
+                  /* The licence, on the page where it is bought. The pricing
+                     table states it and the seat page enforces it; this card,
+                     where the money actually changes hands, did not. */
+                  <div className="amw-spec">
+                    <dt>licence</dt>
+                    <dd>{seatLine({ seats: product.seats })}</dd>
+                  </div>
+                )}
                 <div className="amw-spec">
                   <dt>delivery</dt>
                   <dd>{isBoilerplate ? 'GitHub invite' : 'instant link'}</dd>
@@ -207,12 +225,20 @@ export default async function ProductPage({
                   isBoilerplate={isBoilerplate}
                   label={
                     typeof product.price === 'number'
-                      ? `Buy — $${product.price.toFixed(2)}`
+                      ? `Buy — ${usd(product.price)}`
                       : 'Buy now'
                   }
                 />
               ) : (
-                <p className="amw-kicker mt-6">not yet available</p>
+                /* The same dashed panel the pricing table uses, rather than a
+                   line of grey text that reads like something failed to
+                   load. A priced kit with no Creem product is in development,
+                   which is a different thing from unfinished. */
+                <p className="amw-kicker amw-cta-pending mt-8">
+                  {typeof product.price === 'number'
+                    ? 'in development'
+                    : 'not yet available'}
+                </p>
               )}
 
               {demoHref && (

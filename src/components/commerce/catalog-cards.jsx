@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import Link from 'next/link'
 import { BuyButton } from '@/components/commerce/BuyButton'
+import { usd } from '@/lib/commerce/money'
 import { typeMeta } from '@/components/commerce/catalog-meta'
 
 /* Catalog cards in the "minimal" template's grammar (components/features.tsx,
@@ -68,7 +69,7 @@ function Price({ value, label, prefix, fallback = 'pricing soon' }) {
     <span className="flex items-baseline gap-1.5">
       {prefix && <span className="amw-kicker">{prefix}</span>}
       <span className="amw-price text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100">
-        ${value.toFixed(2)}
+        {usd(value)}
       </span>
       {label && (
         <span className="text-sm text-zinc-600 dark:text-zinc-400">
@@ -255,10 +256,7 @@ export function ServiceCard({ service, index = 0, description = null }) {
           <div className="flex flex-wrap items-baseline gap-1.5">
             <span className="amw-kicker">from</span>
             <span className="amw-price text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-5xl">
-              {`$${service.startingPrice.toLocaleString('en-US', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              })}`}
+              {usd(service.startingPrice)}
             </span>
             <span className="text-sm text-zinc-600 dark:text-zinc-400">
               {service.priceLabel || 'USD'}
@@ -286,12 +284,7 @@ export function ServiceCard({ service, index = 0, description = null }) {
             itemType="service"
             slug={service.slug}
             label={
-              hasPrice
-                ? `Purchase — $${service.startingPrice.toLocaleString('en-US', {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 2,
-                  })}`
-                : 'Purchase'
+              hasPrice ? `Purchase — ${usd(service.startingPrice)}` : 'Purchase'
             }
           />
         ) : (

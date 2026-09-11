@@ -2,7 +2,6 @@
 
 import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
 import { claimFreeKit } from '@/lib/commerce/claim'
-import { Button } from '@/components/Button'
 import { GithubAccountField } from '@/components/commerce/GithubAccountField'
 
 /* The free Lite path. Same delivery as a paid kit -- a repository invitation
@@ -152,17 +151,13 @@ export function ClaimFreeKit({ slug, label = 'Get free access' }) {
         </p>
       )}
 
-      <Button
-        type="submit"
-        disabled={isPending || gated}
-        className="disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <button type="submit" className="amw-cta" disabled={isPending || gated}>
         {isPending
           ? 'Sending invitation…'
           : gated
           ? 'Confirm your account'
           : label}
-      </Button>
+      </button>
 
       <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-500">
         Free. No card, no account — the kit arrives as a GitHub invitation.

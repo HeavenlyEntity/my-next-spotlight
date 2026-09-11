@@ -3,6 +3,7 @@ import { Container } from '@/components/Container'
 import { CourseBody } from '@/components/site/CourseBody'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { BuyButton } from '@/components/commerce/BuyButton'
+import { usd } from '@/lib/commerce/money'
 
 export const revalidate = 60
 
@@ -69,7 +70,7 @@ export default async function CoursePage({
               slug={course.slug}
               label={
                 typeof course.price === 'number'
-                  ? `Enroll — USD ${(course.price as number).toFixed(2)}`
+                  ? `Enroll — ${usd(course.price as number)}`
                   : 'Enroll now'
               }
             />

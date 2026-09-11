@@ -2,7 +2,6 @@
 
 import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
 import { createCheckout } from '@/lib/commerce/checkout'
-import { Button } from '@/components/Button'
 import { GithubAccountField } from '@/components/commerce/GithubAccountField'
 
 /* The action used to throw on a missing GitHub username, which sent the buyer
@@ -62,13 +61,9 @@ export function BuyButton({
         </p>
       )}
 
-      <Button
-        type="submit"
-        disabled={isPending || gated}
-        className="disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <button type="submit" className="amw-cta" disabled={isPending || gated}>
         {isPending ? 'Redirecting…' : gated ? 'Confirm your account' : label}
-      </Button>
+      </button>
     </form>
   )
 }

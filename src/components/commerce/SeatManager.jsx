@@ -2,7 +2,6 @@
 
 import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
 import { addSeat } from '@/lib/commerce/addSeat'
-import { Button } from '@/components/Button'
 import { GithubAccountField } from '@/components/commerce/GithubAccountField'
 
 /* The seat page for a team licence. The signed link in the URL is the whole
@@ -126,17 +125,13 @@ export function SeatManager({ token, initialSeats, repo }) {
           </p>
         )}
 
-        <Button
-          type="submit"
-          disabled={isPending || gated}
-          className="disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" className="amw-cta" disabled={isPending || gated}>
           {isPending
             ? 'Inviting…'
             : gated
             ? 'Confirm the account'
             : 'Add to the licence'}
-        </Button>
+        </button>
 
         {/* Shown rather than disabling the form: someone already on the
             licence can still be re-invited when a full team needs it, and a

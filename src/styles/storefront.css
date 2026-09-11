@@ -268,6 +268,92 @@
   }
 }
 
+/* A datasheet card that holds a FORM rather than a link.
+ *
+ * `.amw-card` lifts 4px and sweeps a scanline on hover, which is right for a
+ * catalog card you click. It is wrong for the buy rail: the card contains a
+ * text input, a checkbox and the purchase button, so moving the pointer
+ * toward the field shifts the field out from under it, and the scanline
+ * re-fires every time someone reaches for the form. On a sticky rail that
+ * repeats for the whole page.
+ *
+ * The frame, ticks and gradient all stay. Only the motion goes -- and the
+ * affordance it carried moves to :focus-within, which is the state that
+ * actually matters on a form and which the hover version never had. */
+.amw-card.amw-card--static:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--amw-line);
+}
+.amw-card.amw-card--static:hover::after {
+  animation: none;
+  opacity: 0;
+}
+.amw-card--static:focus-within {
+  border-color: color-mix(in srgb, var(--amw-accent) 55%, var(--amw-line));
+}
+
+/* ---- primary action ------------------------------------------------------
+ * One grammar for the button that takes money, everywhere it appears. It was
+ * the old template's small grey `Button`, which made the primary action on
+ * the page where people actually buy look weaker than the secondary links
+ * around it -- and weaker than the same action on /services and /pricing.
+ *
+ * Full width because it is the only thing to do in that card. Accent fill
+ * because it is the one primary action on the screen. The radius morph is the
+ * landing template's own hover, so the buy button and the booking link move
+ * the same way. zinc-950 on the accent is the established pairing: 7.9:1 in
+ * light, higher in dark where the accent lightens.
+ */
+.amw-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  /* 44px floor: this is a touch target before it is a button. */
+  min-height: 2.75rem;
+  padding: 0.625rem 1.25rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: var(--amw-accent);
+  color: #09090b;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-radius 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.28s ease, opacity 0.2s ease;
+}
+.amw-cta:hover:not(:disabled) {
+  border-radius: 50px;
+  box-shadow: 0 14px 30px -18px color-mix(in srgb, var(--amw-accent) 85%, transparent);
+}
+.amw-cta:focus-visible {
+  outline: 2px solid var(--amw-accent-ink);
+  outline-offset: 2px;
+}
+.amw-cta:disabled {
+  cursor: not-allowed;
+  /* Opacity alone would drop the label under 4.5:1, so the disabled fill is
+     a real colour rather than a faded one. */
+  background: var(--amw-line-strong);
+  color: var(--amw-mut);
+  box-shadow: none;
+}
+
+/* The honest empty state for something priced but not yet purchasable: a
+   panel that says so, never a button that leads to a checkout which cannot
+   complete. Matches the pricing table's "In development" card. */
+.amw-cta-pending {
+  display: block;
+  width: 100%;
+  border: 1px dashed var(--amw-line-strong);
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+
 /* corner ticks — datasheet framing (use on a relatively-positioned box) */
 .amw-ticks::before,
 .amw-ticks::after {
@@ -491,6 +577,12 @@
   }
   .amw-cursor::after {
     animation: none;
+  }
+  .amw-cta {
+    transition: box-shadow 0.28s ease, opacity 0.2s ease;
+  }
+  .amw-cta:hover:not(:disabled) {
+    border-radius: 0.375rem;
   }
 }
 

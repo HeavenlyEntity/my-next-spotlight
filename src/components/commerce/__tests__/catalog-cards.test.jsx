@@ -35,7 +35,10 @@ describe('catalog cards', () => {
     expect(links[0]).toHaveAccessibleName('SaaS Kit')
     expect(links[0]).toHaveAttribute('href', '/products/saas-kit')
     expect(screen.getByText('01')).toBeInTheDocument()
-    expect(screen.getByText('$149.00')).toBeInTheDocument()
+    /* Was '$149.00'. One price format across the storefront now: whole
+       dollars stay whole, because ".00" is two characters of noise on the
+       line a buyer reads most carefully. */
+    expect(screen.getByText('$149')).toBeInTheDocument()
     expect(screen.getByText('Boilerplate')).toBeInTheDocument()
     expect(screen.getByRole('list', { name: 'Stack' })).toHaveTextContent(
       'Next.js'
