@@ -63,6 +63,66 @@ describe('boilerplate confirmation email', () => {
     expect(body()).toMatch(/within one business day/i)
   })
 
+  it('carries the accept link when an invitation really was sent', async () => {
+    await sendBoilerplateConfirmationEmail({
+      to: 'buyer@example.com',
+      itemName: 'WareKit React NetSuite (Lite)',
+      githubUsername: 'octocat',
+      repo: 'amwaredotdev/warekit-react-netsuite-lite',
+      inviteUrl:
+        'https://github.com/amwaredotdev/warekit-react-netsuite-lite/invitations',
+    })
+    const text = body()
+    expect(text).toContain(
+      'https://github.com/amwaredotdev/warekit-react-netsuite-lite/invitations'
+    )
+    expect(text).toContain('amwaredotdev/warekit-react-netsuite-lite')
+    // The buyer has access now. Telling them it takes a day would be a lie
+    // in the other direction.
+    expect(text).not.toMatch(/one business day/i)
+    expect(text).not.toMatch(/by hand/i)
+  })
+
+  it('warns that the invitation expires, because GitHub expires it at seven days', async () => {
+    await sendBoilerplateConfirmationEmail({
+      to: 'buyer@example.com',
+      itemName: 'WareKit',
+      githubUsername: 'octocat',
+      inviteUrl: 'https://github.com/o/r/invitations',
+    })
+    expect(body()).toMatch(/seven days/i)
+  })
+
+  it('does not tell someone to accept an invitation they do not need', async () => {
+    await sendBoilerplateConfirmationEmail({
+      to: 'buyer@example.com',
+      itemName: 'WareKit',
+      githubUsername: 'octocat',
+      repo: 'amwaredotdev/warekit-next-netsuite',
+      alreadyHadAccess: true,
+    })
+    const text = body()
+    expect(text).toMatch(/already has access/i)
+    expect(text).toMatch(/nothing to accept/i)
+    expect(text).not.toMatch(/one business day/i)
+  })
+
+  it('falls back to the manual promise when the invitation did not send', async () => {
+    await sendBoilerplateConfirmationEmail({
+      to: 'buyer@example.com',
+      itemName: 'WareKit',
+      githubUsername: 'octocat',
+      inviteUrl: null,
+    })
+    const text = body()
+    // It says the automatic attempt failed rather than implying it never
+    // tried -- the buyer is owed the real reason they are waiting.
+    expect(text).toMatch(/could not send/i)
+    expect(text).toMatch(/by hand/i)
+    expect(text).toMatch(/within one business day/i)
+    expect(text).not.toMatch(/invitations$/m)
+  })
+
   it('still reads correctly when no username reached the webhook', async () => {
     await sendBoilerplateConfirmationEmail({
       to: 'buyer@example.com',

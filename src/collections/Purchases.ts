@@ -73,6 +73,25 @@ export const Purchases: CollectionConfig = {
       type: 'text',
       admin: { description: 'Boilerplate orders — consumed by Phase B3.' },
     },
+    {
+      name: 'githubRepo',
+      type: 'text',
+      admin: {
+        description:
+          'owner/repo the invitation was sent to, copied from the product at ' +
+          'purchase time. Stored rather than looked up, so a later catalogue ' +
+          'edit cannot rewrite the history of what someone bought.',
+      },
+    },
+    {
+      name: 'githubInviteUrl',
+      type: 'text',
+      admin: {
+        description:
+          'GitHub accept link. Empty means no invitation was sent — that ' +
+          'order needs one by hand.',
+      },
+    },
     { name: 'accessTokenJti', type: 'text' },
     {
       name: 'status',

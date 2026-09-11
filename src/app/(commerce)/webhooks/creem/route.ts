@@ -1,6 +1,7 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { verifyCreemSignature } from '@/lib/commerce/creem'
 import { createAccessToken } from '@/lib/commerce/accessToken'
+import { inviteToRepo } from '@/lib/commerce/githubInvite'
 import {
   sendAccessLinkEmail,
   sendBoilerplateConfirmationEmail,
@@ -309,13 +310,49 @@ async function handleCheckout(event) {
     // A retainer needs no delivery. It was recorded, which is the whole job;
     // the engagement itself is scheduled with the client out of band.
   } else if (isBoilerplate) {
-    // Confirmation email is best-effort; the repo invite (Phase B3) is the real
-    // fulfillment, so a failed confirmation must NOT flip the order to 'failed'.
+    /* The invitation is the fulfillment. It is attempted here and never
+       allowed to throw: an order is already captured by the time this runs,
+       so GitHub being unreachable must leave a recorded sale that a human can
+       finish, not a 500 that makes Creem redeliver it. */
+    const repo = typeof item?.githubRepo === 'string' ? item.githubRepo : null
+    const invite = await inviteToRepo({ repo, username: githubUsername })
+
+    if (!invite.ok) {
+      console.error('Repo invite failed for order', orderId, {
+        repo,
+        reason: invite.reason,
+      })
+    }
+
+    await payload
+      .update({
+        collection: 'purchases',
+        id: purchase.id,
+        overrideAccess: true,
+        data: {
+          githubRepo: repo || undefined,
+          githubInviteUrl: (invite.ok && invite.url) || undefined,
+          /* 'sent' only when access genuinely exists. Anything else stays
+             'pending_invite', which is the admin's queue of orders still
+             owed a repository. */
+          fulfillmentStatus: invite.ok ? 'sent' : 'pending_invite',
+        },
+      })
+      .catch(() =>
+        console.error('Purchase invite update failed for order', orderId)
+      )
+
+    // Best-effort: the buyer has access either way, and a bounced email must
+    // not undo a granted invitation.
     try {
       await sendBoilerplateConfirmationEmail({
         to: email,
         itemName,
         githubUsername,
+        repo: repo || undefined,
+        inviteUrl: invite.ok ? invite.url : null,
+        alreadyHadAccess:
+          invite.ok && invite.state === 'already-a-collaborator',
       })
     } catch {
       console.error('Boilerplate confirmation email failed for order', orderId)

@@ -30,38 +30,73 @@ export async function sendAccessLinkEmail(args: {
  * it can be found rather than buried in a sentence. */
 const INVITE_WINDOW = 'one business day'
 
-/* The old copy said an invitation would arrive "shortly". Nothing sends one:
- * repository access is granted by hand, and the automated invite is still
- * unbuilt. A promise the system cannot keep costs more than a slower promise
- * it can, so this describes the process that actually happens.
+/* Two emails, because there are two truths.
  *
- * It also repeats the username back. That is the single moment a buyer can
- * catch their own typo -- after this, the next signal is an invitation that
- * never arrives, by which point they have paid and have no way to correct it.
+ * When the invitation actually went out, the email says so and carries the
+ * link to accept it. When it did not -- no token configured, GitHub
+ * unreachable, a repository the token cannot see -- the email falls back to
+ * describing the manual process, which is what really happens next.
+ *
+ * The old copy said an invitation would arrive "shortly" in both cases.
+ * Nothing sent one. A promise the system cannot keep costs more than a slower
+ * promise it can, so neither branch claims more than it did.
+ *
+ * Both repeat the username back. That is the single moment a buyer can catch
+ * their own typo -- after this, the next signal is an invitation that never
+ * arrives, by which point they have paid and have no way to correct it.
  */
 export async function sendBoilerplateConfirmationEmail(args: {
   to: string
   itemName: string
   githubUsername?: string
+  /** `owner/repo`, so the buyer can tell which kit was granted. */
+  repo?: string
+  /** GitHub's accept link. Present only when an invitation really was sent. */
+  inviteUrl?: string | null
+  /** True when GitHub reports the buyer already had access. */
+  alreadyHadAccess?: boolean
 }): Promise<void> {
   const target = args.githubUsername
     ? `@${args.githubUsername}`
     : 'the GitHub account you gave at checkout'
 
   const correction = args.githubUsername
-    ? `\n\nIf @${args.githubUsername} is not the right account, reply to this email and I will fix it before sending the invitation.`
-    : '\n\nIf you need the invitation sent to a different account, reply to this email.'
+    ? `\n\nIf @${args.githubUsername} is not the right account, reply to this email and I will fix it.`
+    : '\n\nIf you need access sent to a different account, reply to this email.'
+
+  const repoName = args.repo ? ` for ${args.repo}` : ''
+
+  let body: string
+
+  if (args.alreadyHadAccess) {
+    body = `Thanks for buying ${args.itemName}.
+
+${target} already has access to the repository${repoName}, so there is nothing to accept — open it and clone.${correction}
+
+— Alec`
+  } else if (args.inviteUrl) {
+    body = `Thanks for buying ${args.itemName}.
+
+A GitHub invitation${repoName} is waiting for ${target}. Accept it here:
+${args.inviteUrl}
+
+GitHub also emails you the invitation, and that one does sometimes land in spam. The invitation expires after seven days — if it lapses, reply to this email and I will send another.${correction}
+
+— Alec`
+  } else {
+    body = `Thanks for buying ${args.itemName}.
+
+I could not send the GitHub invitation automatically, so I am granting access by hand — which means it is not instant. You will get an invitation${repoName} to ${target} within ${INVITE_WINDOW}.${correction}
+
+GitHub sends its own email when the invitation goes out, and it does sometimes land in spam.
+
+— Alec`
+  }
 
   await getResend().emails.send({
     from: FROM,
     to: args.to,
     subject: `Your purchase of ${args.itemName}`,
-    text: `Thanks for buying ${args.itemName}.
-
-I grant repository access by hand rather than automatically, so it is not instant. You will get a GitHub invitation to ${target} within ${INVITE_WINDOW}.${correction}
-
-GitHub sends its own email when the invitation goes out, and it does sometimes land in spam.
-
-— Alec`,
+    text: body,
   })
 }
