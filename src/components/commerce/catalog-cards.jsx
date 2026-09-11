@@ -246,21 +246,31 @@ export function ServiceCard({ service, index = 0, description = null }) {
         )}
       </div>
 
-      <div className="mb-8 flex items-baseline gap-1.5">
+      {/* A retainer is a monthly number, so the period has to sit with it --
+          "$3,000" and "$3,000 per month" are very different offers, and
+          toFixed(2) was rendering the first as "$3000.00" with no separator
+          either. Cents only appear when there are any. */}
+      <div className="mb-8">
         {hasPrice ? (
-          <>
+          <div className="flex flex-wrap items-baseline gap-1.5">
             <span className="amw-kicker">from</span>
             <span className="amw-price text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-5xl">
-              ${service.startingPrice.toFixed(2)}
+              {`$${service.startingPrice.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+              })}`}
             </span>
             <span className="text-sm text-zinc-600 dark:text-zinc-400">
-              USD
+              {service.priceLabel || 'USD'}
             </span>
-          </>
+          </div>
         ) : (
           <span className="text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100">
             Scoped per engagement
           </span>
+        )}
+        {service.commitment && (
+          <p className="amw-kicker mt-2">{service.commitment}</p>
         )}
       </div>
 
@@ -277,16 +287,27 @@ export function ServiceCard({ service, index = 0, description = null }) {
             slug={service.slug}
             label={
               hasPrice
-                ? `Purchase — $${service.startingPrice.toFixed(2)}`
+                ? `Purchase — $${service.startingPrice.toLocaleString('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  })}`
                 : 'Purchase'
             }
           />
         ) : (
+          /* A retainer does not start with a quote, it starts with a
+             conversation. When the tier carries a booking link the card asks
+             for the call; without one it falls back to the contact form. */
           <Link
-            href="/contact"
+            href={service.bookingUrl || '/contact'}
+            {...(service.bookingUrl
+              ? { target: '_blank', rel: 'noreferrer' }
+              : {})}
             className="group inline-flex items-center gap-3 rounded-md bg-zinc-900 py-3 pl-5 pr-3 font-medium text-white no-underline transition-all duration-500 ease-out hover:rounded-[50px] dark:bg-zinc-100 dark:text-zinc-900"
           >
-            <span>Request a quote</span>
+            <span>
+              {service.bookingUrl ? 'Book an intro call' : 'Request a quote'}
+            </span>
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-zinc-900 transition-all duration-300 group-hover:scale-110 dark:bg-zinc-900 dark:text-zinc-100">
               <ChevronRight
                 className="relative left-px h-4 w-4"
@@ -294,6 +315,11 @@ export function ServiceCard({ service, index = 0, description = null }) {
               />
             </span>
           </Link>
+        )}
+        {service.depositNote && (
+          <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">
+            {service.depositNote}
+          </p>
         )}
       </div>
     </motion.li>

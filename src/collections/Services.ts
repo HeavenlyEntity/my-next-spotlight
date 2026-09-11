@@ -6,7 +6,7 @@ export const Services: CollectionConfig = {
   slug: 'services',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'status', 'order'],
+    defaultColumns: ['name', 'startingPrice', 'priceLabel', 'status', 'order'],
   },
   access: {
     read: ({ req: { user } }) => {
@@ -23,6 +23,42 @@ export const Services: CollectionConfig = {
     { name: 'description', type: 'richText' },
     { name: 'icon', type: 'upload', relationTo: 'media' },
     { name: 'startingPrice', type: 'number' },
+    {
+      name: 'priceLabel',
+      type: 'text',
+      admin: {
+        description:
+          'What the price is per — "per month" for a retainer. Empty reads ' +
+          'as a one-off. Without it a $3,000 monthly retainer renders as a ' +
+          'flat $3,000, which is a very different offer.',
+      },
+    },
+    {
+      name: 'commitment',
+      type: 'text',
+      admin: {
+        description: 'Rough time, e.g. "about 10 hrs a month".',
+      },
+    },
+    {
+      name: 'bookingUrl',
+      type: 'text',
+      admin: {
+        description:
+          'Cal.com link. Present ⇒ the card asks for an intro call instead ' +
+          'of a quote, which is how a retainer actually starts.',
+      },
+    },
+    {
+      name: 'depositNote',
+      type: 'textarea',
+      admin: {
+        description:
+          'The money line under the call to action — the deposit and what ' +
+          'happens to it. Anything quoted here is a commitment to a client, ' +
+          'so it lives with the tier it applies to rather than in a layout.',
+      },
+    },
     {
       name: 'creemProductId',
       type: 'text',

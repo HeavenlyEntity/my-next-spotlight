@@ -80,11 +80,69 @@ describe('catalog cards', () => {
         />
       </ul>
     )
-    expect(screen.getByText('$3500.00')).toBeInTheDocument()
+    /* Was '$3500.00'. A retainer is thousands a month, and that rendering
+       had no separator and two cents nobody charges. */
+    expect(screen.getByText('$3,500')).toBeInTheDocument()
     expect(screen.getByText('Weekly shipping.')).toBeInTheDocument()
+    // No booking link on this one, so it still falls back to the quote form.
     expect(
       screen.getByRole('link', { name: /request a quote/i })
     ).toHaveAttribute('href', '/contact')
+  })
+
+  it('service card says what the price is per, when the tier says so', () => {
+    render(
+      <ul>
+        <ServiceCard
+          service={{
+            slug: 'cto',
+            name: 'Fractional CTO',
+            startingPrice: 7500,
+            priceLabel: 'per month',
+            commitment: 'about 20 to 25 hrs a month',
+          }}
+        />
+      </ul>
+    )
+    // $7,500 and $7,500 per month are very different offers.
+    expect(screen.getByText('$7,500')).toBeInTheDocument()
+    expect(screen.getByText('per month')).toBeInTheDocument()
+    expect(screen.getByText(/20 to 25 hrs/)).toBeInTheDocument()
+  })
+
+  it('service card asks for the call when the tier has a booking link', () => {
+    render(
+      <ul>
+        <ServiceCard
+          service={{
+            slug: 'cto',
+            name: 'Fractional CTO',
+            startingPrice: 7500,
+            bookingUrl: 'https://cal.com/amware/on-demand-outcome',
+            depositNote: 'A $1,500 deposit, credited against month one.',
+          }}
+        />
+      </ul>
+    )
+    // A retainer starts with a conversation, not a quote request.
+    const link = screen.getByRole('link', { name: /book an intro call/i })
+    expect(link).toHaveAttribute(
+      'href',
+      'https://cal.com/amware/on-demand-outcome'
+    )
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(screen.getByText(/\$1,500 deposit/)).toBeInTheDocument()
+  })
+
+  it('keeps cents when a price actually has them', () => {
+    render(
+      <ul>
+        <ServiceCard
+          service={{ slug: 'a', name: 'A', startingPrice: 1250.5 }}
+        />
+      </ul>
+    )
+    expect(screen.getByText('$1,250.5')).toBeInTheDocument()
   })
 
   it('service card with a product id renders the purchase button instead', () => {
@@ -101,7 +159,7 @@ describe('catalog cards', () => {
       </ul>
     )
     expect(
-      screen.getByRole('button', { name: 'Purchase — $900.00' })
+      screen.getByRole('button', { name: 'Purchase — $900' })
     ).toBeInTheDocument()
     expect(screen.queryByRole('link')).toBeNull()
   })
