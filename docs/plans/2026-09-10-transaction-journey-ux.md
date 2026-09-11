@@ -183,6 +183,44 @@ Fix: point the CTA at the real Cal.com link, and give the booking page a
 short honest description of what the call is and what starting costs. Add
 the $1,500 deposit as a Creem product once the API key has write scope.
 
+### F9 — After paying, the customer is alone (addition, not a defect)
+
+Every other finding is something broken. This one is something missing.
+
+The journey ends at an email. There is no person on the other side of the
+purchase, nowhere to ask a question that is not "reply to this email", and no
+sign that anyone else bought the thing. For a $249 boilerplate that a developer
+will live inside for months, that isolation is the product's weakest point
+after the delivery itself.
+
+A Discord server addresses it, with two boundaries.
+
+**Discord is for people, not for bugs.** Messages scroll away, carry no status,
+do not dedupe, and cannot be found by the next person with the same problem. A
+code product needs a tracker, and the buyer already has repository access, so
+GitHub Issues on the boilerplate repo is strictly better and free. Route bugs
+there and keep Discord for conversation. Conflating them produces a channel
+full of unanswered reports, which reads worse than no channel.
+
+**An empty server is worse than no server.** A buyer who joins and finds four
+people and nothing posted in three weeks concludes the product is abandoned.
+That is F7's failure again -- promising what cannot be delivered -- but slower
+and more damaging, because they have already paid. So:
+
+- The invite appears in the post-purchase email and on the success page, where
+  isolation actually starts. It does not go on the pricing card until the
+  server is alive, because a card feature is a promise.
+- Use a permanent invite link. Discord invites expire by default, and an
+  expired link in a fulfilment email is a dead end for every future buyer.
+- Keep it public with a customers-only channel gated by a role assigned by
+  hand. At zero customers, a verification bot is machinery for a problem that
+  does not exist yet; revisit when the manual step is actually a burden.
+
+Note the Advisor tier already promises "Async Slack and email support". That is
+a private retainer channel and must stay distinct from a public community, or
+retainer clients will reasonably expect their paid support line to be a Discord
+room shared with everyone.
+
 ## Cross-cutting requirements
 
 - Every new interactive element: visible label, `aria-describedby` for hints
@@ -210,6 +248,10 @@ Ordered by damage prevented per unit of work.
 6. **F4** — make cancel return people where they were.
 7. **F8** — wire the engagement path once the Cal.com URL and Creem write
    scope exist.
+8. **F9** — add the community link to the post-purchase email and success page
+   once a server exists that someone would want to be in. Last because it is
+   the only item that depends on something outside the codebase being alive
+   rather than merely configured.
 
 Items 1 to 6 are self-contained. Item 7 is blocked on two things outside the
 codebase.
@@ -244,7 +286,12 @@ codebase.
 3. **Does the deposit get its own product page**, or is it a link sent after
    the call? A public $1,500 page invites people to pay before the call, which
    is the order we deliberately avoided.
-4. **Is a wrong-invite leak worth blocking before the boilerplate ships?**
+4. **Is the community a paid perk or an open front door?** Gated makes it a
+   feature worth listing; open makes it a place prospects can see is alive
+   before they buy, which is worth more while the customer count is small.
+   The recommendation is open with a customers-only channel, but it is a
+   positioning call rather than a technical one.
+5. **Is a wrong-invite leak worth blocking before the boilerplate ships?**
    Until redemption binding exists, a plausible wrong username hands the
    repository to a stranger. Publishing the $249 boilerplate before that is a
    decision to accept the risk, and it should be a decision rather than an
