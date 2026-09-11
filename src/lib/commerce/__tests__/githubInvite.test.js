@@ -115,6 +115,14 @@ describe('inviteToRepo', () => {
     expect(r).toEqual({ ok: false, reason: 'unreachable' })
   })
 
+  it('reports 422 as rejected, not as a network problem', async () => {
+    reply(422)
+    const r = await inviteToRepo({ repo: REPO, username: 'octocat' })
+    // 422 is the daily 50-invitation cap, or spam detection. Either way a
+    // human has to finish the order, so it must not read as "try again".
+    expect(r).toEqual({ ok: false, reason: 'rejected' })
+  })
+
   it('reports 404 as not-found rather than pretending it worked', async () => {
     reply(404)
     const r = await inviteToRepo({ repo: REPO, username: 'ghost' })

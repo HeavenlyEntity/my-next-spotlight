@@ -11,7 +11,15 @@ import { POST as creemWebhook } from '@/app/(commerce)/webhooks/creem/route'
    with: a purchase row, a fulfillment state, and a confirmation email. */
 
 const BUYER = 'delivered@resend.dev' // Resend's sink address: nobody receives it
+/* The org owner. A simulated purchase really does call GitHub when a token is
+   configured, so the username has to be someone who already has access --
+   GitHub answers 204 and nobody is invited to anything. Point this at a
+   stranger and the simulation starts sending real invitations. */
 const GITHUB = 'HeavenlyEntity'
+/* Fulfillment legitimately ends in a different state depending on whether a
+   token is configured, so the assertion follows the configuration instead of
+   freezing one of the two answers. */
+const HAS_TOKEN = Boolean(process.env.GITHUB_TOKEN)
 
 const form = (fields) => {
   const fd = new FormData()
@@ -220,7 +228,12 @@ describe.skipIf(!SUBJECT)('customer journey: after payment', () => {
       `purchase id=${p.id} email=${p.email} amount=${p.amount} status=${p.status} fulfillment=${p.fulfillmentStatus} github=${p.githubUsername}`
     )
     expect(p.status).toBe('paid')
-    expect(p.fulfillmentStatus).toBe('pending_invite')
+    /* 'sent' only when access genuinely exists. Without a token the invite
+       cannot be attempted, so the order stays in the queue a human works
+       from -- and that fallback is the thing being checked here. */
+    expect(p.fulfillmentStatus).toBe(HAS_TOKEN ? 'sent' : 'pending_invite')
+    // Recorded either way: the manual path needs to know which repo.
+    expect(p.githubRepo).toBe(SUBJECT.githubRepo)
     expect(p.githubUsername).toBe(GITHUB)
     expect(p.amount).toBe(Math.round(SUBJECT.price * 100))
   })

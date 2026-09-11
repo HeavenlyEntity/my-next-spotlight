@@ -11,6 +11,15 @@
  * the product itself, and `push` is the default the API would otherwise pick
  * for you.
  *
+ * GitHub caps this at 50 invitations per repository per 24 hours (no cap for
+ * inviting existing organisation members, which buyers are not). At that
+ * point it answers 422, the same status it uses for spam detection, so
+ * `rejected` covers both -- and both mean the same thing operationally: this
+ * order needs a human.
+ *
+ * Token: see docs/github-token.md. Fine-grained PATs need Administration
+ * (write) on the kit repositories; classic PATs need `repo`.
+ *
  * Nothing here throws. This runs inside a payment webhook, where an exception
  * means Creem retries an order that was already captured, and where GitHub
  * being unreachable says nothing about whether the sale was good. Every
@@ -30,6 +39,7 @@ export type InviteFailure =
   | 'no-username' // the purchase carries no GitHub account
   | 'not-found' // repo or user gone, or the token cannot see the repo
   | 'forbidden' // token lacks the scope, or SSO is not authorised
+  | 'rejected' // 422: invitation cap for the day, or spam detection
   | 'rate-limited'
   | 'unreachable' // timeout, DNS, GitHub 5xx
 
@@ -105,6 +115,10 @@ export async function inviteToRepo(args: {
     }
   }
   if (res.status === 429) return { ok: false, reason: 'rate-limited' }
+  /* 422 is validation-failed OR spam detection OR the 50-a-day invitation
+     cap. GitHub does not separate them, so neither do we -- it is reported
+     honestly as rejected rather than dressed up as a network problem. */
+  if (res.status === 422) return { ok: false, reason: 'rejected' }
 
   return { ok: false, reason: 'unreachable', detail: String(res.status) }
 }

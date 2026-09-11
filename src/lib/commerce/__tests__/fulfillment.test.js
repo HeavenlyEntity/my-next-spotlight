@@ -83,14 +83,21 @@ describe('boilerplate confirmation email', () => {
     expect(text).not.toMatch(/by hand/i)
   })
 
-  it('warns that the invitation expires, because GitHub expires it at seven days', async () => {
+  it('warns the invitation can lapse, without inventing a deadline', async () => {
     await sendBoilerplateConfirmationEmail({
       to: 'buyer@example.com',
       itemName: 'WareKit',
       githubUsername: 'octocat',
       inviteUrl: 'https://github.com/o/r/invitations',
     })
-    expect(body()).toMatch(/seven days/i)
+    const text = body()
+    expect(text).toMatch(/lapse/i)
+    expect(text).toMatch(/send another/i)
+    /* GitHub's REST docs expose an `expired` flag on invitations but never
+       publish the window. A number we cannot cite is a promise to a paying
+       customer that we cannot keep, so the copy says invitations lapse and
+       offers a replacement instead of naming days. */
+    expect(text).not.toMatch(/seven days|7 days/i)
   })
 
   it('does not tell someone to accept an invitation they do not need', async () => {

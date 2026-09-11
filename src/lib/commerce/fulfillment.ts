@@ -80,7 +80,7 @@ ${target} already has access to the repository${repoName}, so there is nothing t
 A GitHub invitation${repoName} is waiting for ${target}. Accept it here:
 ${args.inviteUrl}
 
-GitHub also emails you the invitation, and that one does sometimes land in spam. The invitation expires after seven days — if it lapses, reply to this email and I will send another.${correction}
+GitHub also emails you the invitation, and that one does sometimes land in spam. Invitations do lapse if they sit unaccepted — if yours has, reply to this email and I will send another.${correction}
 
 — Alec`
   } else {
