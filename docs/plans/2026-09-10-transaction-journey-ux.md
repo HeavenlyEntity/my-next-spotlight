@@ -57,15 +57,64 @@ Genuine server faults keep throwing — those are not the buyer's to fix.
 ### F2 — The GitHub username is unvalidated and unconfirmed (High)
 
 It is a free-text box with a placeholder and no rules. GitHub usernames are
-1–39 characters of alphanumerics and single hyphens. A typo is accepted,
-charged for, and only discovered when an invite fails to arrive — at which
-point the buyer has no way to correct it and no idea anything is wrong.
+1-39 characters of alphanumerics and single hyphens. A typo is accepted,
+charged for, and only discovered when an invite fails to arrive.
 
-Fix: `pattern` plus `maxLength` on the input for browser-native validation,
-a visible hint naming the format, and a confirmation step showing the exact
-username before payment. Post-purchase, the success page shows the username
-used and offers a correction route. This is the single field in the whole
-journey where a typo costs real money.
+The cost is worse than a failed delivery. A plausible-but-wrong username means
+the repository invitation goes to a stranger, and if they accept it they have
+the $249 boilerplate. A wrong username is a leak, not a support ticket.
+
+**Now: confirm the account against the GitHub API.**
+
+`GET https://api.github.com/users/{username}` returns `login`, `name`,
+`avatar_url`, `html_url` and `type` for any public account. Debounce the field,
+show the avatar and name, and make the buyer confirm the account is theirs
+before the buy button enables. A 404 renders as "No GitHub account with that
+name" beside the field, using the F1 error mechanism.
+
+Two constraints decide how this is built:
+
+- **The call runs in the browser, not on the server.** Unauthenticated GitHub
+  allows 60 requests an hour per IP. From the browser that is 60 per visitor,
+  which no one will reach. From the server it is 60 an hour shared across every
+  visitor, which fails immediately under any traffic. Verified against the live
+  API: `x-ratelimit-limit: 60`.
+- **The server re-checks at checkout.** A client-side check is advisory and
+  trivially bypassed, so `createCheckout` verifies the username again before
+  creating the session, using the `GITHUB_TOKEN` the invite work needs anyway
+  (5,000 an hour).
+
+`next.config.mjs` declares no `remotePatterns`, so `next/image` will refuse
+`avatars.githubusercontent.com` until one is added.
+
+This kills typos, which is the failure that actually happens. It does not prove
+ownership: it confirms an account exists, not that the buyer controls it.
+
+**Target: bind the account at redemption, not at purchase.**
+
+Once the invite machinery exists, the pre-purchase field should be deleted
+rather than validated. Buy with an email alone; the confirmation email carries
+a claim link; the buyer authenticates with GitHub there and the invitation goes
+to the account they just proved they control. No field before payment, no typo
+possible, and the invite cannot land on a stranger.
+
+That handshake needs **no auth platform and no user accounts**. Supabase here
+is a Postgres host only -- there is no `@supabase/supabase-js`, no
+`@supabase/ssr` and no `SUPABASE_*` key in the environment -- and Payload's
+`Users` collection is the CMS admin login, not customer identity. The whole
+commerce flow is deliberately accountless: purchases keyed by email, access by
+signed token, `/access/resend` instead of a password. Adding an auth system
+would contradict that for the sake of one proof.
+
+What is needed is a single ephemeral handshake: claim link, GitHub authorize,
+callback that verifies `state`, exchanges the code and reads `login`, then
+sends the invite. Nothing persists except the resolved username on the
+Purchase. No session, no logout, no user record.
+
+If customer accounts are ever genuinely wanted -- a licence dashboard, download
+history, seat management -- that decision changes, and the answer then is to
+extend Payload's existing auth with a customers collection rather than
+introduce a second identity system.
 
 ### F3 — The success page knows nothing about the purchase (Medium)
 
@@ -186,11 +235,19 @@ codebase.
    there is invisible to us and the buyer. Collecting it first lets the
    success page confirm it and the resend path match it, at the cost of one
    more field before payment.
-2. **What happens when a GitHub username turns out to be wrong?** Self-serve
-   correction needs an authenticated surface the buyer does not currently
-   have. A "reply to this email" route may be the honest answer for now.
+2. **How long does the pre-purchase username field survive?** F2 validates it
+   now and deletes it later, once redemption binds the account instead. If the
+   invite work lands soon, validating a field that is about to be removed is
+   wasted effort and the confirmation step could be skipped. If it is months
+   away, the field ships to real buyers and must be validated. This is a
+   sequencing question, not a design one.
 3. **Does the deposit get its own product page**, or is it a link sent after
    the call? A public $1,500 page invites people to pay before the call, which
    is the order we deliberately avoided.
+4. **Is a wrong-invite leak worth blocking before the boilerplate ships?**
+   Until redemption binding exists, a plausible wrong username hands the
+   repository to a stranger. Publishing the $249 boilerplate before that is a
+   decision to accept the risk, and it should be a decision rather than an
+   oversight.
 
 Do not edit this plan during implementation; report scope conflicts separately.
