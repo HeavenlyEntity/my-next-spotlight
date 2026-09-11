@@ -4,6 +4,7 @@ import { Container } from '@/components/Container'
 import { RichText } from '@/components/site/RichText'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { BuyButton } from '@/components/commerce/BuyButton'
+import { ClaimFreeKit } from '@/components/commerce/ClaimFreeKit'
 import { typeMeta } from '@/components/commerce/storefront'
 
 export const revalidate = 60
@@ -69,6 +70,10 @@ export default async function ProductPage({
   const features = Array.isArray(product.features) ? product.features : []
   const demoHref = safeHref(product.demoUrl)
   const isBoilerplate = product.type === 'boilerplate'
+  /* Free is a price of exactly 0, not a missing price. A kit with no price
+     set is unfinished and shows "Soon"; a kit priced at 0 is a deliberate
+     free tier and is claimed rather than bought. */
+  const isFree = product.price === 0
 
   return (
     <Container className="mt-16 sm:mt-32">
@@ -147,12 +152,18 @@ export default async function ProductPage({
             <div className="amw-card amw-ticks p-6">
               <p className="amw-eyebrow">{'// datasheet'}</p>
               <p className="amw-price mt-3 text-3xl font-bold text-zinc-900 dark:text-zinc-50">
-                {typeof product.price === 'number'
+                {isFree
+                  ? 'Free'
+                  : typeof product.price === 'number'
                   ? `$${product.price.toFixed(2)}`
                   : 'Soon'}
               </p>
               <p className="amw-kicker mt-1">
-                {product.priceLabel || 'one-time'} · {product.currency || 'USD'}
+                {isFree
+                  ? 'the whole architecture, not a demo'
+                  : `${product.priceLabel || 'one-time'} · ${
+                      product.currency || 'USD'
+                    }`}
               </p>
 
               <dl className="mt-6">
@@ -183,7 +194,9 @@ export default async function ProductPage({
                 </div>
               </dl>
 
-              {product.creemProductId ? (
+              {isFree && isBoilerplate ? (
+                <ClaimFreeKit slug={product.slug} />
+              ) : product.creemProductId ? (
                 <BuyButton
                   itemType="product"
                   slug={product.slug}

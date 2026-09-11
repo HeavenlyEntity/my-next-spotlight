@@ -65,6 +65,8 @@ const KITS = [
   {
     name: 'WareKit React NetSuite (Lite)',
     slug: 'warekit-react-netsuite-lite',
+    // Free tier. Exactly 0, not absent: absent means unfinished.
+    price: 0,
     githubRepo: `${ORG}/warekit-react-netsuite-lite`,
     order: 1,
     featured: true,
@@ -137,6 +139,8 @@ const KITS = [
   {
     name: 'WareKit Next NetSuite (Lite)',
     slug: 'warekit-next-netsuite-lite',
+    // Free tier. Exactly 0, not absent: absent means unfinished.
+    price: 0,
     githubRepo: `${ORG}/warekit-next-netsuite-lite`,
     order: 3,
     featured: true,
