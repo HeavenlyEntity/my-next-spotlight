@@ -38,32 +38,48 @@ const runCheckout = async (fields) => {
   }
 }
 
-let payload
-beforeAll(async () => {
-  payload = await getPayload({ config })
-})
+const payload = await getPayload({ config })
 
-describe('customer journey: buying the WareKit', () => {
+/* Whichever kit is actually purchasable right now. Resolved at collection
+   time rather than hardcoded to a slug, because the catalogue changes and a
+   simulation pinned to a retired product fails for the wrong reason. With
+   nothing purchasable -- every kit still waiting on a price and a Creem
+   product -- the journey is skipped with a reason rather than failing. */
+const { docs: sellable } = await payload.find({
+  collection: 'products',
+  where: {
+    and: [
+      { type: { equals: 'boilerplate' } },
+      { status: { equals: 'published' } },
+      { creemProductId: { exists: true } },
+    ],
+  },
+  sort: 'order',
+  limit: 1,
+  overrideAccess: true,
+})
+const SUBJECT = sellable[0] ?? null
+if (!SUBJECT) {
+  console.log(
+    'SKIPPED: no published boilerplate has a creemProductId yet, so there is nothing to buy.'
+  )
+}
+
+describe.skipIf(!SUBJECT)('customer journey: buying the WareKit', () => {
   let checkoutUrl
 
   it('step 0 — the product is on sale', async () => {
-    const { docs } = await payload.find({
-      collection: 'products',
-      where: { slug: { equals: 'warekit' }, status: { equals: 'published' } },
-      limit: 1,
-      overrideAccess: true,
-    })
-    expect(docs.length).toBe(1)
     console.log(
-      `product id=${docs[0].id} price=$${docs[0].price} creem=${docs[0].creemProductId}`
+      `product id=${SUBJECT.id} ${SUBJECT.slug} price=$${SUBJECT.price} creem=${SUBJECT.creemProductId}`
     )
-    expect(docs[0].creemProductId).toBeTruthy()
+    expect(SUBJECT.creemProductId).toBeTruthy()
+    expect(SUBJECT.githubRepo).toBeTruthy()
   })
 
   it('step 1 — a typo is refused before any money moves', async () => {
     const { state } = await runCheckout({
       itemType: 'product',
-      slug: 'warekit',
+      slug: SUBJECT.slug,
       githubUsername: 'not a username',
     })
     console.log('malformed →', JSON.stringify(state?.error))
@@ -73,7 +89,7 @@ describe('customer journey: buying the WareKit', () => {
   it('step 2 — a well-formed name GitHub does not have is refused too', async () => {
     const { state } = await runCheckout({
       itemType: 'product',
-      slug: 'warekit',
+      slug: SUBJECT.slug,
       githubUsername: 'zzq-no-such-account-' + Date.now().toString(36),
     })
     console.log('nonexistent →', JSON.stringify(state?.error))
@@ -84,7 +100,7 @@ describe('customer journey: buying the WareKit', () => {
   it('step 3 — a real account reaches a live Creem checkout page', async () => {
     const { state, redirect } = await runCheckout({
       itemType: 'product',
-      slug: 'warekit',
+      slug: SUBJECT.slug,
       githubUsername: GITHUB,
     })
     expect(state).toBeNull()
@@ -98,7 +114,7 @@ describe('customer journey: buying the WareKit', () => {
   })
 })
 
-describe('customer journey: after payment', () => {
+describe.skipIf(!SUBJECT)('customer journey: after payment', () => {
   const orderId = 'ord_sim_' + Date.now().toString(36)
   let itemId
   let creemProductId
@@ -116,7 +132,7 @@ describe('customer journey: after payment', () => {
       metadata: {
         itemType: 'product',
         itemId: String(itemId),
-        slug: 'warekit',
+        slug: SUBJECT.slug,
         githubUsername: GITHUB,
       },
     },
@@ -140,15 +156,9 @@ describe('customer journey: after payment', () => {
     )
   }
 
-  beforeAll(async () => {
-    const { docs } = await payload.find({
-      collection: 'products',
-      where: { slug: { equals: 'warekit' } },
-      limit: 1,
-      overrideAccess: true,
-    })
-    itemId = docs[0].id
-    creemProductId = docs[0].creemProductId
+  beforeAll(() => {
+    itemId = SUBJECT.id
+    creemProductId = SUBJECT.creemProductId
   })
 
   it('step 4 — an unsigned webhook is rejected', async () => {

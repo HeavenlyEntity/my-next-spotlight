@@ -34,7 +34,9 @@ export default defineConfig({
     setupFiles: ['./sim/env.setup.mjs'],
     testTimeout: 120000,
     hookTimeout: 120000,
-    // Shared database rows and one Creem account: these must not interleave.
+    /* Shared database rows and one Creem account: these must not interleave.
+       The numeric filename prefixes are the order -- the catalogue is seeded
+       before the journey reads it, or the journey tests yesterday's data. */
     fileParallelism: false,
     sequence: { concurrent: false },
   },
