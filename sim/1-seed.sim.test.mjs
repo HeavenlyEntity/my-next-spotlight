@@ -67,6 +67,7 @@ const KITS = [
     slug: 'warekit-react-netsuite-lite',
     // Free tier. Exactly 0, not absent: absent means unfinished.
     price: 0,
+    seats: 1,
     githubRepo: `${ORG}/warekit-react-netsuite-lite`,
     order: 1,
     featured: true,
@@ -103,6 +104,7 @@ const KITS = [
     name: 'WareKit React NetSuite (Pro)',
     slug: 'warekit-react-netsuite-pro',
     price: 499,
+    seats: 1,
     githubRepo: `${ORG}/warekit-react-netsuite`,
     order: 2,
     featured: false,
@@ -141,6 +143,7 @@ const KITS = [
     slug: 'warekit-next-netsuite-lite',
     // Free tier. Exactly 0, not absent: absent means unfinished.
     price: 0,
+    seats: 1,
     githubRepo: `${ORG}/warekit-next-netsuite-lite`,
     order: 3,
     featured: true,
@@ -178,6 +181,7 @@ const KITS = [
     name: 'WareKit Next NetSuite (Pro)',
     slug: 'warekit-next-netsuite-pro',
     price: 499,
+    seats: 1,
     githubRepo: `${ORG}/warekit-next-netsuite`,
     order: 4,
     featured: false,
@@ -210,6 +214,81 @@ const KITS = [
       'Playwright',
     ],
   },
+  {
+    name: 'WareKit Next NetSuite (Team)',
+    slug: 'warekit-next-netsuite-team',
+    githubRepo: `${ORG}/warekit-next-netsuite`,
+    order: 5,
+    featured: false,
+    status: 'published',
+    price: 999,
+    seats: 5,
+    tagline:
+      'The Pro kit licensed for a team — up to five GitHub accounts on one repository, added whenever you hire.',
+    description: [
+      'Everything in Next NetSuite (Pro), licensed for five people instead of one. Sessions live in a NetSuite custom record rather than Postgres, with the concurrency-aware reads that keeps a real traffic load under NetSuite’s account-level request budget.',
+      'Seats are filled after purchase, not at checkout — you get a link that adds a GitHub account to the licence whenever someone joins, and each one gets their own repository invitation. No account to create and no seat to pre-assign.',
+      'One payment. The licence does not lapse and neither does the repository access.',
+    ],
+    features: [
+      'Everything in the Pro edition',
+      'Up to 5 GitHub accounts on one licence',
+      'Add collaborators after purchase, from a link — no account needed',
+      'Session storage backed by a NetSuite custom record, not Postgres',
+      'Concurrency-aware session reads — per-instance cache, in-flight collapsing, `N/cache`',
+      'Next.js App Router app, deployed to Vercel',
+      'OAuth 2 sign-in via Better Auth, with the userinfo RESTlet included',
+      'SDF project and RESTlets, generated and deployable',
+    ],
+    techStack: [
+      'Next.js',
+      'React 19',
+      'TypeScript',
+      'Better Auth',
+      'Vercel',
+      'SuiteScript',
+      'SDF',
+      'Playwright',
+    ],
+  },
+  {
+    name: 'WareKit React NetSuite (Team)',
+    slug: 'warekit-react-netsuite-team',
+    githubRepo: `${ORG}/warekit-react-netsuite`,
+    order: 6,
+    featured: false,
+    // Draft for the same reason as React Pro: that repository does not exist.
+    status: 'draft',
+    price: 999,
+    seats: 5,
+    tagline:
+      'The Pro kit licensed for a team — up to five GitHub accounts on one repository.',
+    description: [
+      'Everything in React NetSuite (Pro), licensed for five people instead of one: licensing and entitlement, role mapping, the typed data layer, the schema generator, the bundle pipeline and the admin center.',
+      'Seats are filled after purchase from a link, each with its own repository invitation.',
+      'In development, alongside the Pro edition it is licensed from.',
+    ],
+    features: [
+      'Everything in the Pro edition',
+      'Up to 5 GitHub accounts on one licence',
+      'Add collaborators after purchase, from a link — no account needed',
+      'Licensing and entitlement — key validation, seat metering, per-account activation',
+      'Role mapping — NetSuite roles to app permissions, role-aware routing',
+      'Data layer — typed record CRUD, saved-search runner, governance-aware paging',
+      'Schema generator — typed definitions to SDF objects, with migrations',
+      'Admin center — a SuiteApp tab for configuration and licence state',
+    ],
+    techStack: [
+      'React 19',
+      'TypeScript',
+      'Tailwind v4',
+      'shadcn/ui',
+      'TanStack Query',
+      'Playwright',
+      'SuiteScript',
+      'SDF',
+    ],
+  },
 ]
 
 let payload
@@ -230,6 +309,7 @@ describe('seed the WareKit catalogue', () => {
         techStack: list('tech', kit.techStack),
         githubRepo: kit.githubRepo,
         ...(kit.price === undefined ? {} : { price: kit.price }),
+        seats: kit.seats ?? 1,
         ...(creemIdFor(kit.slug)
           ? { creemProductId: creemIdFor(kit.slug) }
           : {}),

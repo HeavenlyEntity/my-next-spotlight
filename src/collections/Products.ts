@@ -50,6 +50,18 @@ export const Products: CollectionConfig = {
       priceLabelField: 'priceLabel',
     }),
     { name: 'price', type: 'number' },
+    {
+      name: 'seats',
+      type: 'number',
+      defaultValue: 1,
+      min: 1,
+      admin: {
+        description:
+          'How many GitHub accounts this licence may invite. 1 for Lite and ' +
+          'Pro, 5 for Team. The seat page refuses the seat past this number, ' +
+          'so it is the licence, not a label.',
+      },
+    },
     { name: 'currency', type: 'text', defaultValue: 'USD' },
     {
       name: 'priceLabel',

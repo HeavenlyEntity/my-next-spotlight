@@ -55,6 +55,10 @@ export async function sendBoilerplateConfirmationEmail(args: {
   inviteUrl?: string | null
   /** True when GitHub reports the buyer already had access. */
   alreadyHadAccess?: boolean
+  /** Signed seat-management link. Only for licences with more than one seat. */
+  seatsUrl?: string | null
+  /** How many accounts the licence covers, when more than one. */
+  seats?: number
 }): Promise<void> {
   const target = args.githubUsername
     ? `@${args.githubUsername}`
@@ -91,6 +95,18 @@ I could not send the GitHub invitation automatically, so I am granting access by
 GitHub sends its own email when the invitation goes out, and it does sometimes land in spam.
 
 — Alec`
+  }
+
+  /* Appended rather than woven into each branch: whether the invitation sent
+     is a different question from how many accounts the licence covers, and
+     the team half of the email should read the same either way. */
+  if (args.seatsUrl && args.seats && args.seats > 1) {
+    body += `
+
+Your licence covers ${args.seats} GitHub accounts. Add the rest of your team here, one invitation each:
+${args.seatsUrl}
+
+Keep that link — it is how you add someone later, and it does not need an account.`
   }
 
   await getResend().emails.send({

@@ -1,6 +1,7 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { verifyCreemSignature } from '@/lib/commerce/creem'
 import { tryCreateAccessToken } from '@/lib/commerce/accessToken'
+import { seatLimit } from '@/lib/commerce/seats'
 import { inviteToRepo } from '@/lib/commerce/githubInvite'
 import {
   sendAccessLinkEmail,
@@ -324,6 +325,28 @@ async function handleCheckout(event) {
       })
     }
 
+    /* The buyer is seat one. Recording it here is what makes the seat page
+       honest on a team licence -- otherwise a five-seat buyer could invite
+       five more people and get six. */
+    const seats = seatLimit(item)
+    const signed =
+      seats > 1
+        ? tryCreateAccessToken({
+            purchaseId: purchase.id,
+            itemType,
+            itemId: item.id,
+          })
+        : null
+    if (signed && !signed.ok) {
+      console.error(
+        'Seat link could not be signed for order',
+        orderId,
+        signed.reason === 'not-configured'
+          ? '— ACCESS_LINK_SECRET is not set in this environment'
+          : '— signing failed'
+      )
+    }
+
     await payload
       .update({
         collection: 'purchases',
@@ -332,6 +355,18 @@ async function handleCheckout(event) {
         data: {
           githubRepo: repo || undefined,
           githubInviteUrl: (invite.ok && invite.url) || undefined,
+          ...(githubUsername
+            ? {
+                seatMembers: [
+                  {
+                    githubUsername,
+                    inviteUrl: (invite.ok && invite.url) || undefined,
+                    addedAt: new Date().toISOString(),
+                  },
+                ],
+              }
+            : {}),
+          ...(signed?.ok ? { accessTokenJti: signed.jti } : {}),
           /* 'sent' only when access genuinely exists. Anything else stays
              'pending_invite', which is the admin's queue of orders still
              owed a repository. */
@@ -342,6 +377,7 @@ async function handleCheckout(event) {
         console.error('Purchase invite update failed for order', orderId)
       )
 
+    const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
     // Best-effort: the buyer has access either way, and a bounced email must
     // not undo a granted invitation.
     try {
@@ -353,6 +389,9 @@ async function handleCheckout(event) {
         inviteUrl: invite.ok ? invite.url : null,
         alreadyHadAccess:
           invite.ok && invite.state === 'already-a-collaborator',
+        seats,
+        seatsUrl:
+          signed?.ok && site ? `${site}/access/seats/${signed.token}` : null,
       })
     } catch {
       console.error('Boilerplate confirmation email failed for order', orderId)

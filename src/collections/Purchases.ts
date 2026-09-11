@@ -92,6 +92,28 @@ export const Purchases: CollectionConfig = {
           'order needs one by hand.',
       },
     },
+    {
+      name: 'seatMembers',
+      type: 'array',
+      labels: { singular: 'Seat', plural: 'Seats' },
+      admin: {
+        description:
+          'Every GitHub account this licence has granted, including the ' +
+          'purchaser. The length is the seats used; the limit lives on the ' +
+          'product. Rows are appended, never replaced, so removing someone ' +
+          'here does not take their repository access away — do that on ' +
+          'GitHub.',
+      },
+      fields: [
+        { name: 'githubUsername', type: 'text', required: true },
+        { name: 'inviteUrl', type: 'text' },
+        {
+          name: 'addedAt',
+          type: 'date',
+          admin: { date: { pickerAppearance: 'dayAndTime' } },
+        },
+      ],
+    },
     { name: 'accessTokenJti', type: 'text' },
     {
       name: 'status',
