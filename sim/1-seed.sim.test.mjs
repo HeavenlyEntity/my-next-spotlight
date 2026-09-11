@@ -52,6 +52,15 @@ const richText = (paragraphs) => ({
 
 const list = (key, values) => values.map((v) => ({ [key]: v }))
 
+/* Creem ids come from the environment, never the repository. A `prod_…` from
+   a test key and one from a live key are different objects, and this database
+   is shared between local and production -- committing either would point the
+   wrong environment at the wrong product. A kit with no id renders as "not
+   yet available" rather than a checkout that cannot complete. */
+const creemIdFor = (slug) =>
+  process.env[`CREEM_PRODUCT_${slug.toUpperCase().replaceAll('-', '_')}`] ||
+  undefined
+
 const KITS = [
   {
     name: 'WareKit React NetSuite (Lite)',
@@ -91,6 +100,7 @@ const KITS = [
   {
     name: 'WareKit React NetSuite (Pro)',
     slug: 'warekit-react-netsuite-pro',
+    price: 499,
     githubRepo: `${ORG}/warekit-react-netsuite`,
     order: 2,
     featured: false,
@@ -163,6 +173,7 @@ const KITS = [
   {
     name: 'WareKit Next NetSuite (Pro)',
     slug: 'warekit-next-netsuite-pro',
+    price: 499,
     githubRepo: `${ORG}/warekit-next-netsuite`,
     order: 4,
     featured: false,
@@ -214,6 +225,10 @@ describe('seed the WareKit catalogue', () => {
         features: list('feature', kit.features),
         techStack: list('tech', kit.techStack),
         githubRepo: kit.githubRepo,
+        ...(kit.price === undefined ? {} : { price: kit.price }),
+        ...(creemIdFor(kit.slug)
+          ? { creemProductId: creemIdFor(kit.slug) }
+          : {}),
         currency: 'USD',
         priceLabel: 'one-time',
         featured: kit.featured,

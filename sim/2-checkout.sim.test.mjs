@@ -126,7 +126,12 @@ describe.skipIf(!SUBJECT)('customer journey: after payment', () => {
       id: 'ch_' + orderId,
       object: 'checkout',
       status: 'completed',
-      order: { id: orderId, amount: 24900, currency: 'USD', status: 'paid' },
+      order: {
+        id: orderId,
+        amount: Math.round(SUBJECT.price * 100),
+        currency: 'USD',
+        status: 'paid',
+      },
       product: { id: creemProductId },
       customer: { id: 'cust_sim', email: BUYER },
       metadata: {
@@ -217,7 +222,7 @@ describe.skipIf(!SUBJECT)('customer journey: after payment', () => {
     expect(p.status).toBe('paid')
     expect(p.fulfillmentStatus).toBe('pending_invite')
     expect(p.githubUsername).toBe(GITHUB)
-    expect(p.amount).toBe(24900)
+    expect(p.amount).toBe(Math.round(SUBJECT.price * 100))
   })
 
   /* One simulated purchase survives a run, so the row is there to look at in

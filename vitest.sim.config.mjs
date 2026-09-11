@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config'
+import { BaseSequencer } from 'vitest/node'
 import path from 'node:path'
 
 /*
@@ -34,10 +35,18 @@ export default defineConfig({
     setupFiles: ['./sim/env.setup.mjs'],
     testTimeout: 120000,
     hookTimeout: 120000,
-    /* Shared database rows and one Creem account: these must not interleave.
-       The numeric filename prefixes are the order -- the catalogue is seeded
-       before the journey reads it, or the journey tests yesterday's data. */
+    /* Shared database rows and one Creem account: these must not interleave. */
     fileParallelism: false,
-    sequence: { concurrent: false },
+    sequence: {
+      concurrent: false,
+      /* Vitest's default sequencer orders files by how long they took last
+         time, which silently ran the journey before the catalogue it reads.
+         Here the numeric filename prefixes ARE the order, so sort by name. */
+      sequencer: class extends BaseSequencer {
+        async sort(files) {
+          return [...files].sort((a, b) => a.moduleId.localeCompare(b.moduleId))
+        }
+      },
+    },
   },
 })
