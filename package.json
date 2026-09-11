@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:tunnel": "node scripts/dev-tunnel.mjs",
+    "tunnel": "ngrok http 3000 --url https://my-portfolio.ngrok.app",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint .",
