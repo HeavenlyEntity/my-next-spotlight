@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Container } from '@/components/Container'
+import { inlineCode } from '@/components/site/inline-code'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import {
   buildPricingTable,
@@ -144,7 +145,7 @@ export default async function PricingPage() {
                           key={i}
                           className="amw-check text-sm leading-relaxed text-zinc-700 dark:text-zinc-300"
                         >
-                          {b}
+                          {inlineCode(b)}
                         </li>
                       ))}
                     </ul>

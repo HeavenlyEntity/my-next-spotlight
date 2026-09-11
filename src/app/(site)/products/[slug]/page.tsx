@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
 import { RichText } from '@/components/site/RichText'
+import { inlineCode } from '@/components/site/inline-code'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { BuyButton } from '@/components/commerce/BuyButton'
 import { ClaimFreeKit } from '@/components/commerce/ClaimFreeKit'
@@ -139,7 +140,10 @@ export default async function ProductPage({
                       key={i}
                       className="amw-check text-sm leading-relaxed text-zinc-700 dark:text-zinc-300"
                     >
-                      {f.feature}
+                      {/* A plain text field cannot carry formatting, so the
+                          backtick convention is resolved here. The rich text
+                          above needs none of this -- it stores its own. */}
+                      {inlineCode(f.feature)}
                     </li>
                   ))}
                 </ul>

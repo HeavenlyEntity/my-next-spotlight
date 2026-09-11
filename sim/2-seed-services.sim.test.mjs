@@ -20,6 +20,35 @@ const CAL = 'https://cal.com/amware/on-demand-outcome'
 const DEPOSIT =
   'Retainers begin after an intro call, with a $1,500 deposit credited in full against your first month.'
 
+/* Lexical stores formatting as a bitmask on each text node, not as markup in
+   the string -- 16 is inline code. Backticks written here are therefore
+   parsed into real formatted nodes rather than shipped as literal characters,
+   which is what they were: the product page rendered "`pnpm dev`" with the
+   backticks showing, because nothing downstream parses markdown and nothing
+   should have to. This produces the same document the editor's code button
+   would, so it stays editable in the admin afterwards. */
+const CODE_FORMAT = 16
+
+const textNode = (text, format) => ({
+  type: 'text',
+  text,
+  format,
+  style: '',
+  mode: 'normal',
+  detail: 0,
+  version: 1,
+})
+
+const inlineNodes = (text) =>
+  text
+    .split(/(`[^`\n]+`)/g)
+    .filter((part) => part !== '')
+    .map((part) =>
+      part.startsWith('`') && part.endsWith('`') && part.length > 2
+        ? textNode(part.slice(1, -1), CODE_FORMAT)
+        : textNode(part, 0)
+    )
+
 const richText = (paragraphs) => ({
   root: {
     type: 'root',
@@ -35,17 +64,7 @@ const richText = (paragraphs) => ({
       direction: 'ltr',
       textFormat: 0,
       textStyle: '',
-      children: [
-        {
-          type: 'text',
-          text,
-          format: 0,
-          style: '',
-          mode: 'normal',
-          detail: 0,
-          version: 1,
-        },
-      ],
+      children: inlineNodes(text),
     })),
   },
 })
