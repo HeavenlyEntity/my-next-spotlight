@@ -386,6 +386,83 @@
     content: '';
   }
 
+  /* The delivery ledger above the Purchases list. Same elevation tokens as
+     the dashboard intro so it reads as part of the admin rather than bolted
+     on, and the accent rail is reserved for the urgent stat -- if everything
+     is emphasised, the one number that is a job stops standing out. */
+  .amware-admin-ledger {
+    margin: 0 0 24px;
+  }
+
+  .amware-admin-ledger__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 12px 0 0;
+  }
+
+  .amware-admin-ledger__stat {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--style-radius-m);
+    background: var(--theme-elevation-50);
+    padding: 16px 18px;
+  }
+
+  .amware-admin-ledger__stat--urgent {
+    border-color: var(--amware-admin-accent-bright);
+  }
+
+  .amware-admin-ledger__stat--urgent::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    background: var(--amware-admin-accent-bright);
+    content: '';
+  }
+
+  .amware-admin-ledger__stat dt {
+    margin: 0;
+    color: var(--theme-elevation-600);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .amware-admin-ledger__stat dd {
+    margin: 6px 0 0;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.1;
+    /* Tabular figures: these sit in a row and a jumping baseline between
+       "0" and "12" reads as a layout bug. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  .amware-admin-ledger__stat p {
+    margin: 4px 0 0;
+    color: var(--theme-elevation-500);
+    font-size: 12px;
+  }
+
+  .amware-admin-amount {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .amware-admin-amount--free {
+    color: var(--theme-elevation-600);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .amware-admin-amount--none {
+    color: var(--theme-elevation-400);
+  }
+
   .amware-admin-status {
     width: 7px;
     height: 7px;

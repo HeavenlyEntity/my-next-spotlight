@@ -30,6 +30,8 @@ import { AmwareAdminLoginIntro as AmwareAdminLoginIntro_f3bb68614b576b1134693729
 import { AmwareAdminNavBrand as AmwareAdminNavBrand_f3bb68614b576b113469372999ad76e1 } from '@/components/admin/AmwareAdminBrand'
 import { AmwareAdminIcon as AmwareAdminIcon_f3bb68614b576b113469372999ad76e1 } from '@/components/admin/AmwareAdminBrand'
 import { AmwareAdminLogo as AmwareAdminLogo_f3bb68614b576b113469372999ad76e1 } from '@/components/admin/AmwareAdminBrand'
+import { PurchaseLedger as PurchaseLedger_a1c0d2e3f4556677889900aabbccddee } from '@/components/admin/PurchaseLedger'
+import { AmountCell as AmountCell_b2d1e3f4556677889900aabbccddeeff } from '@/components/admin/AmountCell'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
@@ -97,4 +99,8 @@ export const importMap = {
     AmwareAdminIcon_f3bb68614b576b113469372999ad76e1,
   '@/components/admin/AmwareAdminBrand#AmwareAdminLogo':
     AmwareAdminLogo_f3bb68614b576b113469372999ad76e1,
+  '@/components/admin/PurchaseLedger#PurchaseLedger':
+    PurchaseLedger_a1c0d2e3f4556677889900aabbccddee,
+  '@/components/admin/AmountCell#AmountCell':
+    AmountCell_b2d1e3f4556677889900aabbccddeeff,
 }

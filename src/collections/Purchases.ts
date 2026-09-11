@@ -4,13 +4,24 @@ export const Purchases: CollectionConfig = {
   slug: 'purchases',
   admin: {
     useAsTitle: 'email',
+    /* Amount is in the list because it is the only thing separating a free
+       claim from a $999 licence at a glance, and githubUsername because it is
+       who the kit actually went to -- an email address is the buyer, the
+       GitHub account is the delivery address, and on a team licence they are
+       routinely different people. */
     defaultColumns: [
       'email',
-      'itemType',
-      'status',
+      'item',
+      'amount',
+      'githubUsername',
       'fulfillmentStatus',
       'createdAt',
     ],
+    // Chasing a failed invite starts from one of these three, never from a row id.
+    listSearchableFields: ['email', 'githubUsername', 'creemOrderId'],
+    components: {
+      beforeList: ['@/components/admin/PurchaseLedger#PurchaseLedger'],
+    },
   },
   // Admin-only; the webhook writes via Local API with overrideAccess: true.
   access: {
@@ -66,7 +77,16 @@ export const Purchases: CollectionConfig = {
           'is what stops that first payment being banked as two sales.',
       },
     },
-    { name: 'amount', type: 'number', admin: { description: 'Cents.' } },
+    {
+      name: 'amount',
+      type: 'number',
+      admin: {
+        description: 'Cents, as Creem sends them. 0 means a free claim.',
+        components: {
+          Cell: '@/components/admin/AmountCell#AmountCell',
+        },
+      },
+    },
     { name: 'currency', type: 'text' },
     {
       name: 'githubUsername',
