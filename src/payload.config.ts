@@ -16,6 +16,7 @@ import { Lessons } from './collections/Lessons'
 import { Services } from './collections/Services'
 import { ContactSubmissions } from './collections/ContactSubmissions'
 import { Purchases } from './collections/Purchases'
+import { PricingPage } from './globals/PricingPage'
 import { creemPriceEndpoint } from './lib/commerce/creemPriceEndpoint'
 
 const filename = fileURLToPath(import.meta.url)
@@ -56,6 +57,7 @@ export default buildConfig({
     ContactSubmissions,
     Purchases,
   ],
+  globals: [PricingPage],
   editor: lexicalEditor(),
   endpoints: [creemPriceEndpoint],
   secret: process.env.PAYLOAD_SECRET || '',

@@ -32,6 +32,59 @@ export const Products: CollectionConfig = {
       ],
     },
     { name: 'tagline', type: 'text' },
+    /* Pricing-page presentation. A kit is one cell in a stack x tier grid,
+       and the grid is built from these rather than parsed out of the slug --
+       a naming convention is not a data model, and renaming a kit should not
+       silently move it to another column. */
+    {
+      name: 'stack',
+      type: 'select',
+      options: [
+        { label: 'React in NetSuite', value: 'react-netsuite' },
+        { label: 'Next.js + NetSuite', value: 'next-netsuite' },
+      ],
+      admin: {
+        description:
+          'Which column of the pricing page this kit belongs to. Kits only.',
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'tier',
+      type: 'select',
+      options: [
+        { label: 'Lite', value: 'lite' },
+        { label: 'Pro', value: 'pro' },
+        { label: 'Team', value: 'team' },
+      ],
+      admin: {
+        description: 'Which row. Sets the order the cards appear in.',
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'popular',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description:
+          'Frames this tier as the recommended one. Only the first is used, ' +
+          'so marking everything popular marks nothing.',
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'pricingHighlights',
+      type: 'array',
+      labels: { singular: 'Highlight', plural: 'Pricing highlights' },
+      admin: {
+        description:
+          'The short bullets on the pricing card — six or so, one line each. ' +
+          'Separate from Features on purpose: the product page sells the ' +
+          'kit, this column sells the difference between tiers.',
+      },
+      fields: [{ name: 'highlight', type: 'text', required: true }],
+    },
     { name: 'description', type: 'richText' },
     {
       name: 'features',

@@ -65,6 +65,17 @@ const KITS = [
   {
     name: 'WareKit React NetSuite (Lite)',
     slug: 'warekit-react-netsuite-lite',
+    stack: 'react-netsuite',
+    tier: 'lite',
+    popular: false,
+    pricingHighlights: [
+      'The whole architecture, not a crippled demo',
+      'Suitelet-served React app, same-origin with the session',
+      'Both deploy modes and a generated SDF project',
+      'Offline mock mode — runs with no NetSuite account',
+      'End-to-end and unit tests',
+      'Community support',
+    ],
     // Free tier. Exactly 0, not absent: absent means unfinished.
     price: 0,
     seats: 1,
@@ -103,6 +114,17 @@ const KITS = [
   {
     name: 'WareKit React NetSuite (Pro)',
     slug: 'warekit-react-netsuite-pro',
+    stack: 'react-netsuite',
+    tier: 'pro',
+    popular: false,
+    pricingHighlights: [
+      'Everything in Lite',
+      'Licensing and entitlement — keys, seat metering, activation',
+      'Role mapping and a typed data layer',
+      'Schema generator and bundle pipeline',
+      'Admin center and observability',
+      'Lifetime updates',
+    ],
     price: 499,
     seats: 1,
     githubRepo: `${ORG}/warekit-react-netsuite`,
@@ -141,6 +163,17 @@ const KITS = [
   {
     name: 'WareKit Next NetSuite (Lite)',
     slug: 'warekit-next-netsuite-lite',
+    stack: 'next-netsuite',
+    tier: 'lite',
+    popular: false,
+    pricingHighlights: [
+      'The whole architecture, not a crippled demo',
+      'OAuth 2 sign-in and machine-to-machine signing',
+      'SDF project and RESTlets, generated and deployable',
+      'Offline mock mode — runs with no NetSuite account',
+      'Sessions in Postgres',
+      'Community support',
+    ],
     // Free tier. Exactly 0, not absent: absent means unfinished.
     price: 0,
     seats: 1,
@@ -180,6 +213,16 @@ const KITS = [
   {
     name: 'WareKit Next NetSuite (Pro)',
     slug: 'warekit-next-netsuite-pro',
+    stack: 'next-netsuite',
+    tier: 'pro',
+    popular: true,
+    pricingHighlights: [
+      'Everything in Lite',
+      'Sessions in NetSuite, not Postgres — one less service',
+      'Concurrency-aware session reads that survive real traffic',
+      'End-to-end and unit tests',
+      'Lifetime updates',
+    ],
     price: 499,
     seats: 1,
     githubRepo: `${ORG}/warekit-next-netsuite`,
@@ -217,6 +260,16 @@ const KITS = [
   {
     name: 'WareKit Next NetSuite (Team)',
     slug: 'warekit-next-netsuite-team',
+    stack: 'next-netsuite',
+    tier: 'team',
+    popular: false,
+    pricingHighlights: [
+      'Everything in Pro',
+      'Add collaborators after purchase, from a link',
+      'No account for your team to create',
+      'One invitation each, to their own GitHub account',
+      'Lifetime updates',
+    ],
     githubRepo: `${ORG}/warekit-next-netsuite`,
     order: 5,
     featured: false,
@@ -254,6 +307,16 @@ const KITS = [
   {
     name: 'WareKit React NetSuite (Team)',
     slug: 'warekit-react-netsuite-team',
+    stack: 'react-netsuite',
+    tier: 'team',
+    popular: false,
+    pricingHighlights: [
+      'Everything in Pro',
+      'Add collaborators after purchase, from a link',
+      'No account for your team to create',
+      'One invitation each, to their own GitHub account',
+      'Lifetime updates',
+    ],
     githubRepo: `${ORG}/warekit-react-netsuite`,
     order: 6,
     featured: false,
@@ -310,6 +373,10 @@ describe('seed the WareKit catalogue', () => {
         githubRepo: kit.githubRepo,
         ...(kit.price === undefined ? {} : { price: kit.price }),
         seats: kit.seats ?? 1,
+        stack: kit.stack,
+        tier: kit.tier,
+        popular: Boolean(kit.popular),
+        pricingHighlights: list('highlight', kit.pricingHighlights ?? []),
         ...(creemIdFor(kit.slug)
           ? { creemProductId: creemIdFor(kit.slug) }
           : {}),
@@ -351,6 +418,52 @@ describe('seed the WareKit catalogue', () => {
       expect(doc.status).toBe(kit.status)
     })
   }
+
+  /* The copy around the table, so changing "One payment" does not need a
+     deploy. Seeded once with sensible defaults; edit it in the admin after
+     that -- this writes the same values every run, so anything changed by
+     hand here would be reverted. Kept deliberately small for that reason:
+     only the words that were going to be hardcoded otherwise. */
+  it('seeds the pricing page copy', async () => {
+    const copy = await payload.updateGlobal({
+      slug: 'pricing-page',
+      overrideAccess: true,
+      data: {
+        eyebrow: 'pricing',
+        heading: 'One payment. The kit is yours.',
+        intro:
+          'Start on Lite for nothing — it is the whole architecture, not a demo. Move up when you are shipping to other people’s NetSuite accounts.',
+        footnote:
+          'Prices are in USD and charged once. Amware is the merchant of record through Creem. Repository access arrives as a GitHub invitation to the account you confirm at checkout, and Lite needs no card and no account.',
+        faqs: [
+          {
+            question: 'What does a seat actually mean?',
+            answer:
+              'One GitHub account with access to the kit’s repository. Pro covers one — you. Team covers five, and you add them whenever someone joins, from a link you get at purchase. Nobody has to create an account here.',
+          },
+          {
+            question: 'Is Lite a trial?',
+            answer:
+              'No. Lite is the whole architecture and it does not expire. Pro adds what you need once you are selling a SuiteApp into other people’s accounts: licensing, role mapping, the typed data layer, the schema generator.',
+          },
+          {
+            question: 'How does the kit reach me?',
+            answer:
+              'As a GitHub invitation to the account you confirm at checkout. You see the account and its avatar before you pay, because an invitation sent to the wrong username is very hard to undo.',
+          },
+          {
+            question: 'Which kit do I want?',
+            answer:
+              'If the app should run inside NetSuite on the session cookie, take React in NetSuite. If it should live on Vercel and talk to NetSuite over OAuth 2, take Next.js + NetSuite. The SuiteScript half is the same work either way.',
+          },
+        ],
+      },
+    })
+    console.log(
+      `pricing copy: "${copy.heading}" · ${copy.faqs?.length ?? 0} FAQ`
+    )
+    expect(copy.heading).toBeTruthy()
+  })
 
   /* The placeholder that preceded the real catalogue. Its copy described
      this website's own codebase, which is not what WareKit sells, and it

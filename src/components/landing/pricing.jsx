@@ -8,11 +8,15 @@ import { SectionEyebrow } from './section-eyebrow'
 /* Ported from the "minimal" landing template (components/pricing.tsx):
    plan cards on a soft band, the recommended plan framed in the accent.
 
-   Prices are the real ones as of 2026-09-09, confirmed by Alec: $249 for the
-   boilerplate and three monthly retainer tiers. They replace placeholders
-   ($149 and a single $3,500 tier) that had sat here behind a TODO. Anything
-   quoted here is also what Creem is told during merchant verification, so
-   these two must not drift apart -- update both together.
+   The retainer tiers are the real ones as of 2026-09-09, confirmed by Alec.
+   Anything quoted here is also what Creem is told during merchant
+   verification, so those two must not drift apart -- update both together.
+
+   The kit card deliberately quotes no single price. It used to say $249,
+   which stopped being true the moment the catalogue became Lite/Pro/Team at
+   three prices across two stacks -- a hardcoded number here had no way of
+   knowing. /pricing reads those from Payload, so this card points at it
+   rather than competing with it. The rule: one price, one source.
 
    The template's two-card offset layout could not carry four plans, so the
    grid is a plain four-up that steps down to two and then one. The offset
@@ -22,15 +26,17 @@ const easeOut = [0.16, 1, 0.3, 1]
 
 const plans = [
   {
-    name: 'Boilerplate',
+    name: 'WareKit',
     tagline: 'Mode B: you build on mine',
-    price: '$249',
-    period: 'one time',
+    price: 'Free',
+    period: 'to start',
+    note: 'Pro $499 · Team $999',
+    href: '/pricing',
     features: [
-      'Next.js 16 + Payload CMS foundation',
-      'Auth and payments wired (Creem)',
-      'Postgres schema and deploy scripts',
-      'Private repository access',
+      'NetSuite starter kits, React or Next.js',
+      'Lite is the whole architecture, not a demo',
+      'Private repository access by invitation',
+      'Team licence covers five collaborators',
       'Lifetime updates',
     ],
   },
@@ -118,6 +124,15 @@ function PlanCard({ plan }) {
         </p>
       </div>
 
+      {plan.href && (
+        <Link
+          href={plan.href}
+          className="hover:text-[var(--amw-accent-ink)] mb-6 inline-flex text-sm font-medium text-zinc-700 no-underline transition-colors dark:text-zinc-300"
+        >
+          See all three tiers →
+        </Link>
+      )}
+
       <ul className="space-y-3">
         {plan.features.map((feature) => (
           <li
@@ -193,10 +208,10 @@ export function Pricing() {
             in full against your first month.
           </p>
           <Link
-            href="/products"
+            href="/pricing"
             className="hover:text-[var(--amw-accent-ink)] min-h-11 inline-flex items-center text-sm text-zinc-600 no-underline transition-colors dark:text-zinc-400"
           >
-            Browse the boilerplate catalog
+            Compare the kit tiers
           </Link>
         </motion.div>
       </div>

@@ -26,6 +26,7 @@ const fadeInUp = {
 
 const catalogLinks = [
   { label: 'Boilerplates', href: '/products' },
+  { label: 'Pricing', href: '/pricing' },
   { label: 'Services', href: '/services' },
   { label: 'Projects', href: '/projects' },
   { label: 'Articles', href: '/articles' },
