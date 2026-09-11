@@ -1,8 +1,9 @@
 'use client'
 
-import { useActionState, useEffect, useId, useRef } from 'react'
+import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
 import { createCheckout } from '@/lib/commerce/checkout'
 import { Button } from '@/components/Button'
+import { GithubAccountField } from '@/components/commerce/GithubAccountField'
 
 /* The action used to throw on a missing GitHub username, which sent the buyer
    to the Next error boundary: a generic page, their input gone, no way back,
@@ -27,8 +28,11 @@ export function BuyButton({
     error: null,
   })
   const usernameRef = useRef(null)
-  const fieldId = useId()
-  const errorId = `${fieldId}-error`
+  /* Set by the field once it has shown a real account the buyer has not yet
+     confirmed. Only that state gates the button -- an unreachable GitHub must
+     not stop someone paying. */
+  const [gated, setGatedState] = useState(false)
+  const setGated = useCallback((next) => setGatedState(next), [])
 
   const fieldError =
     state.error?.field === 'githubUsername' ? state.error.message : null
@@ -45,41 +49,11 @@ export function BuyButton({
       <input type="hidden" name="slug" value={slug} />
 
       {isBoilerplate && (
-        <div className="mb-3">
-          <label
-            htmlFor={fieldId}
-            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            GitHub username (for repo access)
-          </label>
-          <input
-            ref={usernameRef}
-            id={fieldId}
-            type="text"
-            name="githubUsername"
-            required
-            autoComplete="username"
-            placeholder="your-github-username"
-            aria-invalid={fieldError ? 'true' : undefined}
-            aria-describedby={fieldError ? errorId : undefined}
-            className={`w-full rounded-md border bg-white px-3 py-2 text-sm text-zinc-800 shadow-sm focus:outline-hidden focus:ring-4 dark:bg-zinc-700/[0.15] dark:text-zinc-200 ${
-              fieldError
-                ? 'border-red-600 focus:border-red-600 focus:ring-red-600/10 dark:border-red-500'
-                : 'border-zinc-900/10 focus:border-teal-500 focus:ring-teal-500/10 dark:border-zinc-700'
-            }`}
-          />
-          {fieldError && (
-            /* Text, not just the red border: colour alone carries nothing to
-               anyone who cannot see it. */
-            <p
-              id={errorId}
-              role="alert"
-              className="mt-2 text-sm text-red-700 dark:text-red-400"
-            >
-              {fieldError}
-            </p>
-          )}
-        </div>
+        <GithubAccountField
+          serverError={fieldError}
+          inputRef={usernameRef}
+          onGateChange={setGated}
+        />
       )}
 
       {formError && (
@@ -90,10 +64,10 @@ export function BuyButton({
 
       <Button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || gated}
         className="disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isPending ? 'Redirecting…' : label}
+        {isPending ? 'Redirecting…' : gated ? 'Confirm your account' : label}
       </Button>
     </form>
   )

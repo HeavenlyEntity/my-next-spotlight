@@ -116,6 +116,10 @@ describe('BuyButton error presentation', () => {
 
     const alert = await screen.findByRole('alert')
     expect(alert).toHaveTextContent(/not on sale yet/i)
-    expect(input).not.toHaveAttribute('aria-describedby')
+    /* The field keeps an aria-describedby pointing at its format hint, so the
+       assertion is that it does not point at THIS alert: a form-level problem
+       is not the field's fault and must not be announced as though it were. */
+    expect(input.getAttribute('aria-describedby')).not.toBe(alert.id)
+    expect(input).not.toHaveAttribute('aria-invalid')
   })
 })

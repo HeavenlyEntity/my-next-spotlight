@@ -4,6 +4,38 @@ import crypto from 'crypto'
 import { redirect } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { createCheckoutSession } from '@/lib/commerce/creem'
+import {
+  checkGithubUsername,
+  usernameMessage,
+} from '@/lib/commerce/githubUsername'
+
+/* Returns true if the account exists, false if GitHub says it does not, and
+ * null when we could not find out. Only an explicit 404 is treated as absent.
+ *
+ * A token is optional but wanted: unauthenticated GitHub allows 60 requests an
+ * hour per IP, and every checkout here shares the server's single IP, so
+ * without one this degrades to null under load rather than failing loudly.
+ */
+async function githubAccountExists(login: string): Promise<boolean | null> {
+  const token = process.env.GITHUB_TOKEN
+  try {
+    const res = await fetch(
+      `https://api.github.com/users/${encodeURIComponent(login)}`,
+      {
+        headers: {
+          Accept: 'application/vnd.github+json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        signal: AbortSignal.timeout(4000),
+      }
+    )
+    if (res.status === 404) return false
+    if (!res.ok) return null
+    return true
+  } catch {
+    return null
+  }
+}
 
 const COLLECTION = {
   product: 'products',
@@ -69,17 +101,31 @@ export async function createCheckout(
     }
   }
 
-  if (
-    itemType === 'product' &&
-    item.type === 'boilerplate' &&
-    !githubUsername
-  ) {
-    return {
-      error: {
-        field: 'githubUsername',
-        message:
-          'Enter the GitHub username that should receive repository access.',
-      },
+  if (itemType === 'product' && item.type === 'boilerplate') {
+    const problem = checkGithubUsername(githubUsername)
+    if (problem) {
+      return {
+        error: { field: 'githubUsername', message: usernameMessage(problem)! },
+      }
+    }
+
+    /* The browser already checked this account exists, but a client check is
+       advice, not a guarantee -- the form can be submitted without ever
+       running it. Re-checking here is what actually stops a repository
+       invitation being addressed to nobody.
+
+       It fails open on purpose. A 404 is GitHub telling us the account is not
+       there, which is worth blocking a sale for. A timeout, a rate limit or an
+       outage tells us nothing about the username, and refusing someone's money
+       over our own dependency being down would be the worse error. */
+    const exists = await githubAccountExists(githubUsername)
+    if (exists === false) {
+      return {
+        error: {
+          field: 'githubUsername',
+          message: `GitHub has no account called "${githubUsername}". Check the spelling — this is where repository access will be sent.`,
+        },
+      }
     }
   }
 

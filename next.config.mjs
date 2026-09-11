@@ -5,6 +5,19 @@ import { withPayload } from '@payloadcms/next/withPayload'
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        // GitHub avatars, shown so a buyer can confirm the account that will
+        // receive repository access is theirs. Scoped to this one host and
+        // path: a wildcard here would let any URL in the app proxy arbitrary
+        // remote images through our own optimiser.
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        pathname: '/u/**',
+      },
+    ],
+  },
   async rewrites() {
     return {
       beforeFiles: [
