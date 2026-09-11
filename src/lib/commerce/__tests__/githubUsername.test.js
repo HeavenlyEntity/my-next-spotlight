@@ -9,8 +9,7 @@ import {
 } from '../githubUsername'
 
 const ok = (name) => expect(checkGithubUsername(name)).toBeNull()
-const bad = (name, problem) =>
-  expect(checkGithubUsername(name)).toBe(problem)
+const bad = (name, problem) => expect(checkGithubUsername(name)).toBe(problem)
 
 describe('checkGithubUsername', () => {
   it('accepts the shapes GitHub actually issues', () => {

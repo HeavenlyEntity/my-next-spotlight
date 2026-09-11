@@ -1,6 +1,6 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { verifyCreemSignature } from '@/lib/commerce/creem'
-import { createAccessToken } from '@/lib/commerce/accessToken'
+import { tryCreateAccessToken } from '@/lib/commerce/accessToken'
 import { inviteToRepo } from '@/lib/commerce/githubInvite'
 import {
   sendAccessLinkEmail,
@@ -358,25 +358,45 @@ async function handleCheckout(event) {
       console.error('Boilerplate confirmation email failed for order', orderId)
     }
   } else if (item) {
-    const { token, jti } = createAccessToken({
+    /* Signing must not throw here. It used to: a missing ACCESS_LINK_SECRET
+       threw out of this handler, the POST 500'd after the purchase row was
+       already written, Creem retried into the idempotency check and stopped
+       -- leaving a paid order stuck at 'pending' with no link sent and no
+       failure recorded. Now the misconfiguration marks the order 'failed',
+       which is a queue someone can work, and says so in the log. */
+    const signed = tryCreateAccessToken({
       purchaseId: purchase.id,
       itemType,
       itemId: item.id,
     })
-    let emailed = false
-    try {
-      await sendAccessLinkEmail({ to: email, itemName, token })
-      emailed = true
-    } catch {
-      console.error('Access link email failed for order', orderId)
+
+    if (!signed.ok) {
+      console.error(
+        'Access link could not be signed for order',
+        orderId,
+        signed.reason === 'not-configured'
+          ? '— ACCESS_LINK_SECRET is not set in this environment'
+          : '— signing failed'
+      )
     }
+
+    let emailed = false
+    if (signed.ok) {
+      try {
+        await sendAccessLinkEmail({ to: email, itemName, token: signed.token })
+        emailed = true
+      } catch {
+        console.error('Access link email failed for order', orderId)
+      }
+    }
+
     await payload
       .update({
         collection: 'purchases',
         id: purchase.id,
         overrideAccess: true,
         data: {
-          accessTokenJti: jti,
+          ...(signed.ok ? { accessTokenJti: signed.jti } : {}),
           fulfillmentStatus: emailed ? 'sent' : 'failed',
         },
       })

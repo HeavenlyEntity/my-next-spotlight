@@ -1,7 +1,7 @@
 import { Container } from '@/components/Container'
 import { Button } from '@/components/Button'
 import { getPayloadClient } from '@/lib/getPayloadClient'
-import { createAccessToken } from '@/lib/commerce/accessToken'
+import { tryCreateAccessToken } from '@/lib/commerce/accessToken'
 import { sendAccessLinkEmail } from '@/lib/commerce/fulfillment'
 
 export const metadata = {
@@ -30,7 +30,12 @@ async function resendLink(formData) {
   })
   const purchase = docs[0]
   if (purchase) {
-    const { token } = createAccessToken({
+    /* Same reason as the webhook: this threw on a missing
+       ACCESS_LINK_SECRET, and the throw reached the error boundary -- so the
+       one page a customer visits when delivery has already gone wrong was the
+       page that broke hardest. A failure here is logged and swallowed, which
+       leaves the identical no-enumeration response below. */
+    const signed = tryCreateAccessToken({
       purchaseId: purchase.id,
       itemType: purchase.itemType,
       itemId:
@@ -38,7 +43,19 @@ async function resendLink(formData) {
           ? purchase.item.value
           : purchase.item,
     })
-    await sendAccessLinkEmail({ to: email, itemName: 'your purchase', token })
+    if (signed.ok) {
+      try {
+        await sendAccessLinkEmail({
+          to: email,
+          itemName: 'your purchase',
+          token: signed.token,
+        })
+      } catch {
+        console.error('Resend: access link email failed')
+      }
+    } else {
+      console.error('Resend: could not sign an access link —', signed.reason)
+    }
   }
   // Always behaves identically (no account enumeration).
 }

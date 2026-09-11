@@ -8,7 +8,39 @@ export type AccessTokenPayload = {
   exp: number // epoch ms
 }
 
-const SECRET = process.env.ACCESS_TOKEN_SECRET || ''
+/*
+ * ACCESS_LINK_SECRET signs OUR OWN access links -- the `/access/<token>` URL
+ * emailed to someone who buys a digital download. It is an HMAC key we
+ * generate, not a credential issued by anyone.
+ *
+ * It has nothing to do with GitHub. GITHUB_TOKEN is the GitHub one, and
+ * anything GitHub-related carries that prefix. The old name here was
+ * ACCESS_TOKEN_SECRET, which read like a third-party access token and sat
+ * one line away from GITHUB_TOKEN in .env.example -- so it is still accepted
+ * for environments that have it, with a warning, and should be renamed.
+ *
+ * Generate one with:  openssl rand -hex 32
+ *
+ * Read at call time, not at module load. A module-level capture binds
+ * whatever the environment happened to hold the first time this file was
+ * imported, which in a serverless runtime is not always after the
+ * environment is populated -- and it makes the value untestable.
+ */
+let warnedLegacy = false
+const secret = () => {
+  const current = process.env.ACCESS_LINK_SECRET
+  if (current) return current
+  const legacy = process.env.ACCESS_TOKEN_SECRET
+  if (legacy && !warnedLegacy) {
+    warnedLegacy = true
+    console.warn(
+      'ACCESS_TOKEN_SECRET is the old name for ACCESS_LINK_SECRET. It still ' +
+        'works, but rename it: it signs our own download links and is not a ' +
+        'GitHub token, which the old name implied.'
+    )
+  }
+  return legacy || ''
+}
 const DEFAULT_TTL_MS = 30 * 24 * 60 * 60 * 1000 // 30 days
 
 function b64url(input: Buffer | string): string {
@@ -20,13 +52,13 @@ function b64url(input: Buffer | string): string {
 }
 
 function sign(data: string): string {
-  return b64url(crypto.createHmac('sha256', SECRET).update(data).digest())
+  return b64url(crypto.createHmac('sha256', secret()).update(data).digest())
 }
 
 export function createAccessToken(
   input: Omit<AccessTokenPayload, 'jti' | 'exp'> & { ttlMs?: number }
 ): { token: string; jti: string; exp: number } {
-  if (!SECRET) throw new Error('ACCESS_TOKEN_SECRET is not configured')
+  if (!secret()) throw new Error('ACCESS_LINK_SECRET is not configured')
   const jti = crypto.randomUUID()
   const exp = Date.now() + (input.ttlMs ?? DEFAULT_TTL_MS)
   const payload: AccessTokenPayload = {
@@ -41,8 +73,43 @@ export function createAccessToken(
   return { token, jti, exp }
 }
 
+export type AccessTokenFailure =
+  /** ACCESS_LINK_SECRET is unset, so nothing can be signed at all. */
+  | 'not-configured'
+  /** Signing itself failed. Should not happen; recorded rather than guessed. */
+  | 'unsignable'
+
+export type AccessTokenResult =
+  | { ok: true; token: string; jti: string; exp: number }
+  | { ok: false; reason: AccessTokenFailure }
+
+/* The non-throwing variant, for the two places that must not throw.
+ *
+ * `createAccessToken` throwing is right: a missing secret is a deployment
+ * fault and should be loud. But it was called bare inside the payment
+ * webhook, where throwing meant the POST 500'd after the purchase row had
+ * already been written -- so Creem retried, hit the idempotency check,
+ * got "ok (duplicate)", and stopped. The order sat at fulfillmentStatus
+ * 'pending' forever and the buyer never received their link, with no failure
+ * recorded anywhere. A misconfiguration that hides itself is worse than one
+ * that shouts.
+ *
+ * Same shape as inviteToRepo: the caller decides what a failure means,
+ * because only the caller knows whether money has changed hands.
+ */
+export function tryCreateAccessToken(
+  input: Omit<AccessTokenPayload, 'jti' | 'exp'> & { ttlMs?: number }
+): AccessTokenResult {
+  if (!secret()) return { ok: false, reason: 'not-configured' }
+  try {
+    return { ok: true, ...createAccessToken(input) }
+  } catch {
+    return { ok: false, reason: 'unsignable' }
+  }
+}
+
 export function verifyAccessToken(token: string): AccessTokenPayload | null {
-  if (!token || !SECRET) return null
+  if (!token || !secret()) return null
   const dotIdx = token.indexOf('.')
   if (dotIdx === -1) return null
   const body = token.slice(0, dotIdx)

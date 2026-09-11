@@ -14,6 +14,14 @@ themselves.
 `src/lib/commerce/checkout.ts` reads the same variable for the pre-purchase
 username lookup, where it is optional and only raises the rate limit.
 
+**`GITHUB_TOKEN` is the only GitHub credential in this app.** Anything
+GitHub-related is prefixed `GITHUB_*`. In particular `ACCESS_LINK_SECRET` is
+*not* a GitHub token — it is an HMAC key we generate ourselves to sign the
+`/access/<token>` download links emailed after a digital purchase. It was
+called `ACCESS_TOKEN_SECRET`, which read like a third-party access token and
+sat one line away from this one in `.env.example`; the old name still works
+and warns.
+
 ## Which kind of token
 
 GitHub's REST quickstart lists four ways to authenticate. Three of them are
