@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
-import { StackChips, stackIcon } from '@/components/commerce/StackChips'
+import {
+  StackChips,
+  StackLogos,
+  stackIcon,
+} from '@/components/commerce/StackChips'
 import {
   IconBrandNextjs,
   IconBrandReact,
@@ -81,5 +85,67 @@ describe('StackChips', () => {
       <StackChips stack={[{ tech: 'Vercel' }, { tech: '' }, {}]} />
     )
     expect(container.querySelectorAll('li')).toHaveLength(1)
+  })
+})
+
+describe('StackLogos', () => {
+  const stack = [
+    { tech: 'Next.js' },
+    { tech: 'React 19' },
+    { tech: 'TypeScript' },
+    { tech: 'SuiteScript' },
+  ]
+
+  it('names every technology in text, not just a tooltip', () => {
+    render(<StackLogos stack={stack} />)
+    // A title attribute would be invisible to most screen readers and to
+    // search. The name is real text inside each item.
+    for (const s of stack) {
+      expect(screen.getAllByText(s.tech).length).toBeGreaterThan(0)
+    }
+  })
+
+  it('stacks later discs behind earlier ones', () => {
+    const { container } = render(<StackLogos stack={stack} />)
+    const z = [...container.querySelectorAll('li')].map((li) =>
+      Number(li.style.zIndex)
+    )
+    // Descending, so the row reads left to right instead of the last mark
+    // covering the first.
+    expect(z).toEqual([...z].sort((a, b) => b - a))
+    expect(new Set(z).size).toBe(z.length)
+  })
+
+  it('gives each mark its brand colour', () => {
+    const { container } = render(<StackLogos stack={stack} />)
+    const discs = container.querySelectorAll('.amw-logo')
+    expect(discs[1].getAttribute('style')).toContain('#61dafb') // React
+    expect(discs[2].getAttribute('style')).toContain('#3178c6') // TypeScript
+  })
+
+  it('uses the ink token for black-logo brands so they survive dark mode', () => {
+    const { container } = render(<StackLogos stack={[{ tech: 'Next.js' }]} />)
+    // #000 would be invisible on a dark card.
+    const style = container.querySelector('.amw-logo').getAttribute('style')
+    expect(style).toContain('--amw-ink')
+    expect(style).not.toContain('#000')
+  })
+
+  it('is reachable by keyboard, so the label is not hover-only', () => {
+    const { container } = render(<StackLogos stack={stack} />)
+    const focusable = container.querySelectorAll('[tabindex="0"]')
+    expect(focusable).toHaveLength(stack.length)
+  })
+
+  it('labels the whole row for screen readers', () => {
+    render(<StackLogos stack={stack} />)
+    expect(
+      screen.getByLabelText(/built with next\.js, react 19/i)
+    ).toBeInTheDocument()
+  })
+
+  it('renders nothing for an empty stack', () => {
+    const { container } = render(<StackLogos stack={[]} />)
+    expect(container.firstChild).toBeNull()
   })
 })

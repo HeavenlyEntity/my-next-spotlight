@@ -293,6 +293,102 @@
   border-color: color-mix(in srgb, var(--amw-accent) 55%, var(--amw-line));
 }
 
+/* ---- logo stack ----------------------------------------------------------
+ * The tech stack as overlapping discs, the way an avatar stack reads: one row,
+ * each disc tucked behind the one before it, so eight technologies occupy
+ * roughly the width of four.
+ *
+ * The ring is the PAGE colour, not a border. That is what makes the overlap
+ * legible: each disc punches a hole in the one behind it instead of stacking
+ * two hairlines into a smudge. It also means the stack only works on the page
+ * surface -- inside a card, --amw-page would be the wrong colour.
+ *
+ * Colour comes from `--logo`, set per item to the brand's own hex. The disc
+ * is tinted with a little of it and the mark is drawn in full strength: a
+ * monochrome mark on a white disc would be a logo wall in greyscale, which is
+ * the opposite of the point. Brands whose logo is black (Next.js, Vercel) are
+ * given the ink token instead, so they do not vanish in dark mode.
+ */
+.amw-logo-stack {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+}
+.amw-logo-stack > li {
+  position: relative;
+  /* Later discs sit behind earlier ones, so the row reads left to right. */
+  margin-left: -0.625rem;
+}
+.amw-logo-stack > li:first-child {
+  margin-left: 0;
+}
+.amw-logo {
+  display: grid;
+  place-items: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  border-radius: 999px;
+  /* The mark is pulled toward the ink token, the disc keeps the true brand
+     hue. At full strength React's #61dafb measured 1.52:1 against its own
+     tinted disc and Playwright 2.58:1 -- present in the DOM, invisible on
+     the screen. This is the same fix --amw-accent-ink already applies to the
+     brand teal, and because the ink token flips with the theme, one rule
+     darkens the mark in light mode and lightens it in dark. */
+  color: color-mix(in srgb, var(--logo, var(--amw-ink)) 60%, var(--amw-ink));
+  background: color-mix(
+    in srgb,
+    var(--logo, var(--amw-ink)) 13%,
+    var(--amw-card)
+  );
+  box-shadow: 0 0 0 3px var(--amw-page),
+    0 0 0 4px
+      color-mix(in srgb, var(--logo, var(--amw-ink)) 26%, var(--amw-line));
+  transition: transform 0.24s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* Lift and come forward, so an overlapped mark can be seen in full. */
+.amw-logo-stack > li:hover,
+.amw-logo-stack > li:focus-within {
+  z-index: 5;
+}
+.amw-logo-stack > li:hover .amw-logo,
+.amw-logo-stack > li:focus-within .amw-logo {
+  transform: translateY(-3px) scale(1.08);
+}
+
+/* The name, on demand. Pointer users get it on hover, keyboard users on
+   focus, and screen readers get the list regardless -- each item carries its
+   name as text, so this label is decoration rather than the only route to it. */
+.amw-logo-name {
+  position: absolute;
+  bottom: calc(100% + 0.4rem);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--amw-line);
+  border-radius: 0.375rem;
+  background: var(--amw-card);
+  color: var(--amw-ink);
+  font-family: var(--amw-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+  z-index: 6;
+}
+.amw-logo-stack > li:hover .amw-logo-name,
+.amw-logo-stack > li:focus-within .amw-logo-name {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .amw-logo-stack > li:hover .amw-logo,
+  .amw-logo-stack > li:focus-within .amw-logo {
+    transform: none;
+  }
+}
+
 /* ---- primary action ------------------------------------------------------
  * One grammar for the button that takes money, everywhere it appears. It was
  * the old template's small grey `Button`, which made the primary action on

@@ -30,36 +30,58 @@ import {
  * "react-native" or "TanStack React Query".
  */
 
+/* Each entry is [match, mark, colour]. Colours are the brands' own.
+ *
+ * INK means the brand's logo is black (Next.js, Vercel, shadcn). Drawing
+ * those in #000 would erase them in dark mode, so they take the ink token
+ * and flip with the theme -- still the right mark, still monochrome, still
+ * visible. Technologies with no brand at all (SuiteScript, SDF) take ink
+ * too, because inventing a colour for them would imply a brand that does
+ * not exist. */
+const INK = 'var(--amw-ink)'
+
 const MARKS = [
-  ['next.js', IconBrandNextjs],
-  ['nextjs', IconBrandNextjs],
-  ['react', IconBrandReact],
-  ['typescript', IconBrandTypescript],
-  ['tailwind', IconBrandTailwind],
-  ['vercel', IconBrandVercel],
-  ['postgres', IconDatabase],
-  ['shadcn', IconComponents],
-  ['tanstack', IconApi],
-  ['playwright', IconTestPipe],
-  ['vitest', IconTestPipe],
-  ['better auth', IconShieldLock],
-  ['auth', IconShieldLock],
-  ['suitescript', IconCode],
-  ['sdf', IconPackageExport],
+  ['next.js', IconBrandNextjs, INK],
+  ['nextjs', IconBrandNextjs, INK],
+  ['react', IconBrandReact, '#61dafb'],
+  ['typescript', IconBrandTypescript, '#3178c6'],
+  ['tailwind', IconBrandTailwind, '#06b6d4'],
+  ['vercel', IconBrandVercel, INK],
+  ['postgres', IconDatabase, '#4169e1'],
+  ['shadcn', IconComponents, INK],
+  ['tanstack', IconApi, '#ef4444'],
+  ['playwright', IconTestPipe, '#2ead33'],
+  ['vitest', IconTestPipe, '#6da13f'],
+  ['better auth', IconShieldLock, '#7c3aed'],
+  ['auth', IconShieldLock, '#7c3aed'],
+  ['suitescript', IconCode, INK],
+  ['sdf', IconPackageExport, INK],
 ]
 
 /** Neutral rather than wrong: an unknown technology is still code. */
 const FALLBACK = IconCode
+const FALLBACK_COLOR = INK
 
-export function stackIcon(tech) {
+function match(tech) {
   const name = String(tech || '').toLowerCase()
   let best = null
-  for (const [pattern, Icon] of MARKS) {
-    if (!name.includes(pattern)) continue
-    if (!best || pattern.length > best[0].length) best = [pattern, Icon]
+  for (const entry of MARKS) {
+    if (!name.includes(entry[0])) continue
+    if (!best || entry[0].length > best[0].length) best = entry
   }
-  return best ? best[1] : FALLBACK
+  return best
 }
+
+export function stackIcon(tech) {
+  return match(tech)?.[1] ?? FALLBACK
+}
+
+export function stackColor(tech) {
+  return match(tech)?.[2] ?? FALLBACK_COLOR
+}
+
+const names = (stack) =>
+  stack.map((s) => (typeof s === 'string' ? s : s?.tech)).filter(Boolean)
 
 /*
  * Chips wrap rather than truncate. The datasheet row used to print the first
@@ -77,9 +99,7 @@ export function stackIcon(tech) {
  * }} props
  */
 export function StackChips({ stack = [], className = '' }) {
-  const items = stack
-    .map((s) => (typeof s === 'string' ? s : s?.tech))
-    .filter(Boolean)
+  const items = names(stack)
   if (items.length === 0) return null
 
   return (
@@ -97,6 +117,59 @@ export function StackChips({ stack = [], className = '' }) {
               className="text-[var(--amw-accent-ink)] shrink-0"
             />
             {tech}
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+/**
+ * The same stack as overlapping discs. Each mark carries its brand colour,
+ * which is the whole point: a row of grey glyphs is a spec sheet, a row of
+ * brand marks is a stack someone recognises at a glance.
+ *
+ * Names are real text inside each item, not a title attribute, so a screen
+ * reader reads the list properly and the hover label is decoration rather
+ * than the only way to find out what a mark is.
+ *
+ * @param {{
+ *   stack?: (string | { tech?: string | null } | null)[],
+ *   className?: string,
+ * }} props
+ */
+export function StackLogos({ stack = [], className = '' }) {
+  const items = names(stack)
+  if (items.length === 0) return null
+
+  return (
+    <ul
+      className={`amw-logo-stack ${className}`}
+      aria-label={`Built with ${items.join(', ')}`}
+    >
+      {items.map((tech, i) => {
+        const Icon = stackIcon(tech)
+        return (
+          <li
+            key={tech}
+            /* Later discs sit behind earlier ones. Inline because the count
+               is only known at render, and a CSS rule per position would be
+               a made-up limit on how many technologies a kit may list. */
+            style={{ zIndex: items.length - i }}
+          >
+            <span
+              className="amw-logo"
+              style={{ '--logo': stackColor(tech) }}
+              /* Focusable so a keyboard user can reach the label the same way
+                 a pointer user hovers it. Not a button: nothing happens. */
+              tabIndex={0}
+            >
+              <Icon size={20} stroke={1.6} aria-hidden="true" />
+              <span className="sr-only">{tech}</span>
+            </span>
+            <span className="amw-logo-name" aria-hidden="true">
+              {tech}
+            </span>
           </li>
         )
       })}

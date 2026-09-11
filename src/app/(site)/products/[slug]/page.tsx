@@ -6,7 +6,7 @@ import { inlineCode } from '@/components/site/inline-code'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { BuyButton } from '@/components/commerce/BuyButton'
 import { ClaimFreeKit } from '@/components/commerce/ClaimFreeKit'
-import { StackChips } from '@/components/commerce/StackChips'
+import { StackLogos } from '@/components/commerce/StackChips'
 import { seatLine } from '@/lib/commerce/pricingTable'
 import { usd } from '@/lib/commerce/money'
 import { typeMeta } from '@/components/commerce/storefront'
@@ -136,11 +136,14 @@ export default async function ProductPage({
 
             {stack.length > 0 && (
               <section className="mt-12">
-                {/* No eyebrow here on purpose: the page already carries one
-                    above the overview and one above what's included, and a
-                    label over a row of named chips tells the reader nothing
-                    the chips do not. */}
-                <StackChips stack={stack} />
+                <StackLogos stack={stack} />
+                {/* The names in text as well as marks. A buyer scanning for
+                    "does this use Postgres" should not have to hover eight
+                    discs to find out, and the marks alone would leave the
+                    stack invisible to search. */}
+                <p className="amw-kicker mt-4 leading-relaxed">
+                  {stack.map((s) => s.tech).join(' · ')}
+                </p>
               </section>
             )}
 
@@ -169,13 +172,11 @@ export default async function ProductPage({
             {/* --static: this card holds a form, so it must not move when the
                 pointer crosses it on the way to the input. See storefront.css. */}
             <div className="amw-card amw-card--static amw-ticks p-6">
-              <p className="amw-eyebrow">{'// datasheet'}</p>
-
               {/* The plan-card treatment from the minimal template: price on
                   its own line, terms beneath it, never inline. At this width
                   "one-time · USD" wrapped under a four-character price but not
                   under "Free", so the two states disagreed with each other. */}
-              <p className="amw-price mt-4 text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 md:text-5xl">
+              <p className="amw-price text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 md:text-5xl">
                 {isFree
                   ? 'Free'
                   : typeof product.price === 'number'
