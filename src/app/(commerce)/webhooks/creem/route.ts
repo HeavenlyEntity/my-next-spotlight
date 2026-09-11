@@ -312,7 +312,11 @@ async function handleCheckout(event) {
     // Confirmation email is best-effort; the repo invite (Phase B3) is the real
     // fulfillment, so a failed confirmation must NOT flip the order to 'failed'.
     try {
-      await sendBoilerplateConfirmationEmail({ to: email, itemName })
+      await sendBoilerplateConfirmationEmail({
+        to: email,
+        itemName,
+        githubUsername,
+      })
     } catch {
       console.error('Boilerplate confirmation email failed for order', orderId)
     }
