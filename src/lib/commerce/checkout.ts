@@ -11,7 +11,32 @@ const COLLECTION = {
   service: 'services',
 } as const
 
-export async function createCheckout(formData: FormData): Promise<void> {
+/* Returns instead of throwing for the two failures a buyer can act on: a
+ * missing GitHub username, and an item that is not purchasable yet. Throwing
+ * sent both to the Next error boundary, which costs the buyer the page they
+ * were on and offers no way back -- for a mistake they could have fixed in
+ * two seconds.
+ *
+ * Everything else still throws. A missing NEXT_PUBLIC_SITE_URL or a Creem
+ * failure is not the buyer's to fix, and swallowing it into a polite message
+ * would hide a fault that needs to be seen.
+ *
+ * `field` names the input to attach the message to, so the caller does not
+ * have to infer placement from the copy.
+ */
+/* A 'use server' module may only export async functions, so the initial state
+ * lives with the component that owns it. Exporting a plain object here threw
+ * at runtime while still building clean, which made it look like a working
+ * change until a real submit returned 500. Types are erased, so the type
+ * export is fine. */
+export type CheckoutState = {
+  error: { field: 'githubUsername' | null; message: string } | null
+}
+
+export async function createCheckout(
+  _prevState: CheckoutState,
+  formData: FormData
+): Promise<CheckoutState> {
   const itemType = String(formData.get('itemType') || '') as
     | 'product'
     | 'course'
@@ -22,6 +47,8 @@ export async function createCheckout(formData: FormData): Promise<void> {
   const collection = Object.prototype.hasOwnProperty.call(COLLECTION, itemType)
     ? COLLECTION[itemType]
     : undefined
+  // Only reachable if the hidden inputs were stripped or tampered with, so
+  // this is a fault rather than a buyer mistake.
   if (!collection || !slug) throw new Error('Invalid checkout request')
 
   const payload = await getPayloadClient()
@@ -33,7 +60,13 @@ export async function createCheckout(formData: FormData): Promise<void> {
   })
   const item = docs[0]
   if (!item || !item.creemProductId) {
-    throw new Error('This item is not available for purchase yet')
+    return {
+      error: {
+        field: null,
+        message:
+          'This item is not on sale yet. Nothing has been charged — check back shortly or get in touch.',
+      },
+    }
   }
 
   if (
@@ -41,7 +74,13 @@ export async function createCheckout(formData: FormData): Promise<void> {
     item.type === 'boilerplate' &&
     !githubUsername
   ) {
-    throw new Error('A GitHub username is required for this purchase')
+    return {
+      error: {
+        field: 'githubUsername',
+        message:
+          'Enter the GitHub username that should receive repository access.',
+      },
+    }
   }
 
   const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
