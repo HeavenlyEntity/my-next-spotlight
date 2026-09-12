@@ -15,6 +15,7 @@ vi.mock('next/navigation', () => ({
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { createCheckoutSession } from '@/lib/commerce/creem'
 import { createCheckout } from '@/lib/commerce/checkout'
+import { verifyOnboardingLink } from '@/lib/commerce/onboardingLink'
 import { BuyButton } from '@/components/commerce/BuyButton'
 
 const boilerplate = {
@@ -35,91 +36,109 @@ const withItem = (item) =>
     find: vi.fn().mockResolvedValue({ docs: item ? [item] : [] }),
   })
 
+const buy = (over = {}) =>
+  createCheckout(
+    { error: null },
+    form({ itemType: 'product', slug: 'saas-kit', ...over })
+  )
+
 beforeEach(() => {
   vi.clearAllMocks()
   process.env.NEXT_PUBLIC_SITE_URL = 'https://example.com'
+  process.env.ACCESS_LINK_SECRET = 'checkout-test-secret'
+  createCheckoutSession.mockResolvedValue({ checkoutUrl: 'https://creem/x' })
 })
 
-describe('createCheckout error contract', () => {
-  it('returns a field error for a boilerplate with no GitHub username', async () => {
+describe('createCheckout', () => {
+  it('no longer asks for a GitHub username to take payment', async () => {
     withItem(boilerplate)
-    const state = await createCheckout(
-      { error: null },
-      form({ itemType: 'product', slug: 'saas-kit' })
-    )
-    expect(state.error?.field).toBe('githubUsername')
-    expect(state.error?.message).toMatch(/github username/i)
-    // The buyer never reaches Creem, so nothing was charged or reserved.
-    expect(createCheckoutSession).not.toHaveBeenCalled()
+    /* It used to refuse a boilerplate without one. The username is collected
+       after payment now, so a checkout with nothing but the item must go
+       straight through -- a field between someone and a purchase they have
+       already decided on is a field that costs sales. */
+    await expect(buy()).rejects.toThrow(/NEXT_REDIRECT/)
+    expect(createCheckoutSession).toHaveBeenCalled()
+  })
+
+  it('sends no username to Creem even if one is posted', async () => {
+    withItem(boilerplate)
+    await expect(buy({ githubUsername: 'octocat' })).rejects.toThrow()
+    const { metadata } = createCheckoutSession.mock.calls[0][0]
+    // Nothing downstream reads it any more, and carrying it would leave two
+    // sources of truth for which account the kit goes to.
+    expect(metadata).not.toHaveProperty('githubUsername')
+    expect(metadata).toMatchObject({ itemType: 'product', slug: 'saas-kit' })
   })
 
   it('returns a form error when the item is not purchasable yet', async () => {
     withItem({ ...boilerplate, creemProductId: undefined })
-    const state = await createCheckout(
-      { error: null },
-      form({ itemType: 'product', slug: 'saas-kit', githubUsername: 'octocat' })
-    )
-    expect(state.error?.field).toBeNull()
+    const state = await buy()
     expect(state.error?.message).toMatch(/not on sale yet/i)
+    // The buyer never reaches Creem, so nothing was charged or reserved.
+    expect(createCheckoutSession).not.toHaveBeenCalled()
   })
 
-  it('still throws for a genuine fault rather than returning a polite message', async () => {
+  it('signs the return URL so onboarding can recognise the buyer', async () => {
+    withItem(boilerplate)
+    await expect(buy()).rejects.toThrow()
+    const { successUrl, requestId } = createCheckoutSession.mock.calls[0][0]
+    const url = new URL(successUrl)
+    expect(url.pathname).toBe('/checkout/onboarding')
+    // The id Creem echoes back on the webhook is the thread between the
+    // redirect and the purchase row.
+    expect(url.searchParams.get('r')).toBe(requestId)
+    expect(
+      verifyOnboardingLink(url.searchParams.get('r'), url.searchParams.get('s'))
+    ).toBe(true)
+  })
+
+  it('refuses to sell what it cannot hand over afterwards', async () => {
+    withItem(boilerplate)
+    delete process.env.ACCESS_LINK_SECRET
+    delete process.env.ACCESS_TOKEN_SECRET
+    /* Without a signing secret the return URL cannot be proven later, so the
+       buyer would pay and land on a page unable to recognise them. Better to
+       fail before the money than after it. */
+    await expect(buy()).rejects.toThrow(/ACCESS_LINK_SECRET/)
+    expect(createCheckoutSession).not.toHaveBeenCalled()
+  })
+
+  it('still throws for a genuine fault rather than a polite message', async () => {
     withItem(boilerplate)
     delete process.env.NEXT_PUBLIC_SITE_URL
-    await expect(
-      createCheckout(
-        { error: null },
-        form({
-          itemType: 'product',
-          slug: 'saas-kit',
-          githubUsername: 'octocat',
-        })
-      )
-    ).rejects.toThrow(/NEXT_PUBLIC_SITE_URL/)
+    await expect(buy()).rejects.toThrow(/NEXT_PUBLIC_SITE_URL/)
   })
 })
 
-describe('BuyButton error presentation', () => {
-  it('renders no error before submission', () => {
-    render(<BuyButton itemType="product" slug="saas-kit" isBoilerplate />)
-    expect(screen.queryByRole('alert')).toBeNull()
-    // Absent, not "false": an untouched field is not invalid.
-    expect(screen.getByLabelText(/github username/i)).not.toHaveAttribute(
-      'aria-invalid'
+describe('BuyButton', () => {
+  it('is just the button now', () => {
+    render(
+      <BuyButton itemType="product" slug="saas-kit" label="Buy this kit" />
     )
+    expect(screen.queryByLabelText(/github username/i)).toBeNull()
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(
+      screen.getByRole('button', { name: 'Buy this kit' })
+    ).toBeInTheDocument()
   })
 
-  it('attaches a field error to the input it belongs to and focuses it', async () => {
-    withItem(boilerplate)
-    render(<BuyButton itemType="product" slug="saas-kit" isBoilerplate />)
-
-    const input = screen.getByLabelText(/github username/i)
-    // Bypass the browser's own required check to reach the server contract.
-    input.removeAttribute('required')
-    fireEvent.submit(input.closest('form'))
-
-    const alert = await screen.findByRole('alert')
-    expect(alert).toHaveTextContent(/github username/i)
-    // The message is reachable from the field, not just visually near it.
-    expect(input).toHaveAttribute('aria-describedby', alert.id)
-    expect(input).toHaveAttribute('aria-invalid', 'true')
-    await waitFor(() => expect(document.activeElement).toBe(input))
-  })
-
-  it('renders a form-level error with no field to attach to', async () => {
+  it('shows a form error and moves focus to it', async () => {
     withItem({ ...boilerplate, creemProductId: undefined })
-    render(<BuyButton itemType="product" slug="saas-kit" isBoilerplate />)
-
-    const input = screen.getByLabelText(/github username/i)
-    fireEvent.change(input, { target: { value: 'octocat' } })
-    fireEvent.submit(input.closest('form'))
+    render(<BuyButton itemType="product" slug="saas-kit" />)
+    fireEvent.submit(screen.getByRole('button').closest('form'))
 
     const alert = await screen.findByRole('alert')
     expect(alert).toHaveTextContent(/not on sale yet/i)
-    /* The field keeps an aria-describedby pointing at its format hint, so the
-       assertion is that it does not point at THIS alert: a form-level problem
-       is not the field's fault and must not be announced as though it were. */
-    expect(input.getAttribute('aria-describedby')).not.toBe(alert.id)
-    expect(input).not.toHaveAttribute('aria-invalid')
+    /* Focused, not merely announced: it is the only thing that changed, and
+       it sits below the button that was just pressed. */
+    await waitFor(() => expect(document.activeElement).toBe(alert))
+  })
+
+  it('carries the item through hidden fields', () => {
+    const { container } = render(
+      <BuyButton itemType="product" slug="saas-kit" />
+    )
+    expect(container.querySelector('[name="itemType"]')).toHaveValue('product')
+    expect(container.querySelector('[name="slug"]')).toHaveValue('saas-kit')
   })
 })

@@ -6,6 +6,10 @@ export const metadata = {
   robots: { index: false },
 }
 
+/* Kept as a fallback. Checkouts created since the username moved point at
+   /checkout/onboarding instead, because that page can identify the buyer from
+   a signed return URL and this one cannot. Anyone landing here came from an
+   older link, so it points at the email rather than guessing. */
 export default function CheckoutSuccess() {
   return (
     <Container className="mt-16 sm:mt-32">
@@ -14,8 +18,9 @@ export default function CheckoutSuccess() {
           Thank you — payment received
         </h1>
         <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-          Check your email for your access link (or your repository invitation
-          for boilerplates). Didn&apos;t get it?{' '}
+          Check your email. For a kit it carries the link that sets up your
+          repository access; for a download it carries the file. Didn&apos;t get
+          it?{' '}
           <Link href="/access/resend" className="text-teal-500">
             Resend my access link
           </Link>

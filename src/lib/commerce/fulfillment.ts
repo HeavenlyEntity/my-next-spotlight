@@ -59,6 +59,8 @@ export async function sendBoilerplateConfirmationEmail(args: {
   seatsUrl?: string | null
   /** How many accounts the licence covers, when more than one. */
   seats?: number
+  /** Signed link back to the setup page, for a buyer who closed the tab. */
+  onboardingUrl?: string | null
 }): Promise<void> {
   const target = args.githubUsername
     ? `@${args.githubUsername}`
@@ -72,7 +74,21 @@ export async function sendBoilerplateConfirmationEmail(args: {
 
   let body: string
 
-  if (args.alreadyHadAccess) {
+  /* The normal path now: paid, but the kit cannot be sent anywhere until the
+     buyer says which GitHub account it goes to. That question is asked on the
+     page they were redirected to, and this email is the way back to it --
+     otherwise a closed tab means the only route is browser history. */
+  if (args.onboardingUrl) {
+    body = `Thanks for buying ${args.itemName}.
+
+One thing left: tell me which GitHub account should receive the repository.
+
+${args.onboardingUrl}
+
+That link is yours. It is how you set up access, and how you get back to the setup page later.
+
+— Alec`
+  } else if (args.alreadyHadAccess) {
     body = `Thanks for buying ${args.itemName}.
 
 ${target} already has access to the repository${repoName}, so there is nothing to accept — open it and clone.${correction}

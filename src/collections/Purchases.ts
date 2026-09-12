@@ -94,6 +94,26 @@ export const Purchases: CollectionConfig = {
       admin: { description: 'Boilerplate orders — consumed by Phase B3.' },
     },
     {
+      name: 'creemRequestId',
+      type: 'text',
+      index: true,
+      admin: {
+        description:
+          'The id we minted when creating the checkout, echoed back by Creem ' +
+          'on the webhook. It is how the post-payment onboarding page finds ' +
+          'this row from a signed return URL, so it must stay indexed.',
+      },
+    },
+    {
+      name: 'licenseKey',
+      type: 'text',
+      admin: {
+        description:
+          'Issued by Creem, when the product has license keys enabled. Empty ' +
+          'means the order issued none, not that one went missing.',
+      },
+    },
+    {
       name: 'githubRepo',
       type: 'text',
       admin: {

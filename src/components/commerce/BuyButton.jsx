@@ -1,68 +1,52 @@
 'use client'
 
-import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
+import { useActionState, useEffect, useRef } from 'react'
 import { createCheckout } from '@/lib/commerce/checkout'
-import { GithubAccountField } from '@/components/commerce/GithubAccountField'
 
-/* The action used to throw on a missing GitHub username, which sent the buyer
-   to the Next error boundary: a generic page, their input gone, no way back,
-   for a mistake they could have fixed in two seconds. It now returns the
-   message and this renders it where it belongs.
+/* The checkout form is now only the hidden item fields and the button. The
+   GitHub username moved to the onboarding page the buyer lands on after
+   paying -- a checkout that asks for a username before it asks for a card is
+   a field between someone and a purchase they have already decided on.
 
-   Two error positions, because they are different problems. A field error sits
-   under its input and is wired to it with aria-describedby, so a screen reader
-   reaches the message while on the field. A form error has no field to attach
-   to, so it sits above the button. Both announce through role="alert", and
-   focus moves to the offending field, which is what lets a keyboard user
-   correct it without hunting. */
+   A form-level error still renders here. createCheckout returns instead of
+   throwing for the one failure a buyer can act on -- an item that is not
+   purchasable yet -- because throwing sent them to the Next error boundary
+   and cost them the page they were on. */
 
-export function BuyButton({
-  itemType,
-  slug,
-  isBoilerplate = false,
-  label = 'Buy now',
-}) {
+export function BuyButton({ itemType, slug, label = 'Buy now' }) {
   // Defined here, not imported: a 'use server' module cannot export a value.
   const [state, formAction, isPending] = useActionState(createCheckout, {
     error: null,
   })
-  const usernameRef = useRef(null)
-  /* Set by the field once it has shown a real account the buyer has not yet
-     confirmed. Only that state gates the button -- an unreachable GitHub must
-     not stop someone paying. */
-  const [gated, setGatedState] = useState(false)
-  const setGated = useCallback((next) => setGatedState(next), [])
 
-  const fieldError =
-    state.error?.field === 'githubUsername' ? state.error.message : null
-  const formError =
-    state.error && !state.error.field ? state.error.message : null
+  const formError = state.error?.message ?? null
+  const errorRef = useRef(null)
 
+  /* Focus the message rather than leaving it announced but unreached: it is
+     the only thing that changed on the page, and it is below the button the
+     buyer just pressed. */
   useEffect(() => {
-    if (fieldError) usernameRef.current?.focus()
-  }, [fieldError])
+    if (formError) errorRef.current?.focus()
+  }, [formError])
 
   return (
     <form action={formAction} className="mt-8">
       <input type="hidden" name="itemType" value={itemType} />
       <input type="hidden" name="slug" value={slug} />
 
-      {isBoilerplate && (
-        <GithubAccountField
-          serverError={fieldError}
-          inputRef={usernameRef}
-          onGateChange={setGated}
-        />
-      )}
-
       {formError && (
-        <p role="alert" className="mb-3 text-sm text-red-700 dark:text-red-400">
+        <p
+          ref={errorRef}
+          tabIndex={-1}
+          role="alert"
+          className="mb-3 text-sm text-red-700 outline-hidden dark:text-red-400"
+        >
           {formError}
         </p>
       )}
 
-      <button type="submit" className="amw-cta" disabled={isPending || gated}>
-        {isPending ? 'Redirecting…' : gated ? 'Confirm your account' : label}
+      <button type="submit" className="amw-cta" disabled={isPending}>
+        {isPending ? 'Redirecting…' : label}
       </button>
     </form>
   )

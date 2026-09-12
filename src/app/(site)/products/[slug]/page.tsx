@@ -221,7 +221,6 @@ export default async function ProductPage({
                 <BuyButton
                   itemType="product"
                   slug={product.slug}
-                  isBoilerplate={isBoilerplate}
                   label={
                     typeof product.price === 'number'
                       ? 'Buy this kit'

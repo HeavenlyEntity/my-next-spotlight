@@ -4,38 +4,7 @@ import crypto from 'crypto'
 import { redirect } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { createCheckoutSession } from '@/lib/commerce/creem'
-import {
-  checkGithubUsername,
-  usernameMessage,
-} from '@/lib/commerce/githubUsername'
-
-/* Returns true if the account exists, false if GitHub says it does not, and
- * null when we could not find out. Only an explicit 404 is treated as absent.
- *
- * A token is optional but wanted: unauthenticated GitHub allows 60 requests an
- * hour per IP, and every checkout here shares the server's single IP, so
- * without one this degrades to null under load rather than failing loudly.
- */
-async function githubAccountExists(login: string): Promise<boolean | null> {
-  const token = process.env.GITHUB_TOKEN
-  try {
-    const res = await fetch(
-      `https://api.github.com/users/${encodeURIComponent(login)}`,
-      {
-        headers: {
-          Accept: 'application/vnd.github+json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        signal: AbortSignal.timeout(4000),
-      }
-    )
-    if (res.status === 404) return false
-    if (!res.ok) return null
-    return true
-  } catch {
-    return null
-  }
-}
+import { onboardingPath } from '@/lib/commerce/onboardingLink'
 
 const COLLECTION = {
   product: 'products',
@@ -62,7 +31,11 @@ const COLLECTION = {
  * change until a real submit returned 500. Types are erased, so the type
  * export is fine. */
 export type CheckoutState = {
-  error: { field: 'githubUsername' | null; message: string } | null
+  /* No `field` any more: the only correctable failure left is an item that is
+     not purchasable, which belongs to the form rather than to an input. The
+     GitHub username, the one field this ever pointed at, is collected after
+     payment now. */
+  error: { message: string } | null
 }
 
 export async function createCheckout(
@@ -74,7 +47,6 @@ export async function createCheckout(
     | 'course'
     | 'service'
   const slug = String(formData.get('slug') || '')
-  const githubUsername = String(formData.get('githubUsername') || '').trim()
 
   const collection = Object.prototype.hasOwnProperty.call(COLLECTION, itemType)
     ? COLLECTION[itemType]
@@ -94,53 +66,37 @@ export async function createCheckout(
   if (!item || !item.creemProductId) {
     return {
       error: {
-        field: null,
         message:
           'This item is not on sale yet. Nothing has been charged. Check back shortly or get in touch.',
       },
     }
   }
 
-  if (itemType === 'product' && item.type === 'boilerplate') {
-    const problem = checkGithubUsername(githubUsername)
-    if (problem) {
-      return {
-        error: { field: 'githubUsername', message: usernameMessage(problem)! },
-      }
-    }
-
-    /* The browser already checked this account exists, but a client check is
-       advice, not a guarantee -- the form can be submitted without ever
-       running it. Re-checking here is what actually stops a repository
-       invitation being addressed to nobody.
-
-       It fails open on purpose. A 404 is GitHub telling us the account is not
-       there, which is worth blocking a sale for. A timeout, a rate limit or an
-       outage tells us nothing about the username, and refusing someone's money
-       over our own dependency being down would be the worse error. */
-    const exists = await githubAccountExists(githubUsername)
-    if (exists === false) {
-      return {
-        error: {
-          field: 'githubUsername',
-          message: `GitHub has no account called "${githubUsername}". Check the spelling: this is where repository access will be sent.`,
-        },
-      }
-    }
-  }
-
   const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
   if (!site) throw new Error('NEXT_PUBLIC_SITE_URL is not configured')
+
+  /* The GitHub username is no longer collected here. It is asked for after
+     payment, on a page that can take its time over it, which keeps the
+     checkout to the fields Creem actually needs.
+   *
+   * That moves a problem though: the onboarding page has to know the visitor
+     paid. The request id is the thread -- Creem echoes it back on the webhook
+     as object.request_id, so signing it into the return URL lets the page
+     match a real, paid purchase. See onboardingLink.ts for why the signature
+     alone is not enough. */
+  const requestId = crypto.randomUUID()
+  const onboarding = onboardingPath(requestId)
+  if (!onboarding) {
+    // No signing secret means no way to prove the redirect later. Fail loudly
+    // rather than sending someone to a page that cannot recognise them.
+    throw new Error('ACCESS_LINK_SECRET is required to sign the return URL')
+  }
+
   const { checkoutUrl } = await createCheckoutSession({
     productId: item.creemProductId,
-    requestId: crypto.randomUUID(),
-    successUrl: `${site}/checkout/success`,
-    metadata: {
-      itemType,
-      itemId: String(item.id),
-      slug,
-      ...(githubUsername ? { githubUsername } : {}),
-    },
+    requestId,
+    successUrl: `${site}${onboarding}`,
+    metadata: { itemType, itemId: String(item.id), slug },
   })
 
   redirect(checkoutUrl) // external redirect to Creem's hosted page

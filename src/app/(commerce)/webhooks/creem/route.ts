@@ -2,6 +2,7 @@ import { getPayloadClient } from '@/lib/getPayloadClient'
 import { verifyCreemSignature } from '@/lib/commerce/creem'
 import { tryCreateAccessToken } from '@/lib/commerce/accessToken'
 import { seatLimit } from '@/lib/commerce/seats'
+import { onboardingPath } from '@/lib/commerce/onboardingLink'
 import { inviteToRepo } from '@/lib/commerce/githubInvite'
 import {
   sendAccessLinkEmail,
@@ -210,7 +211,16 @@ async function handleCheckout(event) {
   const meta = obj.metadata || {}
   const itemType = meta.itemType
   const itemId = meta.itemId
+  /* No longer sent at checkout: the buyer gives it on the onboarding page
+     they land on after paying. Still read, because a purchase made before
+     this change carries one and must still be fulfilled from it. */
   const githubUsername = meta.githubUsername
+  const requestId = obj.request_id
+  /* Present only when the product has license keys enabled in Creem. An
+     absent array means the order issued none, not that one went missing. */
+  const licenseKey = Array.isArray(obj.license_keys)
+    ? obj.license_keys[0]?.key
+    : undefined
   // Present when the purchase started a retainer; absent on one-time sales.
   const subscriptionId = obj.subscription?.id || obj.subscription
 
@@ -264,6 +274,8 @@ async function handleCheckout(event) {
         itemType,
         creemProductId,
         creemOrderId: orderId,
+        creemRequestId: requestId || undefined,
+        licenseKey: licenseKey || undefined,
         amount,
         currency,
         githubUsername: githubUsername || undefined,
@@ -311,14 +323,22 @@ async function handleCheckout(event) {
     // A retainer needs no delivery. It was recorded, which is the whole job;
     // the engagement itself is scheduled with the client out of band.
   } else if (isBoilerplate) {
-    /* The invitation is the fulfillment. It is attempted here and never
-       allowed to throw: an order is already captured by the time this runs,
-       so GitHub being unreachable must leave a recorded sale that a human can
-       finish, not a 500 that makes Creem redeliver it. */
     const repo = typeof item?.githubRepo === 'string' ? item.githubRepo : null
-    const invite = await inviteToRepo({ repo, username: githubUsername })
 
-    if (!invite.ok) {
+    /* No username on a new order: it is collected on the onboarding page the
+       buyer is being redirected to right now. So there is nothing to invite
+       yet, and attempting it would log a failure for the expected path.
+     *
+       Orders placed before the username moved still carry one, and are still
+       fulfilled from here. When that happens the invitation is attempted and
+       never allowed to throw -- the order is already captured by the time
+       this runs, so GitHub being unreachable must leave a recorded sale a
+       human can finish, not a 500 that makes Creem redeliver it. */
+    const invite = githubUsername
+      ? await inviteToRepo({ repo, username: githubUsername })
+      : null
+
+    if (invite && !invite.ok) {
       console.error('Repo invite failed for order', orderId, {
         repo,
         reason: invite.reason,
@@ -354,13 +374,13 @@ async function handleCheckout(event) {
         overrideAccess: true,
         data: {
           githubRepo: repo || undefined,
-          githubInviteUrl: (invite.ok && invite.url) || undefined,
+          githubInviteUrl: (invite?.ok && invite.url) || undefined,
           ...(githubUsername
             ? {
                 seatMembers: [
                   {
                     githubUsername,
-                    inviteUrl: (invite.ok && invite.url) || undefined,
+                    inviteUrl: (invite?.ok && invite.url) || undefined,
                     addedAt: new Date().toISOString(),
                   },
                 ],
@@ -368,9 +388,10 @@ async function handleCheckout(event) {
             : {}),
           ...(signed?.ok ? { accessTokenJti: signed.jti } : {}),
           /* 'sent' only when access genuinely exists. Anything else stays
-             'pending_invite', which is the admin's queue of orders still
-             owed a repository. */
-          fulfillmentStatus: invite.ok ? 'sent' : 'pending_invite',
+             'pending_invite', which is both the admin's queue of orders still
+             owed a repository AND, now, the normal state of an order whose
+             buyer has not finished onboarding yet. */
+          fulfillmentStatus: invite?.ok ? 'sent' : 'pending_invite',
         },
       })
       .catch(() =>
@@ -386,12 +407,21 @@ async function handleCheckout(event) {
         itemName,
         githubUsername,
         repo: repo || undefined,
-        inviteUrl: invite.ok ? invite.url : null,
+        inviteUrl: invite?.ok ? invite.url : null,
         alreadyHadAccess:
-          invite.ok && invite.state === 'already-a-collaborator',
+          invite?.ok && invite.state === 'already-a-collaborator',
         seats,
         seatsUrl:
           signed?.ok && site ? `${site}/access/seats/${signed.token}` : null,
+        /* The way back to onboarding if the tab was closed. Without this the
+           buyer's only route to the setup page is browser history. */
+        onboardingUrl:
+          !githubUsername && requestId && site
+            ? (() => {
+                const path = onboardingPath(requestId)
+                return path ? `${site}${path}` : null
+              })()
+            : null,
       })
     } catch {
       console.error('Boilerplate confirmation email failed for order', orderId)
