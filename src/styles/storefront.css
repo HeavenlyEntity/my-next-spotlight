@@ -313,25 +313,36 @@
  */
 .amw-logo-stack {
   --ring: var(--amw-page);
+  --ring-w: 3px;
   --disc: 2.375rem;
+  --overlap: 0.625rem;
   display: flex;
   align-items: center;
   padding: 2px 0;
 }
 
-/* Inside the buy card: the card is the surface the ring has to match, and at
-   330px there is less room, so the discs come down a size. Eight fit in
-   186px instead of 234px, which leaves headroom for a kit that lists more. */
+/* Inside the datasheet's own "stack" row. The card is the surface the ring
+   has to match, and the row leaves roughly 225px once the "stack" label and
+   its gap are taken out. The discs stay at 32px, which is the size a mark is
+   actually recognisable at -- nine occupy 208px, and a tenth wraps to a
+   second line rather than overflowing, which matters because the list is
+   CMS-editable and nobody adding one is going to come and check this file. */
 .amw-logo-stack--on-card {
   --ring: var(--amw-card);
+  --ring-w: 2px;
   --disc: 2rem;
+  --overlap: 0.625rem;
+  /* Right-aligned like every other value in the datasheet. */
+  justify-content: flex-end;
+  margin-left: auto;
   flex-wrap: wrap;
-  row-gap: 0.5rem;
+  row-gap: 0.375rem;
+  padding: 0;
 }
 .amw-logo-stack > li {
   position: relative;
   /* Later discs sit behind earlier ones, so the row reads left to right. */
-  margin-left: -0.625rem;
+  margin-left: calc(-1 * var(--overlap));
 }
 .amw-logo-stack > li:first-child {
   margin-left: 0;
@@ -372,10 +383,11 @@
 /* The name, on demand. Pointer users get it on hover, keyboard users on
    focus, and screen readers get the list regardless -- each item carries its
    name as text, so this label is decoration rather than the only route to it. */
-/* Left-aligned to its own disc rather than centred on it. The buy card sets
-   overflow:hidden for its scanline, so a tooltip centred on the first disc
-   would be clipped by the card edge; growing rightward from each disc keeps
-   every label inside the padding. */
+/* Anchored to an edge rather than centred, because the card sets
+   overflow:hidden for its scanline and a centred label would be clipped by
+   whichever edge it is nearest. On the page the stack is left-aligned so the
+   labels grow right; in the card they are right-aligned so they grow left.
+   Either way they run back into the card, never out of it. */
 .amw-logo-name {
   position: absolute;
   bottom: calc(100% + 0.4rem);
@@ -397,6 +409,18 @@
 .amw-logo-stack > li:hover .amw-logo-name,
 .amw-logo-stack > li:focus-within .amw-logo-name {
   opacity: 1;
+}
+
+.amw-logo-stack--on-card .amw-logo-name {
+  left: auto;
+  right: 0;
+}
+
+/* The stack sits in a datasheet row whose other values are single-line text,
+   so the row is baseline-aligned. A flex list has no useful baseline; without
+   this the discs hang below the label. */
+.amw-spec--logos {
+  align-items: center;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -514,7 +538,11 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 1rem;
-  padding: 0.62rem 0;
+  /* Roomier than the 0.62rem it was. The stack row carries 32px discs, and
+     the honest fix for that was to give the rows height rather than shrink
+     the marks until nobody could tell Playwright from Postgres. The extra
+     air suits the other four rows too. */
+  padding: 0.85rem 0;
   border-bottom: 1px dashed var(--amw-line);
   font-family: var(--amw-mono);
   font-size: 0.75rem;

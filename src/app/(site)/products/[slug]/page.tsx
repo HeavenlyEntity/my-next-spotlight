@@ -184,15 +184,13 @@ export default async function ProductPage({
                   <dd>{t.label}</dd>
                 </div>
                 {stack.length > 0 && (
-                  /* A count, not the first three of eight with no ellipsis
-                     and no total -- that made an eight-item stack look like a
-                     three-item one, and the full list is now a row of chips
-                     in the column to the left. */
-                  <div className="amw-spec">
+                  /* The marks themselves, not a count of them. "8
+                     technologies" told a buyer how many things they were not
+                     being told. */
+                  <div className="amw-spec amw-spec--logos">
                     <dt>stack</dt>
                     <dd>
-                      {stack.length}{' '}
-                      {stack.length === 1 ? 'technology' : 'technologies'}
+                      <StackLogos stack={stack} onCard />
                     </dd>
                   </div>
                 )}
@@ -216,13 +214,6 @@ export default async function ProductPage({
                   <dd>{isBoilerplate ? 'GitHub invite' : 'instant link'}</dd>
                 </div>
               </dl>
-
-              {/* Directly under its own count row, in the card the buyer is
-                  already looking at. In the overview column it was competing
-                  with the prose for a glance it was never going to win. */}
-              {stack.length > 0 && (
-                <StackLogos stack={stack} onCard className="mt-5" />
-              )}
 
               {isFree && isBoilerplate ? (
                 <ClaimFreeKit slug={product.slug} />
