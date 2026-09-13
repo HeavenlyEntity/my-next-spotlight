@@ -7,6 +7,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { SiteHeader } from '@/components/SiteHeader'
 import { Footer } from '@/components/Footer'
 import { StagewiseInit } from '@/components/StagewiseInit'
+import { WHOP_PIXEL } from '@/lib/analytics/whop-pixel'
 
 import '@/styles/tailwind.css'
 import '@/styles/global.css'
@@ -83,6 +84,13 @@ export default function SiteLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: modeScript }} />
+        {/* Whop Pixel. Whop's instruction is "inside the <head> of every page
+            in your funnel", which this layout is: every marketing, catalogue,
+            pricing and checkout page renders through it. It sits after the
+            dark-mode script because that one has to run before first paint or
+            the page flashes, and an ads pixel has no such claim on the
+            critical path. */}
+        <script dangerouslySetInnerHTML={{ __html: WHOP_PIXEL }} />
       </head>
       <body className="flex h-full flex-col bg-zinc-50 font-sans dark:bg-black">
         <div className="fixed inset-0 flex justify-center sm:px-8">
