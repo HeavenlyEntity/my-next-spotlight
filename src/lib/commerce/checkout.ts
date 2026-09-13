@@ -75,27 +75,42 @@ export async function createCheckout(
   const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
   if (!site) throw new Error('NEXT_PUBLIC_SITE_URL is not configured')
 
-  /* The GitHub username is no longer collected here. It is asked for after
-     payment, on a page that can take its time over it, which keeps the
-     checkout to the fields Creem actually needs.
-   *
-   * That moves a problem though: the onboarding page has to know the visitor
-     paid. The request id is the thread -- Creem echoes it back on the webhook
-     as object.request_id, so signing it into the return URL lets the page
-     match a real, paid purchase. See onboardingLink.ts for why the signature
-     alone is not enough. */
   const requestId = crypto.randomUUID()
-  const onboarding = onboardingPath(requestId)
-  if (!onboarding) {
-    // No signing secret means no way to prove the redirect later. Fail loudly
-    // rather than sending someone to a page that cannot recognise them.
-    throw new Error('ACCESS_LINK_SECRET is required to sign the return URL')
+
+  /* Only a boilerplate needs onboarding, and only a boilerplate should be
+     sent there. A kit is delivered as a repository invitation, so it cannot
+     be handed over until the buyer names a GitHub account -- that is the
+     question the onboarding page exists to ask.
+   *
+     A digital download has no such question. Its delivery is the signed
+     access link already emailed by the webhook, and sending its buyer to a
+     page demanding a GitHub username would ask for something they do not
+     have, for a product with no repository to grant. It would also make
+     ACCESS_LINK_SECRET a hard requirement for selling a $12 guide, which it
+     is not.
+   *
+     For the kits, the onboarding page has to know the visitor paid. The
+     request id is the thread -- Creem echoes it back on the webhook as
+     object.request_id, so signing it into the return URL lets the page match
+     a real, paid purchase. See onboardingLink.ts for why the signature alone
+     is not enough. */
+  const needsOnboarding = itemType === 'product' && item.type === 'boilerplate'
+
+  let successUrl = `${site}/checkout/success`
+  if (needsOnboarding) {
+    const onboarding = onboardingPath(requestId)
+    if (!onboarding) {
+      // No signing secret means no way to prove the redirect later. Fail
+      // loudly rather than taking money for a kit that cannot be handed over.
+      throw new Error('ACCESS_LINK_SECRET is required to sign the return URL')
+    }
+    successUrl = `${site}${onboarding}`
   }
 
   const { checkoutUrl } = await createCheckoutSession({
     productId: item.creemProductId,
     requestId,
-    successUrl: `${site}${onboarding}`,
+    successUrl,
     metadata: { itemType, itemId: String(item.id), slug },
   })
 

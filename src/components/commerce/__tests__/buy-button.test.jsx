@@ -92,7 +92,7 @@ describe('createCheckout', () => {
     ).toBe(true)
   })
 
-  it('refuses to sell what it cannot hand over afterwards', async () => {
+  it('refuses to sell a KIT it cannot hand over afterwards', async () => {
     withItem(boilerplate)
     delete process.env.ACCESS_LINK_SECRET
     delete process.env.ACCESS_TOKEN_SECRET
@@ -101,6 +101,26 @@ describe('createCheckout', () => {
        fail before the money than after it. */
     await expect(buy()).rejects.toThrow(/ACCESS_LINK_SECRET/)
     expect(createCheckoutSession).not.toHaveBeenCalled()
+  })
+
+  it('sends a digital download to the plain success page, not onboarding', async () => {
+    /* A guide has no repository and its buyer has no GitHub username to
+       give. Sending them to a page that demands one would ask for something
+       they do not have, for a product that cannot use it. */
+    withItem({ ...boilerplate, type: 'digital' })
+    await expect(buy()).rejects.toThrow(/NEXT_REDIRECT/)
+    const { successUrl } = createCheckoutSession.mock.calls[0][0]
+    expect(new URL(successUrl).pathname).toBe('/checkout/success')
+  })
+
+  it('does not make the signing secret a condition of selling a guide', async () => {
+    withItem({ ...boilerplate, type: 'digital' })
+    delete process.env.ACCESS_LINK_SECRET
+    delete process.env.ACCESS_TOKEN_SECRET
+    // The $12 guide is the one product currently on sale. Requiring a secret
+    // it never uses would have taken it down on deploy.
+    await expect(buy()).rejects.toThrow(/NEXT_REDIRECT/)
+    expect(createCheckoutSession).toHaveBeenCalled()
   })
 
   it('still throws for a genuine fault rather than a polite message', async () => {

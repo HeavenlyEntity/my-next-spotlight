@@ -61,6 +61,42 @@ export default async function PricingPage() {
 
   const faqs = (copy?.faqs ?? []) as { question: string; answer: string }[]
 
+  /* With every kit held back, the whole page is framing for a table that is
+     not there: a heading promising "the kit is yours", an intro explaining
+     Lite, a footnote about repository access, and an FAQ answering questions
+     about seats nobody can buy. Rendering all of it above "nothing is on sale"
+     makes the page contradict itself, so the empty state replaces the page
+     rather than sitting inside it. It comes back on its own the moment a kit
+     is published. */
+  if (stacks.length === 0) {
+    return (
+      <Container className="mt-16 sm:mt-32">
+        <div className="amw mx-auto max-w-2xl">
+          <p className="amw-kicker">{copy?.eyebrow || 'pricing'}</p>
+          <h1 className="mt-5 text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-5xl">
+            The kits are not on sale yet
+          </h1>
+          <p className="mt-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+            They are being finished. When they go up, this page carries the
+            tiers, the seat counts and what each edition includes.
+          </p>
+          <p className="mt-8">
+            <Link href="/contact" className="amw-cta inline-flex max-w-xs">
+              Tell me when they are ready
+            </Link>
+          </p>
+          <p className="mt-10 text-sm text-zinc-500 dark:text-zinc-500">
+            Looking for the retainers instead?{' '}
+            <Link href="/services" className="text-teal-500">
+              The engagements are live
+            </Link>
+            .
+          </p>
+        </div>
+      </Container>
+    )
+  }
+
   return (
     <Container className="mt-16 sm:mt-32">
       <div className="amw">
@@ -71,12 +107,6 @@ export default async function PricingPage() {
         {copy?.intro && (
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
             {copy.intro}
-          </p>
-        )}
-
-        {stacks.length === 0 && (
-          <p className="mt-12 text-zinc-600 dark:text-zinc-400">
-            Nothing is on sale just yet. Check back shortly.
           </p>
         )}
 

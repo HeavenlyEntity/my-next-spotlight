@@ -20,6 +20,17 @@ import config from '@payload-config'
 
 const ORG = 'amwaredotdev'
 
+/* Every kit is held back while the catalogue is finished: the Creem products
+ * are still test-mode, GITHUB_TOKEN is unset so invitations do not send, and
+ * there is no Discord server for the step that offers one. Draft keeps them
+ * out of /products, /pricing and their own pages without losing a word of the
+ * copy -- flip this to 'published' when the pieces are in place.
+ *
+ * One switch rather than six literals, so the catalogue cannot go live by
+ * halves, and so re-running this seed cannot quietly republish what was
+ * deliberately taken down. */
+const KIT_STATUS = process.env.SEED_KIT_STATUS || 'draft'
+
 /* Lexical stores formatting as a bitmask on each text node, not as markup in
    the string -- 16 is inline code. Backticks written here are therefore
    parsed into real formatted nodes rather than shipped as literal characters,
@@ -101,7 +112,7 @@ const KITS = [
     githubRepo: `${ORG}/warekit-react-netsuite-lite`,
     order: 1,
     featured: true,
-    status: 'published',
+    status: KIT_STATUS,
     tagline:
       'Build React apps that run inside your NetSuite account. Served by a Suitelet, same-origin with the signed-in session.',
     description: [
@@ -149,12 +160,7 @@ const KITS = [
     githubRepo: `${ORG}/warekit-react-netsuite`,
     order: 2,
     featured: false,
-    /* Published, but never purchasable: it carries no Creem product, so the
-       pricing page renders it "In development" and no checkout can start.
-       Hiding it made the React stack look half-finished and hid the roadmap;
-       selling it would promise a repository that does not exist. Published
-       and purchasable are different things. */
-    status: 'published',
+    status: KIT_STATUS,
     tagline:
       'Everything in Lite, plus what a commercial SuiteApp needs once you are selling it into other people’s accounts.',
     description: [
@@ -202,7 +208,7 @@ const KITS = [
     githubRepo: `${ORG}/warekit-next-netsuite-lite`,
     order: 3,
     featured: true,
-    status: 'published',
+    status: KIT_STATUS,
     tagline:
       'Build Next.js apps that talk to NetSuite. Hosted on Vercel, authenticated over OAuth 2, with the SuiteScript half deployed by SDF.',
     description: [
@@ -250,7 +256,7 @@ const KITS = [
     githubRepo: `${ORG}/warekit-next-netsuite`,
     order: 4,
     featured: false,
-    status: 'published',
+    status: KIT_STATUS,
     tagline:
       'The hybrid kit with sessions in NetSuite instead of Postgres: one less service to provision, and a concurrency budget that survives real traffic.',
     description: [
@@ -295,7 +301,7 @@ const KITS = [
     githubRepo: `${ORG}/warekit-next-netsuite`,
     order: 5,
     featured: false,
-    status: 'published',
+    status: KIT_STATUS,
     price: 999,
     seats: 5,
     tagline:
@@ -342,9 +348,7 @@ const KITS = [
     githubRepo: `${ORG}/warekit-react-netsuite`,
     order: 6,
     featured: false,
-    // Same as React Pro: published so the tier is visible, unpurchasable
-    // because there is no Creem product and no repository behind it.
-    status: 'published',
+    status: KIT_STATUS,
     price: 999,
     seats: 5,
     tagline:
@@ -439,6 +443,7 @@ describe('seed the WareKit catalogue', () => {
       )
       expect(doc.githubRepo).toBe(kit.githubRepo)
       expect(doc.status).toBe(kit.status)
+      expect(doc.status).toBe(KIT_STATUS)
     })
   }
 
