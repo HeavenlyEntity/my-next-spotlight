@@ -35,14 +35,14 @@ const iconButton =
 
 const MAX_CARD_W = 500
 
-function Face({ chapter, offset, active, compact, sizer }) {
+function Face({ chapter, offset, active, compact, tight, sizer }) {
   const dim = useTransform(offset, [-2, -1, 0, 1, 2], [0.5, 0.3, 0, 0.3, 0.5])
 
   return (
     <div
       aria-hidden={active && !sizer ? undefined : true}
       className={`bg-[var(--amw-card)] relative flex h-full flex-col overflow-hidden rounded-2xl border transition-[border-color,box-shadow] duration-300 ${
-        compact ? 'p-5' : 'p-7'
+        tight ? 'p-4' : compact ? 'p-5' : 'p-7'
       } ${
         active
           ? 'border-[var(--amw-accent)] shadow-[0_24px_56px_-24px_rgba(9,9,11,0.4)]'
@@ -71,14 +71,17 @@ function Face({ chapter, offset, active, compact, sizer }) {
       <h2
         style={{ fontFamily: 'Layer, sans-serif' }}
         className={`relative mt-5 font-bold leading-tight tracking-tight text-zinc-900 dark:text-zinc-50 ${
-          compact ? 'text-xl' : 'text-2xl md:text-3xl'
+          tight ? 'text-lg' : compact ? 'text-xl' : 'text-2xl md:text-3xl'
         }`}
       >
         {chapter.title}
       </h2>
       <p
+        /* Body copy never drops below 16px, whatever the card: below that a
+           phone zooms and the reading size is gone. Narrow cards hyphenate
+           instead. */
         className={`relative mt-4 leading-relaxed text-zinc-600 dark:text-zinc-400 ${
-          compact ? 'text-base' : 'text-lg'
+          compact ? 'hyphens-auto text-base' : 'text-lg'
         }`}
       >
         {chapter.copy}
@@ -138,6 +141,7 @@ export function StoryFan({ chapters }) {
 
   const cardW = Math.max(240, Math.min(MAX_CARD_W, columnW - 24))
   const compact = cardW < 420
+  const tight = cardW < 300
   const cardH = Math.max(Math.round(cardW * 1.12), needH)
   const size = useMemo(() => ({ w: cardW, h: cardH }), [cardW, cardH])
 
@@ -163,7 +167,9 @@ export function StoryFan({ chapters }) {
       minScale: 0.3,
     }
   }, [cardW, cardH, columnW])
-  const height = Math.round(cardH * 1.36)
+  /* Less room above and below on a phone: the side cards barely show
+     there, so the frame need not reserve for them. */
+  const height = Math.round(cardH * (compact ? 1.22 : 1.36))
 
   const next = useCallback(() => fan.current?.next(), [])
   const prev = useCallback(() => fan.current?.prev(), [])
@@ -189,9 +195,10 @@ export function StoryFan({ chapters }) {
         offset={offset}
         active={isActive}
         compact={compact}
+        tight={tight}
       />
     ),
-    [compact]
+    [compact, tight]
   )
 
   return (
@@ -204,7 +211,14 @@ export function StoryFan({ chapters }) {
         className="invisible absolute left-0 top-0"
         style={{ width: cardW }}
       >
-        <Face chapter={longest} offset={still} active compact={compact} sizer />
+        <Face
+          chapter={longest}
+          offset={still}
+          active
+          compact={compact}
+          tight={tight}
+          sizer
+        />
       </div>
 
       <div

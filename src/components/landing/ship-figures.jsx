@@ -557,7 +557,10 @@ export function ShipFigure({ active = false }) {
         variants={statCard}
         className="border-[var(--amw-line)] bg-[var(--amw-card-2)] group-hover:border-[var(--amw-accent)]/60 mt-4 flex flex-1 items-center justify-between gap-3 rounded-lg border px-4 py-2.5 transition-colors duration-300"
       >
-        <div className="min-w-0">
+        {/* The figure and its label keep their width; the sparkline is the
+            part that gives way on a narrow card. It used to be the other way
+            round, and at 320px "uptime" was squeezed into a 16px cell. */}
+        <div className="shrink-0">
           <div className="amw-price flex items-baseline gap-0.5 text-2xl font-semibold leading-none text-zinc-900 dark:text-zinc-50">
             <RollingNumber
               key={active ? 'live' : 'idle'}
@@ -569,14 +572,14 @@ export function ShipFigure({ active = false }) {
           </div>
           <p className="amw-kicker mt-1.5 leading-none">uptime</p>
         </div>
-        <div className="text-right">
+        <div className="min-w-0 flex-1 text-right">
           <svg
             viewBox={`0 0 ${spark.w} ${spark.h}`}
             width={spark.w}
             height={spark.h}
             fill="none"
             aria-hidden="true"
-            className="block"
+            className="block h-auto max-w-full"
           >
             <defs>
               <linearGradient id="amw-spark-fill" x1="0" y1="0" x2="0" y2="1">

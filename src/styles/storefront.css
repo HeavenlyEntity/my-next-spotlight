@@ -201,6 +201,20 @@
   background: var(--amw-accent-soft);
 }
 
+/* Type stays inside its box. Headings wrap in balanced lines and any
+   token too long for the measure breaks rather than running past the
+   edge; prose breaks the same way. `break-word`, never `anywhere`: the
+   latter lets a flex cell shrink a label to single letters, which reads
+   as nonsense, whereas break-word only breaks a token that could not fit
+   the full width anyway. */
+.amw :is(h1, h2, h3) {
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+.amw :is(p, li, dd, dt, figcaption, blockquote) {
+  overflow-wrap: break-word;
+}
+
 /* Token-driven keyboard focus for every interactive element in scope. */
 .amw :is(a, button, input):focus-visible {
   outline: 2px solid var(--amw-accent-ink);
