@@ -4,6 +4,11 @@ import { render, screen } from '@testing-library/react'
 vi.mock('@/components/commerce/BuyButton', () => ({
   BuyButton: ({ label }) => <button type="button">{label}</button>,
 }))
+/* The embed loads Cal.com's script on mount; jsdom has no business doing
+   that. What the card owes the test is the data attributes the embed reads. */
+vi.mock('@calcom/embed-react', () => ({
+  getCalApi: vi.fn(async () => vi.fn()),
+}))
 
 import {
   CourseCard,
@@ -127,14 +132,33 @@ describe('catalog cards', () => {
         />
       </ul>
     )
-    // A retainer starts with a conversation, not a quote request.
-    const link = screen.getByRole('link', { name: /book an intro call/i })
-    expect(link).toHaveAttribute(
-      'href',
-      'https://cal.com/amware/on-demand-outcome'
-    )
-    expect(link).toHaveAttribute('target', '_blank')
+    // A retainer starts with a conversation, not a quote request -- and a
+    // Cal.com link books it here, in the embed, rather than sending the
+    // visitor away to a page that cannot report back.
+    const button = screen.getByRole('button', { name: /book an intro call/i })
+    expect(button).toHaveAttribute('data-cal-link', 'amware/on-demand-outcome')
+    expect(button).toHaveAttribute('data-cal-namespace', 'on-demand-outcome')
+    expect(
+      screen.queryByRole('link', { name: /book an intro call/i })
+    ).toBeNull()
     expect(screen.getByText(/\$1,500 deposit/)).toBeInTheDocument()
+  })
+
+  it('service card links out when the booking link is not Cal.com', () => {
+    render(
+      <ul>
+        <ServiceCard
+          service={{
+            slug: 'cto',
+            name: 'Fractional CTO',
+            bookingUrl: 'https://calendly.com/amware/intro',
+          }}
+        />
+      </ul>
+    )
+    const link = screen.getByRole('link', { name: /book an intro call/i })
+    expect(link).toHaveAttribute('href', 'https://calendly.com/amware/intro')
+    expect(link).toHaveAttribute('target', '_blank')
   })
 
   it('keeps cents when a price actually has them', () => {

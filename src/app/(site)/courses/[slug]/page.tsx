@@ -1,6 +1,7 @@
 import { withSocialImage } from '@/lib/social/metadata'
 import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
+import { TrackView } from '@/components/analytics/TrackView'
 import { CourseBody } from '@/components/site/CourseBody'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { BuyButton } from '@/components/commerce/BuyButton'
@@ -64,6 +65,7 @@ export default async function CoursePage({
 
   return (
     <Container className="mt-16 sm:mt-32">
+      <TrackView type="course" id={course.slug} name={course.title} />
       <CourseBody
         course={course}
         lessons={lessons}
@@ -72,6 +74,12 @@ export default async function CoursePage({
             <BuyButton
               itemType="course"
               slug={course.slug}
+              price={
+                typeof course.price === 'number'
+                  ? (course.price as number)
+                  : undefined
+              }
+              name={course.title}
               label={
                 typeof course.price === 'number'
                   ? `Enroll — ${usd(course.price as number)}`

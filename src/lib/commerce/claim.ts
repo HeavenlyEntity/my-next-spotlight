@@ -38,6 +38,12 @@ export type ClaimState = {
     alreadyHadAccess: boolean
     /** True when the invitation could not be sent and a human must finish it. */
     manual: boolean
+    /** The claim's idempotency key, `free:<slug>:<username>`. One per real
+        claim, so the page can report the conversion once however many times
+        the form is re-sent. */
+    eventId: string
+    /** The address the claim was sent to, echoed back to the person who typed it. */
+    email: string
   } | null
 }
 
@@ -227,6 +233,8 @@ export async function claimFreeKit(
       inviteUrl: invite.ok ? invite.url : null,
       alreadyHadAccess,
       manual: !invite.ok,
+      eventId: claimId,
+      email,
     },
   }
 }

@@ -9,6 +9,7 @@ import { motion } from 'motion/react'
 import { GitHubIcon, LinkedInIcon, TwitterIcon } from '@/components/SocialIcons'
 import { SectionEyebrow } from '@/components/landing/section-eyebrow'
 import { briefForContact } from '@/lib/founders/handoff'
+import { WHOP_EVENT, whopTrack } from '@/lib/analytics/whop'
 import { computeRead } from '@/lib/founders/equity/engine'
 import {
   hasHydrated,
@@ -187,6 +188,20 @@ export default function ContactForm({ topic = 'default' }) {
         body: JSON.stringify(payload),
       })
       if (!res.ok) throw new Error('Submission failed')
+
+      /* Reported here, in the success handler, not on /thank-you: that page
+         is also where the newsletter lands, and a page cannot tell which
+         form sent someone to it. Payload returns the created row, and its id
+         is the event id, so a retried send is one lead rather than two.
+         Fired before the navigation on purpose -- Whop sends with keepalive,
+         and a client-side route change cancels nothing anyway. */
+      const created = await res.json().catch(() => null)
+      const submissionId = created?.doc?.id
+      whopTrack(WHOP_EVENT.lead, {
+        event_id: submissionId ? `contact_${submissionId}` : undefined,
+        name: payload.name ? String(payload.name) : undefined,
+        email: payload.email ? String(payload.email) : undefined,
+      })
       router.push('/thank-you')
     } catch {
       setError(

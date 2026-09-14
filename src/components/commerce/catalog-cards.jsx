@@ -4,6 +4,8 @@ import { ChevronRight } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import Link from 'next/link'
 import { BuyButton } from '@/components/commerce/BuyButton'
+import { BookCallButton } from '@/components/commerce/BookCallButton'
+import { calLinkFromUrl } from '@/lib/commerce/calLink'
 import { usd } from '@/lib/commerce/money'
 import { typeMeta } from '@/components/commerce/catalog-meta'
 
@@ -211,10 +213,30 @@ export function CourseCard({ course, index = 0 }) {
  *   without the annotation TS infers the `null` default as the whole type and
  *   rejects every real caller.
  */
+/* The one call-to-action treatment, shared by the three things a service
+   card can ask for so they cannot drift apart. */
+const CTA_CLASS =
+  'group inline-flex items-center gap-3 rounded-md bg-zinc-900 py-3 pl-5 pr-3 font-medium text-white no-underline transition-all duration-500 ease-out hover:rounded-[50px] dark:bg-zinc-100 dark:text-zinc-900'
+
+function CtaLabel({ children }) {
+  return (
+    <>
+      <span>{children}</span>
+      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-zinc-900 transition-all duration-300 group-hover:scale-110 dark:bg-zinc-900 dark:text-zinc-100">
+        <ChevronRight className="relative left-px h-4 w-4" aria-hidden="true" />
+      </span>
+    </>
+  )
+}
+
+/**
+ * @param {{ service: any, index?: number, description?: import('react').ReactNode }} props
+ */
 export function ServiceCard({ service, index = 0, description = null }) {
   const { reduce, ...reveal } = useReveal(index)
   const icon = mediaUrl(service.icon)
   const hasPrice = typeof service.startingPrice === 'number'
+  const booking = calLinkFromUrl(service.bookingUrl)
   return (
     <motion.li
       id={service.slug}
@@ -283,28 +305,35 @@ export function ServiceCard({ service, index = 0, description = null }) {
           <BuyButton
             itemType="service"
             slug={service.slug}
+            price={hasPrice ? service.startingPrice : undefined}
+            name={service.name}
             label={'Purchase'}
           />
-        ) : (
+        ) : booking ? (
           /* A retainer does not start with a quote, it starts with a
-             conversation. When the tier carries a booking link the card asks
-             for the call; without one it falls back to the contact form. */
+             conversation. A Cal.com link opens the booking here, in a popup,
+             which is the only way the booking itself can be observed. */
+          <BookCallButton
+            calLink={booking.link}
+            namespace={booking.namespace}
+            serviceName={service.name}
+            className={CTA_CLASS}
+          >
+            <CtaLabel>Book an intro call</CtaLabel>
+          </BookCallButton>
+        ) : (
+          /* Any other booking link opens where it points; no link at all
+             falls back to the contact form. */
           <Link
             href={service.bookingUrl || '/contact'}
             {...(service.bookingUrl
               ? { target: '_blank', rel: 'noreferrer' }
               : {})}
-            className="group inline-flex items-center gap-3 rounded-md bg-zinc-900 py-3 pl-5 pr-3 font-medium text-white no-underline transition-all duration-500 ease-out hover:rounded-[50px] dark:bg-zinc-100 dark:text-zinc-900"
+            className={CTA_CLASS}
           >
-            <span>
+            <CtaLabel>
               {service.bookingUrl ? 'Book an intro call' : 'Request a quote'}
-            </span>
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-zinc-900 transition-all duration-300 group-hover:scale-110 dark:bg-zinc-900 dark:text-zinc-100">
-              <ChevronRight
-                className="relative left-px h-4 w-4"
-                aria-hidden="true"
-              />
-            </span>
+            </CtaLabel>
           </Link>
         )}
         {service.depositNote && (

@@ -1,4 +1,5 @@
 import { cmsSocialImage, withSocialImage } from '@/lib/social/metadata'
+import { TrackView } from '@/components/analytics/TrackView'
 import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
 import { RichText } from '@/components/site/RichText'
@@ -70,6 +71,7 @@ export default async function BlogPostPage({
 
   return (
     <Container className="mt-16 sm:mt-32">
+      <TrackView type="blog" id={slug} name={post.title} />
       <article className="mx-auto max-w-2xl">
         <header>
           <p className="text-sm text-zinc-400 dark:text-zinc-500">

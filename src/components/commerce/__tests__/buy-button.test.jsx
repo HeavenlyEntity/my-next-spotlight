@@ -109,8 +109,13 @@ describe('createCheckout', () => {
        they do not have, for a product that cannot use it. */
     withItem({ ...boilerplate, type: 'digital' })
     await expect(buy()).rejects.toThrow(/NEXT_REDIRECT/)
-    const { successUrl } = createCheckoutSession.mock.calls[0][0]
-    expect(new URL(successUrl).pathname).toBe('/checkout/success')
+    const { successUrl, requestId } = createCheckoutSession.mock.calls[0][0]
+    const url = new URL(successUrl)
+    expect(url.pathname).toBe('/checkout/success')
+    /* Unsigned, and meant to be: the page only reports the sale to the ads
+       pixel, so the id needs no proof -- unlike onboarding, which grants. */
+    expect(url.searchParams.get('r')).toBe(requestId)
+    expect(url.searchParams.has('s')).toBe(false)
   })
 
   it('does not make the signing secret a condition of selling a guide', async () => {

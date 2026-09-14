@@ -1,6 +1,7 @@
 import { withSocialImage } from '@/lib/social/metadata'
 import Link from 'next/link'
 import { Container } from '@/components/Container'
+import { TrackView } from '@/components/analytics/TrackView'
 import { inlineCode } from '@/components/site/inline-code'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import {
@@ -103,6 +104,7 @@ export default async function PricingPage() {
 
   return (
     <Container className="mt-16 sm:mt-32">
+      <TrackView type="pricing" id="pricing" name="Pricing" />
       <div className="amw">
         <p className="amw-kicker">{copy?.eyebrow || 'pricing'}</p>
         <h1 className="mt-5 text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-5xl">

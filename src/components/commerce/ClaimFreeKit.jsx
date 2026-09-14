@@ -3,6 +3,7 @@
 import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
 import { claimFreeKit } from '@/lib/commerce/claim'
 import { GithubAccountField } from '@/components/commerce/GithubAccountField'
+import { WHOP_EVENT, whopTrack } from '@/lib/analytics/whop'
 
 /* The free Lite path. Same delivery as a paid kit -- a repository invitation
    -- so it reuses the same field, including the avatar card and the "this is
@@ -35,6 +36,22 @@ export function ClaimFreeKit({ slug, label = 'Get free access' }) {
     if (emailError) emailRef.current?.focus()
     else if (fieldError) usernameRef.current?.focus()
   }, [emailError, fieldError])
+
+  /* No money changed hands, but a kit went out and an address came in: a
+     conversion by any useful definition. The server's claim key is the
+     event id, so re-sending the form (which re-sends the invitation) does
+     not count as a second claim. */
+  const claimed = state.ok
+  useEffect(() => {
+    if (!claimed) return
+    whopTrack(WHOP_EVENT.kitClaimed, {
+      event_id: claimed.eventId,
+      email: claimed.email,
+      content_type: 'boilerplate',
+      content_id: slug,
+      content_name: claimed.itemName,
+    })
+  }, [claimed, slug])
 
   if (state.ok) {
     const { itemName, repo, username, inviteUrl, alreadyHadAccess, manual } =

@@ -8,6 +8,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { Footer } from '@/components/Footer'
 import { StagewiseInit } from '@/components/StagewiseInit'
 import { WHOP_PIXEL } from '@/lib/analytics/whop-pixel'
+import { WhopRouteEvents } from '@/components/analytics/WhopRouteEvents'
 
 import '@/styles/tailwind.css'
 import '@/styles/global.css'
@@ -106,6 +107,9 @@ export default function SiteLayout({
         <Analytics />
         <SpeedInsights />
         <StagewiseInit />
+        {/* The head snippet reports the first page view; this reports the
+            client-side navigations that follow it. */}
+        <WhopRouteEvents />
       </body>
     </html>
   )

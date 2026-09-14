@@ -3,6 +3,8 @@ import { Container } from '@/components/Container'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { verifyOnboardingLink } from '@/lib/commerce/onboardingLink'
 import { OnboardingSteps } from '@/components/commerce/OnboardingSteps'
+import { TrackPurchase } from '@/components/analytics/TrackPurchase'
+import { centsToValue } from '@/lib/analytics/whop'
 
 export const dynamic = 'force-dynamic'
 export const metadata = {
@@ -101,6 +103,15 @@ export default async function OnboardingPage({
 
   return (
     <Shell title={`${itemName} is yours`}>
+      {/* Only reachable past the signature and the paid check above, so the
+          sale is real and the viewer is the buyer: the email can go with it. */}
+      <TrackPurchase
+        eventId={requestId}
+        value={centsToValue(purchase.amount ?? 0)}
+        currency={(purchase.currency || 'USD').toUpperCase()}
+        email={purchase.email}
+        contentName={itemName}
+      />
       <p className="mt-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
         Payment received. One step to go and the repository is in your hands.
       </p>

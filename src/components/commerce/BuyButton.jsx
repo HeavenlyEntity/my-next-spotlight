@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from 'react'
 import { createCheckout } from '@/lib/commerce/checkout'
+import { WHOP_EVENT, whopTrack } from '@/lib/analytics/whop'
 
 /* The checkout form is now only the hidden item fields and the button. The
    GitHub username moved to the onboarding page the buyer lands on after
@@ -13,7 +14,7 @@ import { createCheckout } from '@/lib/commerce/checkout'
    purchasable yet -- because throwing sent them to the Next error boundary
    and cost them the page they were on. */
 
-export function BuyButton({ itemType, slug, label = 'Buy now' }) {
+export function BuyButton({ itemType, slug, label = 'Buy now', price, name }) {
   // Defined here, not imported: a 'use server' module cannot export a value.
   const [state, formAction, isPending] = useActionState(createCheckout, {
     error: null,
@@ -29,8 +30,21 @@ export function BuyButton({ itemType, slug, label = 'Buy now' }) {
     if (formError) errorRef.current?.focus()
   }, [formError])
 
+  /* The last thing that happens on this site before Creem's page. onSubmit
+     runs before the server action, and the pixel sends with keepalive, so
+     the event survives the redirect. No event id: each press is an attempt,
+     and Whop should see how many attempts a sale takes. */
+  const reportCheckout = () =>
+    whopTrack(WHOP_EVENT.beginCheckout, {
+      value: typeof price === 'number' ? price : undefined,
+      currency: 'USD',
+      content_type: itemType,
+      content_id: slug,
+      content_name: name,
+    })
+
   return (
-    <form action={formAction} className="mt-8">
+    <form action={formAction} onSubmit={reportCheckout} className="mt-8">
       <input type="hidden" name="itemType" value={itemType} />
       <input type="hidden" name="slug" value={slug} />
 

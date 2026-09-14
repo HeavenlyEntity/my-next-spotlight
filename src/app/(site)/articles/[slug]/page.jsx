@@ -1,4 +1,5 @@
 import { withSocialImage } from '@/lib/social/metadata'
+import { TrackView } from '@/components/analytics/TrackView'
 import { notFound } from 'next/navigation'
 import { getAllArticles } from '@/lib/getAllArticles'
 
@@ -69,6 +70,11 @@ export default async function ArticlePage({ params }) {
   const { slug } = await params
   const loaded = await loadArticle(slug)
   if (!loaded) notFound()
-  const { Post } = loaded
-  return <Post />
+  const { Post, meta } = loaded
+  return (
+    <>
+      <TrackView type="article" id={slug} name={meta?.title} />
+      <Post />
+    </>
+  )
 }

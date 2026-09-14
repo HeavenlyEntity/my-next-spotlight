@@ -1,5 +1,6 @@
 import { withSocialImage } from '@/lib/social/metadata'
 import { Container } from '@/components/Container'
+import { TrackView } from '@/components/analytics/TrackView'
 import { RichText } from '@/components/site/RichText'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import {
@@ -31,6 +32,7 @@ export default async function ServicesPage() {
 
   return (
     <Container className="mt-16 sm:mt-32">
+      <TrackView type="services" id="services" name="Services" />
       <div className="amw">
         <StoreHero
           eyebrow="// AMWARE · ENGAGEMENTS"

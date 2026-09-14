@@ -98,7 +98,12 @@ export async function createCheckout(
   const needsOnboarding =
     itemType === 'product' && (item as Product).type === 'boilerplate'
 
-  let successUrl = `${site}/checkout/success`
+  /* The plain success page gets the request id too, unsigned. It uses it
+     for one thing: to report the sale to the ads pixel with its real
+     amount. It grants nothing -- delivery is the emailed access link -- so
+     it needs no signature, and a guessed id (a UUID) would reveal only that
+     a sale of some amount happened. */
+  let successUrl = `${site}/checkout/success?r=${requestId}`
   if (needsOnboarding) {
     const onboarding = onboardingPath(requestId)
     if (!onboarding) {

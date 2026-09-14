@@ -2,6 +2,7 @@ import { withProductSocialImage } from '@/lib/social/metadata'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
+import { TrackView } from '@/components/analytics/TrackView'
 import { RichText } from '@/components/site/RichText'
 import { inlineCode } from '@/components/site/inline-code'
 import { getPayloadClient } from '@/lib/getPayloadClient'
@@ -85,6 +86,7 @@ export default async function ProductPage({
 
   return (
     <Container className="mt-16 sm:mt-32">
+      <TrackView type={product.type} id={product.slug} name={product.name} />
       <div className="amw">
         <Link
           href="/products"
@@ -225,6 +227,12 @@ export default async function ProductPage({
                 <BuyButton
                   itemType="product"
                   slug={product.slug}
+                  price={
+                    typeof product.price === 'number'
+                      ? product.price
+                      : undefined
+                  }
+                  name={product.name}
                   label={
                     typeof product.price === 'number'
                       ? 'Buy this kit'
