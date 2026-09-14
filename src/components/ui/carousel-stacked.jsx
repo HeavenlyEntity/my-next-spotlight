@@ -59,20 +59,36 @@ function Card({
   const { dx, dy, curve, rotation, scaleStep, minScale } = geometry
 
   const scaleAt = (o) => Math.max(minScale, 1 - Math.abs(o) * scaleStep)
-  /* Travel along the arc, but never past the parent's bounds: a card's
-     centre stops where its own scaled edge would cross. The far cards
-     stack up at the edge rather than crossing into whatever sits beside
-     the fan. */
+  /* A card's rotated box: half-extents of a w x h card scaled and turned
+     by its own angle. Used to keep every card inside the parent's bounds
+     whatever the width: the far cards stack at the edge instead of
+     crossing into whatever sits beside the fan. */
+  const extents = (o) => {
+    const sc = scaleAt(o)
+    const t = (Math.abs(o) * rotation * Math.PI) / 180
+    const cos = Math.cos(t)
+    const sin = Math.sin(t)
+    return {
+      hw: (size.w * sc * cos + size.h * sc * sin) / 2,
+      hh: (size.w * sc * sin + size.h * sc * cos) / 2,
+    }
+  }
+
   const x = useTransform(offset, (o) => {
     const wanted = o * dx
-    if (!bounds) return wanted
-    const maxX = Math.max(0, (bounds - size.w * scaleAt(o)) / 2)
+    if (!bounds?.width) return wanted
+    const maxX = Math.max(0, bounds.width / 2 - extents(o).hw)
     return Math.max(-maxX, Math.min(maxX, wanted))
   })
   /* |o|^curve with curve < 1 flattens the line as it leaves the centre:
      the second card out drops less than twice the first, which is what
      turns a straight diagonal into an arc. */
-  const y = useTransform(offset, (o) => sign(o) * dy * Math.abs(o) ** curve)
+  const y = useTransform(offset, (o) => {
+    const wanted = sign(o) * dy * Math.abs(o) ** curve
+    if (!bounds?.height) return wanted
+    const maxY = Math.max(0, bounds.height / 2 - extents(o).hh)
+    return Math.max(-maxY, Math.min(maxY, wanted))
+  })
   const rotate = useTransform(offset, (o) => o * rotation)
   const scale = useTransform(offset, scaleAt)
   const opacity = useTransform(

@@ -147,20 +147,23 @@ export function StoryFan({ chapters }) {
      The horizontal step is capped so the card one step out sits inside
      the column instead of being cut at its edge: nothing here clips, the
      page does, and only at the paper's edge. */
-  const scaleStep = 0.38
+  /* Depth: one step out is a little over half size, two steps out under a
+     third, so the far cards read as far away and the fan stays in
+     proportion with the profile and ID cards beside it. */
+  const scaleStep = 0.45
   const geometry = useMemo(() => {
     const neighbourHalf = (cardW * (1 - scaleStep)) / 2
     const fits = Math.max(0, (columnW - cardW) / 2 + cardW / 2 - neighbourHalf)
     return {
       dx: Math.round(Math.max(cardW * 0.26, Math.min(cardW * 0.5, fits))),
-      dy: Math.round(cardH * 0.34),
+      dy: Math.round(cardH * 0.3),
       curve: 0.7,
-      rotation: 7,
+      rotation: 6,
       scaleStep,
-      minScale: 0.46,
+      minScale: 0.3,
     }
   }, [cardW, cardH, columnW])
-  const height = Math.round(cardH * 1.42)
+  const height = Math.round(cardH * 1.36)
 
   const next = useCallback(() => fan.current?.next(), [])
   const prev = useCallback(() => fan.current?.prev(), [])
@@ -224,7 +227,7 @@ export function StoryFan({ chapters }) {
           size={size}
           height={height}
           geometry={geometry}
-          bounds={columnW || undefined}
+          bounds={columnW ? { width: columnW, height } : undefined}
         />
       </div>
 
