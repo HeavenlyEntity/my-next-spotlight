@@ -39,7 +39,16 @@ import { cn } from '@/lib/utils'
 const mod = (n, m) => ((n % m) + m) % m
 const sign = (n) => (n < 0 ? -1 : 1)
 
-function Card({ index, total, progress, geometry, size, render, active }) {
+function Card({
+  index,
+  total,
+  progress,
+  geometry,
+  size,
+  bounds,
+  render,
+  active,
+}) {
   /* Signed distance from the front, wrapped so the fan is a ring. */
   const offset = useTransform(progress, (p) => {
     let d = (index - p) % total
@@ -49,15 +58,23 @@ function Card({ index, total, progress, geometry, size, render, active }) {
   })
   const { dx, dy, curve, rotation, scaleStep, minScale } = geometry
 
-  const x = useTransform(offset, (o) => o * dx)
+  const scaleAt = (o) => Math.max(minScale, 1 - Math.abs(o) * scaleStep)
+  /* Travel along the arc, but never past the parent's bounds: a card's
+     centre stops where its own scaled edge would cross. The far cards
+     stack up at the edge rather than crossing into whatever sits beside
+     the fan. */
+  const x = useTransform(offset, (o) => {
+    const wanted = o * dx
+    if (!bounds) return wanted
+    const maxX = Math.max(0, (bounds - size.w * scaleAt(o)) / 2)
+    return Math.max(-maxX, Math.min(maxX, wanted))
+  })
   /* |o|^curve with curve < 1 flattens the line as it leaves the centre:
      the second card out drops less than twice the first, which is what
      turns a straight diagonal into an arc. */
   const y = useTransform(offset, (o) => sign(o) * dy * Math.abs(o) ** curve)
   const rotate = useTransform(offset, (o) => o * rotation)
-  const scale = useTransform(offset, (o) =>
-    Math.max(minScale, 1 - Math.abs(o) * scaleStep)
-  )
+  const scale = useTransform(offset, scaleAt)
   const opacity = useTransform(
     offset,
     [-2.6, -2, -1, 0, 1, 2, 2.6],
