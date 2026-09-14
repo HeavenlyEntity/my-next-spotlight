@@ -5,7 +5,10 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
    engine project has no `@/` alias, and checkout.ts imports through it, so a
    test placed beside the action would fail to resolve its own subject. */
 vi.mock('@/lib/getPayloadClient', () => ({ getPayloadClient: vi.fn() }))
-vi.mock('@/lib/commerce/creem', () => ({ createCheckoutSession: vi.fn() }))
+vi.mock('@/lib/commerce/creem', async (importOriginal) => ({
+  ...(await importOriginal()),
+  createCheckoutSession: vi.fn(),
+}))
 vi.mock('next/navigation', () => ({
   redirect: vi.fn(() => {
     throw new Error('NEXT_REDIRECT')
@@ -13,7 +16,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 import { getPayloadClient } from '@/lib/getPayloadClient'
-import { createCheckoutSession } from '@/lib/commerce/creem'
+import { CreemError, createCheckoutSession } from '@/lib/commerce/creem'
 import { createCheckout } from '@/lib/commerce/checkout'
 import { verifyOnboardingLink } from '@/lib/commerce/onboardingLink'
 import { BuyButton } from '@/components/commerce/BuyButton'
@@ -50,6 +53,28 @@ beforeEach(() => {
 })
 
 describe('createCheckout', () => {
+  it('treats a product Creem does not know as not on sale, not as a crash', async () => {
+    /* A test-mode product id against a live key (or the reverse) is how the
+       store's one product 500'd in production. The buyer should see the
+       same "not on sale yet" as a product with no Creem id at all; nothing
+       was charged, and the page they were on is still theirs. */
+    withItem({ ...boilerplate, type: 'digital' })
+    createCheckoutSession.mockRejectedValue(
+      new CreemError('Creem checkout failed (404)', 404)
+    )
+    const state = await buy()
+    expect(state.error?.message).toMatch(/not on sale yet/)
+    expect(state.error?.message).toMatch(/Nothing has been charged/)
+  })
+
+  it('still surfaces any other Creem failure as a fault', async () => {
+    withItem({ ...boilerplate, type: 'digital' })
+    createCheckoutSession.mockRejectedValue(
+      new CreemError('Creem checkout failed (500)', 500)
+    )
+    await expect(buy()).rejects.toThrow(/Creem checkout failed \(500\)/)
+  })
+
   it('no longer asks for a GitHub username to take payment', async () => {
     withItem(boilerplate)
     /* It used to refuse a boilerplate without one. The username is collected

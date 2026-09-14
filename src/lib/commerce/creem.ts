@@ -18,6 +18,19 @@ const API_URL = (() => {
   return u.origin
 })()
 
+/* Carries Creem's status so a caller can tell "this product is not in the
+   environment this key belongs to" (404) from everything else. That one is
+   configuration drift -- a test-mode id against a live key, or the reverse
+   -- and it is the failure a buyer is most likely to meet. */
+export class CreemError extends Error {
+  status: number
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'CreemError'
+    this.status = status
+  }
+}
+
 export type CreateCheckoutArgs = {
   productId: string
   requestId: string
@@ -47,8 +60,9 @@ export async function createCheckoutSession(
     const detail = await res.text().catch(() => '')
     const safe =
       process.env.NODE_ENV === 'production' ? '' : detail.slice(0, 200)
-    throw new Error(
-      `Creem checkout failed (${res.status})${safe ? ': ' + safe : ''}`
+    throw new CreemError(
+      `Creem checkout failed (${res.status})${safe ? ': ' + safe : ''}`,
+      res.status
     )
   }
   const data = await res.json()

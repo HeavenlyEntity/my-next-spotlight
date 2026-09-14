@@ -4,7 +4,7 @@ import type { Product } from '@/payload-types'
 import crypto from 'crypto'
 import { redirect } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
-import { createCheckoutSession } from '@/lib/commerce/creem'
+import { CreemError, createCheckoutSession } from '@/lib/commerce/creem'
 import { onboardingPath } from '@/lib/commerce/onboardingLink'
 
 const COLLECTION = {
@@ -114,12 +114,37 @@ export async function createCheckout(
     successUrl = `${site}${onboarding}`
   }
 
-  const { checkoutUrl } = await createCheckoutSession({
-    productId: item.creemProductId,
-    requestId,
-    successUrl,
-    metadata: { itemType, itemId: String(item.id), slug },
-  })
+  let checkoutUrl: string
+  try {
+    ;({ checkoutUrl } = await createCheckoutSession({
+      productId: item.creemProductId,
+      requestId,
+      successUrl,
+      metadata: { itemType, itemId: String(item.id), slug },
+    }))
+  } catch (err) {
+    /* Creem not knowing the product is the same situation as the CMS not
+       having one: the item cannot be bought right now, and nothing has
+       been charged. It happens when the product id and the API key belong
+       to different Creem modes -- a test id in production, say -- which is
+       a configuration slip, not a fault the buyer can do anything about or
+       should lose their page over. It is still logged loudly: this is the
+       store's one product failing to sell. Every other Creem failure keeps
+       throwing, as before. */
+    if (err instanceof CreemError && err.status === 404) {
+      console.error('Creem does not know this product in the current mode', {
+        slug,
+        creemProductId: item.creemProductId,
+      })
+      return {
+        error: {
+          message:
+            'This item is not on sale yet. Nothing has been charged. Check back shortly or get in touch.',
+        },
+      }
+    }
+    throw err
+  }
 
   redirect(checkoutUrl) // external redirect to Creem's hosted page
 }
