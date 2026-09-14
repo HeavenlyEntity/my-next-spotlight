@@ -5,7 +5,6 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
-  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
@@ -19,84 +18,47 @@ import {
 import { cn } from '@/lib/utils'
 
 /* Cards fanned along an arc, dragged with a spring. Adapted from 21st.dev
-   "carousel-07" (CarouselStacked), with four changes:
+   "carousel-07" (CarouselStacked). What is kept: one motion value for the
+   whole fan, a signed wrapped distance per card, transforms derived from
+   that distance, the spring on release. What changed:
 
-   - it is sized to its container, not the window, so it can sit in a
-     column beside something else without spilling past it;
-   - the card is a render prop, so this file knows nothing about what a
-     card shows;
-   - next() and prev() are exposed on a ref, and onChange reports the card
-     in front, so buttons, keys and a counter can drive it -- the original
-     is drag-only, which is no way in for a keyboard;
-   - under reduced motion the fan snaps instead of springing.
-
-   The arc itself is the original's: distance from the centre becomes
-   horizontal travel, a downward drop, a rotation and a shrink, so the fan
-   reads as cards held in a hand, the middle one raised. */
-
-const tier = (width) => {
-  if (width < 480) {
-    return {
-      cardW: 176,
-      cardH: 232,
-      distanceDivisor: 120,
-      velocityDivisor: 500,
-      sensitivity: 180,
-      x: 88,
-      y: 20,
-      rotation: 8,
-      scale: 0.06,
-    }
-  }
-  if (width < 800) {
-    return {
-      cardW: 216,
-      cardH: 296,
-      distanceDivisor: 160,
-      velocityDivisor: 650,
-      sensitivity: 220,
-      x: 122,
-      y: 28,
-      rotation: 10,
-      scale: 0.09,
-    }
-  }
-  return {
-    cardW: 256,
-    cardH: 352,
-    distanceDivisor: 200,
-    velocityDivisor: 800,
-    sensitivity: 250,
-    x: 150,
-    y: 36,
-    rotation: 12,
-    scale: 0.11,
-  }
-}
+   - the arc is a prop. The original arches symmetrically (both sides drop
+     the same way); this takes a direction, so the previous card can sit
+     up and to the left while the next sits down and to the right -- a
+     diagonal arc -- or any other line;
+   - card size and the fan's height are props, decided by the parent from
+     its own container and content, not by the window;
+   - the card is a render prop;
+   - next() and prev() on a ref, onChange for the card in front, and a
+     reduced-motion snap. The original is drag-only, which is no way in
+     for a keyboard. */
 
 const mod = (n, m) => ((n % m) + m) % m
+const sign = (n) => (n < 0 ? -1 : 1)
 
-function Card({ index, total, progress, config, render, active }) {
-  /* Signed distance from the front, wrapped so the fan is a ring: the card
-     after the last is the first. */
+function Card({ index, total, progress, geometry, size, render, active }) {
+  /* Signed distance from the front, wrapped so the fan is a ring. */
   const offset = useTransform(progress, (p) => {
     let d = (index - p) % total
     if (d > total / 2) d -= total
     if (d < -total / 2) d += total
     return d
   })
-  const x = useTransform(offset, (o) => o * config.x)
-  const rotate = useTransform(offset, (o) =>
-    Math.abs(o) < 0.05 ? 0 : o * config.rotation
+  const { dx, dy, curve, rotation, scaleStep, minScale } = geometry
+
+  const x = useTransform(offset, (o) => o * dx)
+  /* |o|^curve with curve < 1 flattens the line as it leaves the centre:
+     the second card out drops less than twice the first, which is what
+     turns a straight diagonal into an arc. */
+  const y = useTransform(offset, (o) => sign(o) * dy * Math.abs(o) ** curve)
+  const rotate = useTransform(offset, (o) => o * rotation)
+  const scale = useTransform(offset, (o) =>
+    Math.max(minScale, 1 - Math.abs(o) * scaleStep)
   )
-  const y = useTransform(offset, (o) =>
-    Math.abs(o) < 0.05 ? 0 : Math.abs(o) * config.y
-  )
-  const scale = useTransform(offset, (o) => 1 - Math.abs(o) * config.scale)
   const opacity = useTransform(
     offset,
-    [-total / 2, -total / 2 + 0.5, 0, total / 2 - 0.5, total / 2],
-    [0, 1, 1, 1, 0]
+    [-2.6, -2, -1, 0, 1, 2, 2.6],
+    [0, 0.5, 0.9, 1, 0.9, 0.5, 0]
   )
   const zIndex = useTransform(offset, (o) => Math.round(100 - Math.abs(o) * 10))
 
@@ -109,8 +71,8 @@ function Card({ index, total, progress, config, render, active }) {
         scale,
         opacity,
         zIndex,
-        width: config.cardW,
-        height: config.cardH,
+        width: size.w,
+        height: size.h,
       }}
       className="pointer-events-none absolute"
     >
@@ -120,28 +82,22 @@ function Card({ index, total, progress, config, render, active }) {
 }
 
 export const CarouselStacked = forwardRef(function CarouselStacked(
-  { items, renderCard, onChange, reduce = false, className },
+  {
+    items,
+    renderCard,
+    onChange,
+    reduce = false,
+    size,
+    height,
+    geometry,
+    className,
+  },
   ref
 ) {
   const total = items.length
   const progress = useMotionValue(0)
   const startProgress = useRef(0)
-  const wrap = useRef(null)
-  const [width, setWidth] = useState(0)
   const [active, setActive] = useState(0)
-  const config = tier(width)
-
-  useLayoutEffect(() => {
-    const el = wrap.current
-    if (!el) return undefined
-    setWidth(el.clientWidth)
-    if (typeof ResizeObserver === 'undefined') return undefined
-    const ro = new ResizeObserver(([entry]) =>
-      setWidth(entry.contentRect.width)
-    )
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
 
   useMotionValueEvent(progress, 'change', (v) => {
     const next = mod(Math.round(v), total)
@@ -167,7 +123,6 @@ export const CarouselStacked = forwardRef(function CarouselStacked(
     },
     [progress, reduce]
   )
-
   const next = useCallback(
     () => goTo(Math.round(progress.get()) + 1),
     [goTo, progress]
@@ -178,21 +133,20 @@ export const CarouselStacked = forwardRef(function CarouselStacked(
   )
   useImperativeHandle(ref, () => ({ next, prev }), [next, prev])
 
+  /* Drag feel scales with the card: a card's width of travel is one card. */
+  const sensitivity = size.w * 0.6
   const onDragStart = () => {
     startProgress.current = progress.get()
   }
   const onDrag = (_, info) => {
-    progress.set(progress.get() - info.delta.x / config.sensitivity)
+    progress.set(progress.get() - info.delta.x / sensitivity)
   }
   const onDragEnd = (_, info) => {
     const shift = Math.max(
       -3,
       Math.min(
         3,
-        Math.round(
-          -info.offset.x / config.distanceDivisor -
-            info.velocity.x / config.velocityDivisor
-        )
+        Math.round(-info.offset.x / (size.w * 0.5) - info.velocity.x / 800)
       )
     )
     goTo(Math.round(startProgress.current) + shift)
@@ -200,12 +154,11 @@ export const CarouselStacked = forwardRef(function CarouselStacked(
 
   return (
     <div
-      ref={wrap}
       className={cn(
         'relative flex w-full select-none items-center justify-center overflow-hidden',
         className
       )}
-      style={{ height: config.cardH + config.y * 2 + 16 }}
+      style={{ height }}
     >
       {/* The drag surface sits over the cards; they are pointer-events-none
           so the whole fan is one grab. Motion sets touch-action: pan-y for
@@ -221,11 +174,12 @@ export const CarouselStacked = forwardRef(function CarouselStacked(
       />
       {items.map((item, i) => (
         <Card
-          key={`${i}-${config.cardW}`}
+          key={`${i}-${size.w}-${size.h}`}
           index={i}
           total={total}
           progress={progress}
-          config={config}
+          geometry={geometry}
+          size={size}
           active={i === active}
           render={({ offset, active: isActive }) =>
             renderCard(item, i, { offset, active: isActive })

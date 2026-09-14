@@ -1,56 +1,52 @@
 'use client'
 
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import {
-  AnimatePresence,
   motion,
+  useMotionValue,
   useReducedMotion,
   useTransform,
 } from 'motion/react'
 import { CarouselStacked } from '@/components/ui/carousel-stacked'
 
-/* The story as a hand of cards fanned along an arc, the current chapter
-   raised in the middle, the rest falling away to either side. Drag the
-   fan, press the arrows, or use the keys; the chapter under the raised
-   card reads below it at full size.
+/* The story as flash cards on a diagonal arc. The current chapter is a
+   large card in the centre of the column, level with the profile and ID
+   cards beside it; the chapter before sits up and to the left, the ones
+   after fall away down and to the right, smaller as they go. Drag the
+   fan, press the arrows, or use the keys.
 
-   WHY THE COPY IS NOT ON THE CARD. The reference this is built on is a
-   photo carousel: its cards are 256x384 and say one line. A chapter here
-   runs to 390 characters, which no card that size can carry at a readable
-   size on a phone. So the card is the flash card -- number and title,
-   enough to recognise the chapter in the fan -- and the paragraph lives
-   under the fan where the eye lands next, crossfading as the fan moves.
-   That keeps the text at 16px+ everywhere and the arc intact.
+   THE TEXT IS ON THE CARD. That is what a flash card is. Two things make
+   that safe at every width: the card is sized from the column (up to
+   500px wide, never wider than the column), and its height is measured
+   from the longest chapter rendered at that width -- so no card can ever
+   clip its own copy, on a phone or a wide screen. Cards that are not in
+   front are dimmed and shrunk; their copy is decoration, and they are
+   hidden from assistive tech, so a reader hears one chapter at a time.
 
-   The cards are solid, with the page's holographic coating as overlays.
-   A fan is the one arrangement where a translucent card would be worst:
-   four others are always behind it.
+   The cards are solid, with the page's holographic coating as overlays:
+   four other cards are always behind the raised one.
 
-   A11Y. The fan is a group with a keyboard; two 44px buttons do the same
-   for pointers; cards behind the front one are hidden from assistive tech,
-   and a live region announces the chapter that arrived. Reduced motion
-   snaps the fan and cuts the paragraph. */
+   A11Y. Group with a keyboard, two 44px buttons, dots with a counter, a
+   live region. Reduced motion snaps the fan. */
 
 const iconButton =
   'border-[var(--amw-line)] bg-[var(--amw-card)] hover:border-[var(--amw-accent)] hover:text-[var(--amw-accent-ink)] flex h-11 w-11 items-center justify-center rounded-full border text-zinc-800 transition-[border-color,color,transform] duration-200 active:scale-95 motion-reduce:active:scale-100 dark:text-zinc-200'
 
-function Face({ chapter, offset, active }) {
-  /* The page's own surface, laid over cards as they fall away, so the
-     raised card is the bright one without any card going grey. */
-  const dim = useTransform(
-    offset,
-    [-2, -0.5, 0, 0.5, 2],
-    [0.55, 0.22, 0, 0.22, 0.55]
-  )
+const MAX_CARD_W = 500
+
+function Face({ chapter, offset, active, compact, sizer }) {
+  const dim = useTransform(offset, [-2, -1, 0, 1, 2], [0.5, 0.3, 0, 0.3, 0.5])
 
   return (
     <div
-      aria-hidden={active ? undefined : true}
-      className={`bg-[var(--amw-card)] relative flex h-full flex-col overflow-hidden rounded-2xl border p-5 transition-[border-color,box-shadow] duration-300 ${
+      aria-hidden={active && !sizer ? undefined : true}
+      className={`bg-[var(--amw-card)] relative flex h-full flex-col overflow-hidden rounded-2xl border transition-[border-color,box-shadow] duration-300 ${
+        compact ? 'p-5' : 'p-7'
+      } ${
         active
-          ? 'border-[var(--amw-accent)] shadow-[0_18px_40px_-20px_rgba(9,9,11,0.35)]'
-          : 'border-[var(--amw-line-strong)] shadow-[0_10px_24px_-18px_rgba(9,9,11,0.3)]'
+          ? 'border-[var(--amw-accent)] shadow-[0_24px_56px_-24px_rgba(9,9,11,0.4)]'
+          : 'border-[var(--amw-line-strong)] shadow-[0_12px_32px_-20px_rgba(9,9,11,0.3)]'
       }`}
     >
       <span aria-hidden="true" className="amw-holo-tint" />
@@ -58,22 +54,43 @@ function Face({ chapter, offset, active }) {
       <span aria-hidden="true" className="amw-holo-specular" />
       <span aria-hidden="true" className="amw-holo-grain" />
 
-      <span className="amw-mono text-[var(--amw-accent-ink)] bg-[var(--amw-accent-soft)] ring-[var(--amw-accent)]/30 relative self-start rounded-md px-2 py-1 text-sm font-medium ring-1">
-        {chapter.number}
-      </span>
+      <div className="relative pb-4">
+        <span className="amw-mono text-[var(--amw-accent-ink)] bg-[var(--amw-accent-soft)] ring-[var(--amw-accent)]/30 inline-block rounded-md px-2 py-1 text-sm font-medium ring-1">
+          {chapter.number}
+        </span>
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-px"
+          style={{
+            background:
+              'linear-gradient(90deg, var(--amw-accent) 0%, color-mix(in srgb, var(--amw-accent) 35%, transparent) 55%, transparent 100%)',
+          }}
+        />
+      </div>
 
       <h2
         style={{ fontFamily: 'Layer, sans-serif' }}
-        className="relative mt-auto text-xl font-bold leading-tight tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-2xl"
+        className={`relative mt-5 font-bold leading-tight tracking-tight text-zinc-900 dark:text-zinc-50 ${
+          compact ? 'text-xl' : 'text-2xl md:text-3xl'
+        }`}
       >
         {chapter.title}
       </h2>
+      <p
+        className={`relative mt-4 leading-relaxed text-zinc-600 dark:text-zinc-400 ${
+          compact ? 'text-base' : 'text-lg'
+        }`}
+      >
+        {chapter.copy}
+      </p>
 
-      <motion.span
-        aria-hidden="true"
-        style={{ opacity: dim }}
-        className="bg-[var(--amw-bg)] pointer-events-none absolute inset-0"
-      />
+      {sizer ? null : (
+        <motion.span
+          aria-hidden="true"
+          style={{ opacity: dim }}
+          className="bg-[var(--amw-bg)] pointer-events-none absolute inset-0"
+        />
+      )}
     </div>
   )
 }
@@ -81,17 +98,64 @@ function Face({ chapter, offset, active }) {
 export function StoryFan({ chapters }) {
   const reduce = useReducedMotion()
   const fan = useRef(null)
+  const wrap = useRef(null)
+  const sizerRef = useRef(null)
   const [active, setActive] = useState(0)
+  const [columnW, setColumnW] = useState(0)
+  const [needH, setNeedH] = useState(0)
   const total = chapters.length
   const current = chapters[active]
+  /* The sizer never moves, but Face reads a motion value for its dimming
+     layer; a constant one avoids a second code path. */
+  const still = useMotionValue(0)
 
-  /* The longest paragraph sets the reading area's height, invisibly, so
-     a shorter chapter does not pull the controls up and a longer one does
-     not push them down. */
   const longest = useMemo(
-    () => chapters.reduce((a, b) => (b.copy.length > a.copy.length ? b : a)),
+    () =>
+      chapters.reduce((a, b) =>
+        b.copy.length + b.title.length * 2 > a.copy.length + a.title.length * 2
+          ? b
+          : a
+      ),
     [chapters]
   )
+
+  /* Card width from the column; card height from the longest chapter at
+     that width. Both re-measure on resize. */
+  useLayoutEffect(() => {
+    const el = wrap.current
+    if (!el) return undefined
+    const measure = () => {
+      setColumnW(el.clientWidth)
+      if (sizerRef.current) setNeedH(sizerRef.current.offsetHeight)
+    }
+    measure()
+    if (typeof ResizeObserver === 'undefined') return undefined
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    if (sizerRef.current) ro.observe(sizerRef.current)
+    return () => ro.disconnect()
+  }, [])
+
+  const cardW = Math.max(240, Math.min(MAX_CARD_W, columnW - 24))
+  const compact = cardW < 420
+  const cardH = Math.max(Math.round(cardW * 1.12), needH)
+  const size = useMemo(() => ({ w: cardW, h: cardH }), [cardW, cardH])
+
+  /* The diagonal arc. One step out is half a card right and a third of a
+     card down (mirrored for the card before); the curve flattens the
+     second step so the line bends rather than runs straight. */
+  const geometry = useMemo(
+    () => ({
+      dx: Math.round(cardW * 0.5),
+      dy: Math.round(cardH * 0.34),
+      curve: 0.7,
+      rotation: 7,
+      scaleStep: 0.38,
+      minScale: 0.46,
+    }),
+    [cardW, cardH]
+  )
+  const height = Math.round(cardH * 1.42)
 
   const next = useCallback(() => fan.current?.next(), [])
   const prev = useCallback(() => fan.current?.prev(), [])
@@ -112,20 +176,36 @@ export function StoryFan({ chapters }) {
 
   const renderCard = useCallback(
     (chapter, _index, { offset, active: isActive }) => (
-      <Face chapter={chapter} offset={offset} active={isActive} />
+      <Face
+        chapter={chapter}
+        offset={offset}
+        active={isActive}
+        compact={compact}
+      />
     ),
-    []
+    [compact]
   )
 
   return (
-    <div>
+    <div ref={wrap} className="relative">
+      {/* Invisible, out of flow: the longest chapter at the card's width,
+          measured to size every card. */}
+      <div
+        ref={sizerRef}
+        aria-hidden="true"
+        className="invisible absolute left-0 top-0"
+        style={{ width: cardW }}
+      >
+        <Face chapter={longest} offset={still} active compact={compact} sizer />
+      </div>
+
       <div
         role="group"
         aria-roledescription="carousel"
         aria-label="The story, one chapter per card"
         tabIndex={0}
         onKeyDown={onKeyDown}
-        className="focus-visible:ring-[var(--amw-accent)] focus-visible:ring-offset-[var(--amw-bg)] -mx-6 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-offset-4 md:mx-0"
+        className="focus-visible:ring-[var(--amw-accent)] focus-visible:ring-offset-[var(--amw-bg)] rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-offset-4"
       >
         <CarouselStacked
           ref={fan}
@@ -133,31 +213,13 @@ export function StoryFan({ chapters }) {
           renderCard={renderCard}
           onChange={setActive}
           reduce={Boolean(reduce)}
+          size={size}
+          height={height}
+          geometry={geometry}
         />
       </div>
 
-      <div className="mt-2 grid">
-        <p
-          aria-hidden="true"
-          className="invisible col-start-1 row-start-1 max-w-prose text-base leading-relaxed md:text-lg"
-        >
-          {longest.copy}
-        </p>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.p
-            key={current.number}
-            initial={reduce ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduce ? { opacity: 1 } : { opacity: 0, y: -6 }}
-            transition={{ duration: reduce ? 0 : 0.22, ease: 'easeOut' }}
-            className="col-start-1 row-start-1 max-w-prose text-base leading-relaxed text-zinc-600 dark:text-zinc-400 md:text-lg"
-          >
-            {current.copy}
-          </motion.p>
-        </AnimatePresence>
-      </div>
-
-      <div className="mt-6 flex items-center justify-between gap-4">
+      <div className="mt-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-1.5" aria-hidden="true">
           {chapters.map((chapter, i) => (
             <span

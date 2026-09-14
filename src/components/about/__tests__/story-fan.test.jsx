@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 
 /* Reduced motion on: the fan snaps instead of springing, so which card is
    in front can be asserted without waiting on animation frames. The arc
@@ -17,29 +17,32 @@ const chapters = [
   { number: '03', title: 'Third', copy: 'Three.' },
 ]
 
+const fan = () => screen.getByRole('group', { name: /story/i })
 const live = () => screen.getByText(/^Chapter \d of 3/)
-const heading = (name) => screen.getByRole('heading', { name })
+const heading = (name) => within(fan()).getByRole('heading', { name })
 
 describe('StoryFan', () => {
-  it('raises the first chapter, reads its copy below, and announces it', () => {
+  it('raises the first chapter with its copy on the card, and announces it', () => {
     render(<StoryFan chapters={chapters} />)
     expect(heading('First')).toBeInTheDocument()
-    expect(screen.getByText('One.')).toBeInTheDocument()
+    expect(within(fan()).getByText('One.')).toBeInTheDocument()
     expect(live()).toHaveTextContent('Chapter 1 of 3: First')
     expect(screen.getByText('01 / 03')).toBeInTheDocument()
   })
 
-  it('hides the cards behind the raised one from assistive tech', () => {
+  it('hides every card but the raised one from assistive tech', () => {
     render(<StoryFan chapters={chapters} />)
+    // One exposed heading: the raised card. Side cards and the sizer are
+    // aria-hidden.
     expect(screen.getAllByRole('heading')).toHaveLength(1)
-    expect(screen.queryByRole('heading', { name: 'Second' })).toBeNull()
+    expect(within(fan()).queryByRole('heading', { name: 'Second' })).toBeNull()
   })
 
-  it('moves the fan forward from the button, swapping the copy', () => {
+  it('moves the fan forward from the button', () => {
     render(<StoryFan chapters={chapters} />)
     fireEvent.click(screen.getByRole('button', { name: 'Next chapter' }))
     expect(heading('Second')).toBeInTheDocument()
-    expect(screen.getByText('Two, a little longer.')).toBeInTheDocument()
+    expect(within(fan()).getByText('Two, a little longer.')).toBeInTheDocument()
     expect(live()).toHaveTextContent('Chapter 2 of 3: Second')
     expect(screen.getByText('02 / 03')).toBeInTheDocument()
   })
@@ -53,20 +56,20 @@ describe('StoryFan', () => {
 
   it('answers the keyboard on the fan itself', () => {
     render(<StoryFan chapters={chapters} />)
-    const fan = screen.getByRole('group', { name: /story/i })
-    fireEvent.keyDown(fan, { key: 'ArrowRight' })
+    fireEvent.keyDown(fan(), { key: 'ArrowRight' })
     expect(heading('Second')).toBeInTheDocument()
-    fireEvent.keyDown(fan, { key: 'ArrowLeft' })
+    fireEvent.keyDown(fan(), { key: 'ArrowLeft' })
     expect(heading('First')).toBeInTheDocument()
-    fireEvent.keyDown(fan, { key: ' ' })
+    fireEvent.keyDown(fan(), { key: ' ' })
     expect(heading('Second')).toBeInTheDocument()
   })
 
-  it('reserves the reading area for the longest chapter so nothing jumps', () => {
-    render(<StoryFan chapters={chapters} />)
-    const sizer = screen.getByText('Two, a little longer.', {
-      selector: '[aria-hidden="true"]',
-    })
-    expect(sizer).toHaveClass('invisible')
+  it('sizes every card from the longest chapter, out of flow and unseen', () => {
+    const { container } = render(<StoryFan chapters={chapters} />)
+    const sizer = container.querySelector(
+      '.invisible.absolute[aria-hidden="true"]'
+    )
+    expect(sizer).not.toBeNull()
+    expect(sizer).toHaveTextContent('Two, a little longer.')
   })
 })
