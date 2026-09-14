@@ -32,6 +32,15 @@ const DitherCursor = dynamic(() => import('./dither-cursor'), { ssr: false })
 const easeOut = [0.16, 1, 0.3, 1]
 const headlineText = 'Let’s Build Something Great'
 
+/* Words with their letters and the index of their first letter in the
+   whole line, so the stagger runs across the sentence, not per word. */
+const headlineWords = headlineText.split(' ').reduce((words, text) => {
+  const start = words.length
+    ? words[words.length - 1].start + words[words.length - 1].chars.length + 1
+    : 0
+  return [...words, { chars: text.split(''), start }]
+}, [])
+
 const cardData = [
   { label: 'Gearz', image: coverGearz },
   { label: 'Celestial Studio Salon', image: coverCelestial },
@@ -152,26 +161,39 @@ export function Hero() {
           className="mb-8 text-5xl font-bold tracking-tighter text-zinc-900 dark:text-zinc-50 md:text-8xl lg:text-8xl"
         >
           <span className="sr-only">{headlineText}</span>
+          {/* Letters animate one by one, but a line may only break between
+              words. Each letter used to be its own inline-block with nothing
+              holding a word together, and the browser is free to break a
+              line between any two inline-blocks: at some widths that split
+              "Something" into "Som" and "ething". Each word is now one
+              unbreakable box of letters, with an ordinary space between
+              words for the line to break on. */}
           <span aria-hidden="true">
-            {headlineText.split('').map((char, index) => (
-              <motion.span
-                key={index}
-                initial={
-                  reduceMotion
-                    ? { opacity: 1, filter: 'blur(0px)' }
-                    : { opacity: 0, filter: 'blur(10px)' }
-                }
-                animate={{ opacity: 1, filter: 'blur(0px)' }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.03,
-                  ease: 'easeOut',
-                }}
-                className="inline-block"
-                style={{ whiteSpace: char === ' ' ? 'pre' : 'normal' }}
-              >
-                {char}
-              </motion.span>
+            {headlineWords.map((word, w) => (
+              <span key={w}>
+                {w > 0 ? ' ' : null}
+                <span className="inline-block whitespace-nowrap">
+                  {word.chars.map((char, c) => (
+                    <motion.span
+                      key={c}
+                      initial={
+                        reduceMotion
+                          ? { opacity: 1, filter: 'blur(0px)' }
+                          : { opacity: 0, filter: 'blur(10px)' }
+                      }
+                      animate={{ opacity: 1, filter: 'blur(0px)' }}
+                      transition={{
+                        duration: 0.4,
+                        delay: (word.start + c) * 0.03,
+                        ease: 'easeOut',
+                      }}
+                      className="inline-block"
+                    >
+                      {char}
+                    </motion.span>
+                  ))}
+                </span>
+              </span>
             ))}
           </span>
         </h1>
