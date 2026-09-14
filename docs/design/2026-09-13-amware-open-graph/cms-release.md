@@ -14,7 +14,7 @@ Base: `origin/main` at `9d8ef43`. Implementation worktree: `codex/amware-og-cms`
 | Import and schema preparation | Complete | Explicit apply, repeatable, no replacement of custom images or publication changes |
 | Review and local verification | Complete | Focused tests, lint, formatting, types and independent review pass                 |
 | CMS assignment                | Complete | Seven uploaded assets assigned and fetched back; second run changes nothing        |
-| Main push                     | Ready    | Normal fast-forward push; remote SHA verified                                      |
+| Main push                     | Complete | Normal fast-forward push; remote SHA verified                                      |
 
 ## Baseline CMS evidence
 
@@ -29,3 +29,7 @@ The reviewed additive schema was applied. Media IDs 4–10 were uploaded through
 44 focused tests passed, alongside changed-file ESLint, formatting, TypeScript, independent review and the production webpack build (all 38 static pages generated). New generated Payload types required three runtime-neutral type corrections. The build also exposed the existing RSS legacy-renderer incompatibility; the reviewed streaming-renderer fix preserves feed content and passed the final build.
 
 The importer uses a dedicated Media/S3 configuration, two database connections, explicit schema safeguards, redacted logging and explicit exit after awaited completion/output flushing. Initial runtime-loading and connection-pool failures occurred before any product assignments; the corrected command completed and passed the repeat-run check.
+
+## Main publication
+
+Implementation commit `c0b20485e1b1f6500a9b8b7533b5ef268970db5b` was pushed normally to `origin/main`, and the remote branch SHA was read back and matched. All tasks above are complete. Hosted deployment and social-platform cache refresh are separate from the verified Git push.
