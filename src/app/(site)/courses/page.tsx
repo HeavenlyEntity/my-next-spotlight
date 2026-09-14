@@ -1,3 +1,4 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import { Container } from '@/components/Container'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import {
@@ -8,11 +9,14 @@ import {
 
 export const revalidate = 60
 
-export const metadata = {
-  title: 'Courses',
-  description:
-    'Practical, build-along courses drawn from real production engineering.',
-}
+export const metadata = withSocialImage(
+  {
+    title: 'Courses',
+    description:
+      'Practical, build-along courses drawn from real production engineering.',
+  },
+  'courses'
+)
 
 export default async function CoursesPage() {
   const payload = await getPayloadClient()

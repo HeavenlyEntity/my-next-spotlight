@@ -1,3 +1,4 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import Link from 'next/link'
 import { Container } from '@/components/Container'
 import { formatDate } from '@/lib/formatDate'
@@ -5,10 +6,13 @@ import { getPayloadClient } from '@/lib/getPayloadClient'
 
 export const revalidate = 60
 
-export const metadata = {
-  title: 'Blog',
-  description: 'Writing published from the CMS.',
-}
+export const metadata = withSocialImage(
+  {
+    title: 'Blog',
+    description: 'Writing published from the CMS.',
+  },
+  'blog'
+)
 
 export default async function BlogPage() {
   const payload = await getPayloadClient()

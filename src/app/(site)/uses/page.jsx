@@ -1,11 +1,16 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import { Card } from '@/components/Card'
 import { Section } from '@/components/Section'
 import { SimpleLayout } from '@/components/SimpleLayout'
 
-export const metadata = {
-  title: 'Uses',
-  description: 'Software I use, gadgets I love, and other things I recommend.',
-}
+export const metadata = withSocialImage(
+  {
+    title: 'Uses',
+    description:
+      'Software I use, gadgets I love, and other things I recommend.',
+  },
+  'uses'
+)
 
 function ToolsSection({ children, ...props }) {
   return (

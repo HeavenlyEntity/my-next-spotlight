@@ -1,12 +1,16 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import { Card } from '@/components/Card'
 import { Section } from '@/components/Section'
 import { SimpleLayout } from '@/components/SimpleLayout'
 
-export const metadata = {
-  title: 'Speaking',
-  description:
-    "I've spoken at events all around the world and been interviewed for many podcasts.",
-}
+export const metadata = withSocialImage(
+  {
+    title: 'Speaking',
+    description:
+      "I've spoken at events all around the world and been interviewed for many podcasts.",
+  },
+  'speaking'
+)
 
 function SpeakingSection({ children, ...props }) {
   return (

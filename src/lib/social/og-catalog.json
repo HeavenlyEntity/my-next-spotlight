@@ -1,0 +1,260 @@
+[
+  {
+    "key": "home",
+    "title": "AMWare — Strategy, systems and software",
+    "eyebrow": "FRACTIONAL CTO / ENGINEERING",
+    "lines": ["Business vision.", "Built into", "software."],
+    "subtitle": "Alec Mingione · Strategy to execution",
+    "path": "/",
+    "variant": "portrait",
+    "dark": true
+  },
+  {
+    "key": "about",
+    "title": "About Alec Mingione",
+    "eyebrow": "THE ENGINEER BEHIND AMWARE",
+    "lines": ["Engineer.", "Architect.", "Business ally."],
+    "subtitle": "Meet Alec Mingione",
+    "path": "/about",
+    "variant": "portrait",
+    "dark": false
+  },
+  {
+    "key": "story",
+    "title": "The AMWare story",
+    "eyebrow": "ORIGIN / PURPOSE / DIRECTION",
+    "lines": ["Every system", "starts with", "a conviction."],
+    "subtitle": "The AMWare story",
+    "path": "/story",
+    "variant": "brand",
+    "dark": true
+  },
+  {
+    "key": "services",
+    "title": "AMWare services — Fractional CTO and engineering",
+    "eyebrow": "FRACTIONAL CTO / BUILD ENGAGEMENTS",
+    "lines": ["Your next", "chapter needs", "a builder."],
+    "subtitle": "Senior technical thinking. Hands-on execution.",
+    "path": "/services",
+    "variant": "systems",
+    "dark": true
+  },
+  {
+    "key": "speaking",
+    "title": "Speaking — Alec Mingione",
+    "eyebrow": "SPEAKING / IDEAS / CONVERSATION",
+    "lines": ["Technology.", "Business.", "Perspective."],
+    "subtitle": "Talks with Alec Mingione",
+    "path": "/speaking",
+    "variant": "editorial",
+    "dark": false
+  },
+  {
+    "key": "uses",
+    "title": "Tools and workflow — AMWare",
+    "eyebrow": "THE WORKING TOOLKIT",
+    "lines": ["Good tools.", "Thoughtful", "workflows."],
+    "subtitle": "The setup behind the work",
+    "path": "/uses",
+    "variant": "systems",
+    "dark": false
+  },
+  {
+    "key": "courses",
+    "title": "AMWare courses",
+    "eyebrow": "COURSES / BUILD-ALONG LEARNING",
+    "lines": ["Learn systems.", "Build with", "understanding."],
+    "subtitle": "Go beyond the syntax",
+    "path": "/courses",
+    "variant": "editorial",
+    "dark": true
+  },
+  {
+    "key": "blog",
+    "title": "AMWare blog",
+    "eyebrow": "NOTES FROM THE WORK",
+    "lines": ["Ideas worth", "building on."],
+    "subtitle": "Engineering, products and business",
+    "path": "/blog",
+    "variant": "editorial",
+    "dark": false
+  },
+  {
+    "key": "articles",
+    "title": "AMWare articles",
+    "eyebrow": "THE LONGER VIEW",
+    "lines": ["Think deeply.", "Build clearly."],
+    "subtitle": "Essays on software and company building",
+    "path": "/articles",
+    "variant": "editorial",
+    "dark": true
+  },
+  {
+    "key": "founders",
+    "title": "Founders’ Desk — AMWare",
+    "eyebrow": "TOOLS FOR FOUNDERS",
+    "lines": ["Make the", "next decision", "a better one."],
+    "subtitle": "Equity. Offers. The bigger picture.",
+    "path": "/founders",
+    "variant": "decisions",
+    "dark": false
+  },
+  {
+    "key": "founders-equity",
+    "title": "Founder equity calculator — AMWare",
+    "eyebrow": "FOUNDERS’ DESK / EQUITY",
+    "lines": ["Understand", "your share", "of the future."],
+    "subtitle": "Explore founder equity scenarios",
+    "path": "/founders/equity",
+    "variant": "decisions",
+    "dark": true
+  },
+  {
+    "key": "founders-job-offer",
+    "title": "Job offer calculator — AMWare",
+    "eyebrow": "FOUNDERS’ DESK / OFFERS",
+    "lines": ["Look beyond", "the headline", "number."],
+    "subtitle": "Explore the shape of an offer",
+    "path": "/founders/job-offer",
+    "variant": "decisions",
+    "dark": false
+  },
+  {
+    "key": "contact",
+    "title": "Contact AMWare",
+    "eyebrow": "LET’S START A CONVERSATION",
+    "lines": ["What are", "you building", "next?"],
+    "subtitle": "Bring the challenge. Let’s talk it through.",
+    "path": "/contact",
+    "variant": "brand",
+    "dark": false
+  },
+  {
+    "key": "contact-offer-review",
+    "title": "Offer review — AMWare",
+    "eyebrow": "A SECOND PERSPECTIVE",
+    "lines": ["Your offer.", "A clearer", "perspective."],
+    "subtitle": "Start an offer review conversation",
+    "path": "/contact/offer-review",
+    "variant": "decisions",
+    "dark": true
+  },
+  {
+    "key": "projects",
+    "title": "AMWare projects",
+    "eyebrow": "SELECTED WORK",
+    "lines": ["Ideas made", "real."],
+    "subtitle": "Software, systems and products by AMWare",
+    "path": "/projects",
+    "variant": "systems",
+    "dark": false
+  },
+  {
+    "key": "products",
+    "title": "WareKit — NetSuite starter kits by AMWare",
+    "eyebrow": "WAREKIT / NETSUITE FOUNDATIONS",
+    "lines": ["Your next", "NetSuite build", "starts here."],
+    "subtitle": "Explore React and Next.js starter kits",
+    "path": "/products",
+    "variant": "kit",
+    "dark": true,
+    "stack": "REACT / NEXT.JS",
+    "edition": "STARTER KITS"
+  },
+  {
+    "key": "pricing",
+    "title": "WareKit pricing and developer licenses",
+    "eyebrow": "WAREKIT / PRICING & LICENSES",
+    "lines": ["Find the kit", "that fits", "your work."],
+    "subtitle": "Compare editions and developer licenses",
+    "path": "/pricing",
+    "variant": "kit",
+    "dark": false,
+    "stack": "WAREKIT",
+    "edition": "COMPARE EDITIONS"
+  },
+  {
+    "key": "react-lite",
+    "title": "WareKit React for NetSuite — Lite",
+    "eyebrow": "WAREKIT / REACT / LITE",
+    "lines": ["React.", "Inside", "NetSuite."],
+    "subtitle": "A source foundation for internal tools",
+    "path": "/products/warekit-react-netsuite-lite",
+    "variant": "kit",
+    "dark": false,
+    "stack": "REACT + NETSUITE",
+    "edition": "LITE"
+  },
+  {
+    "key": "react-pro",
+    "title": "WareKit React for NetSuite — Pro",
+    "eyebrow": "WAREKIT / REACT / PRO",
+    "lines": ["React.", "Inside", "NetSuite."],
+    "subtitle": "Explore the planned Pro edition",
+    "path": "/products/warekit-react-netsuite-pro",
+    "variant": "kit",
+    "dark": true,
+    "stack": "REACT + NETSUITE",
+    "edition": "PRO / PLANNED"
+  },
+  {
+    "key": "react-team",
+    "title": "WareKit React for NetSuite — Team",
+    "eyebrow": "WAREKIT / REACT / TEAM",
+    "lines": ["React.", "Inside", "NetSuite."],
+    "subtitle": "Explore the planned Team edition",
+    "path": "/products/warekit-react-netsuite-team",
+    "variant": "kit",
+    "dark": false,
+    "stack": "REACT + NETSUITE",
+    "edition": "TEAM / PLANNED"
+  },
+  {
+    "key": "next-lite",
+    "title": "WareKit Next.js for NetSuite — Lite",
+    "eyebrow": "WAREKIT / NEXT.JS / LITE",
+    "lines": ["Next.js.", "Connected", "to NetSuite."],
+    "subtitle": "An independently hosted web foundation",
+    "path": "/products/warekit-next-netsuite-lite",
+    "variant": "kit",
+    "dark": false,
+    "stack": "NEXT.JS + NETSUITE",
+    "edition": "LITE"
+  },
+  {
+    "key": "next-pro",
+    "title": "WareKit Next.js for NetSuite — Pro",
+    "eyebrow": "WAREKIT / NEXT.JS / PRO",
+    "lines": ["Next.js.", "Connected", "to NetSuite."],
+    "subtitle": "Explore NetSuite-backed sessions",
+    "path": "/products/warekit-next-netsuite-pro",
+    "variant": "kit",
+    "dark": true,
+    "stack": "NEXT.JS + NETSUITE",
+    "edition": "PRO"
+  },
+  {
+    "key": "next-team",
+    "title": "WareKit Next.js for NetSuite — Team",
+    "eyebrow": "WAREKIT / NEXT.JS / TEAM",
+    "lines": ["One kit.", "Your whole", "delivery team."],
+    "subtitle": "Next.js foundations for NetSuite projects",
+    "path": "/products/warekit-next-netsuite-team",
+    "variant": "kit",
+    "dark": true,
+    "stack": "NEXT.JS + NETSUITE",
+    "edition": "TEAM"
+  },
+  {
+    "key": "warekit-commerce",
+    "title": "WareKit commerce — AMWare",
+    "eyebrow": "WAREKIT / COMMERCE",
+    "lines": ["Content.", "Commerce.", "Access."],
+    "subtitle": "A foundation under development",
+    "path": "/products/warekit",
+    "variant": "kit",
+    "dark": false,
+    "stack": "WAREKIT COMMERCE",
+    "edition": "IN DEVELOPMENT"
+  }
+]

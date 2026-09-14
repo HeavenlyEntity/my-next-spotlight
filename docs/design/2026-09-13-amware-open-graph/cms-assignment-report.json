@@ -1,0 +1,71 @@
+{
+  "products": [
+    {
+      "productId": 2,
+      "slug": "warekit",
+      "status": "draft",
+      "mediaId": 10,
+      "filename": "amware-og-warekit-commerce-d17d4a85a99bb59a9b1524fb391c1d43f3ede00b3f5fb1f763660ce8bd64b88c.png",
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "productId": 3,
+      "slug": "warekit-react-netsuite-lite",
+      "status": "draft",
+      "mediaId": 4,
+      "filename": "amware-og-react-lite-3ebb8fa09df26a88a0317c41264be2be67489c6ef9e307fd78c02b3c27d4eedf.png",
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "productId": 4,
+      "slug": "warekit-react-netsuite-pro",
+      "status": "draft",
+      "mediaId": 5,
+      "filename": "amware-og-react-pro-5551882260cd0c699efa3d2c525b6583d8cdb92efc9fb183ce9b490876676eee.png",
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "productId": 5,
+      "slug": "warekit-next-netsuite-lite",
+      "status": "draft",
+      "mediaId": 7,
+      "filename": "amware-og-next-lite-ca650b54d8ff381dfc4ef0ca3d1c19b2c52199d6b756a6520f2a892d6673bc2c.png",
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "productId": 6,
+      "slug": "warekit-next-netsuite-pro",
+      "status": "draft",
+      "mediaId": 8,
+      "filename": "amware-og-next-pro-d953cd58e87742249b7269260ffd0bc807eac45f28f81fef8526dae8b1a93c80.png",
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "productId": 7,
+      "slug": "warekit-next-netsuite-team",
+      "status": "draft",
+      "mediaId": 9,
+      "filename": "amware-og-next-team-1b4caf2b7ccd703871bc5e9b2a9b7c700938d7fc3bd960be6b35ce81555db256.png",
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "productId": 8,
+      "slug": "warekit-react-netsuite-team",
+      "status": "draft",
+      "mediaId": 6,
+      "filename": "amware-og-react-team-6a3ef654855a05d003444d96a46ca3eafe9d6bb96decb20780a4522a03f87da2.png",
+      "width": 1200,
+      "height": 630
+    }
+  ],
+  "productDataUnchangedExceptOgImage": true,
+  "repeatApply": "7 already-assigned; no duplicate media",
+  "delivery": "All seven production media URLs returned byte-identical PNGs.",
+  "verification": "44 focused tests, lint, formatting, TypeScript, independent review and full production webpack build passed."
+}

@@ -1,3 +1,4 @@
+import { cmsSocialImage, withSocialImage } from '@/lib/social/metadata'
 import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
 import { RichText } from '@/components/site/RichText'
@@ -47,7 +48,15 @@ export async function generateMetadata({
   const { slug } = await params
   const post = await getPost(slug)
   if (!post) return {}
-  return { title: post.title, description: post.description ?? undefined }
+  return withSocialImage(
+    {
+      title: post.title,
+      description: post.description ?? undefined,
+      openGraph: { type: 'article' },
+    },
+    'blog',
+    cmsSocialImage(post.ogImage)
+  )
 }
 
 export default async function BlogPostPage({

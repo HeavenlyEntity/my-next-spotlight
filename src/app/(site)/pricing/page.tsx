@@ -1,3 +1,4 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import Link from 'next/link'
 import { Container } from '@/components/Container'
 import { inlineCode } from '@/components/site/inline-code'
@@ -17,11 +18,14 @@ import {
 
 export const revalidate = 60
 
-export const metadata = {
-  title: 'Pricing',
-  description:
-    'WareKit pricing: free Lite kits, single-seat Pro licences and five-seat Team licences for the AMWARE NetSuite starter kits.',
-}
+export const metadata = withSocialImage(
+  {
+    title: 'Pricing',
+    description:
+      'WareKit pricing: free Lite kits, single-seat Pro licences and five-seat Team licences for the AMWARE NetSuite starter kits.',
+  },
+  'pricing'
+)
 
 /* Everything commercial is read from Payload: prices, seats, bullets, which
    column a kit sits in, which tier is framed as recommended, and the copy

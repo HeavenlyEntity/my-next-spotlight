@@ -1,3 +1,4 @@
+import { withProductSocialImage } from '@/lib/social/metadata'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
@@ -53,7 +54,10 @@ export async function generateMetadata({
   const { slug } = await params
   const product = await getProduct(slug)
   if (!product) return {}
-  return { title: product.name, description: product.tagline ?? undefined }
+  return withProductSocialImage(
+    { title: product.name, description: product.tagline ?? undefined },
+    product
+  )
 }
 
 export default async function ProductPage({

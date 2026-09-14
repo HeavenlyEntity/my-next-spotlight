@@ -1,4 +1,5 @@
-import { renderToStaticMarkup } from 'react-dom/server.edge'
+import { createElement } from 'react'
+import { renderToReadableStream } from 'react-dom/server.edge'
 import { Feed } from 'feed'
 
 import { getAllArticles } from './getAllArticles'
@@ -25,7 +26,11 @@ export async function buildFeed() {
 
   for (let article of articles) {
     let url = `${siteUrl}/articles/${article.slug}`
-    let html = renderToStaticMarkup(<article.component isRssFeed />)
+    const stream = await renderToReadableStream(
+      createElement(article.component, { isRssFeed: true })
+    )
+    await stream.allReady
+    const html = await new Response(stream).text()
     feed.addItem({
       title: article.title,
       id: url,

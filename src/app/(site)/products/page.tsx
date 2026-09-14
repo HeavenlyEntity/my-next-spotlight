@@ -1,3 +1,4 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import { Container } from '@/components/Container'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import {
@@ -8,11 +9,14 @@ import {
 
 export const revalidate = 60
 
-export const metadata = {
-  title: 'Products',
-  description:
-    'Engineering-grade boilerplates and digital tooling for founders, wired, typed and documented so you ship the product, not the plumbing.',
-}
+export const metadata = withSocialImage(
+  {
+    title: 'Products',
+    description:
+      'Engineering-grade boilerplates and digital tooling for founders, wired, typed and documented so you ship the product, not the plumbing.',
+  },
+  'products'
+)
 
 export default async function ProductsPage() {
   const payload = await getPayloadClient()

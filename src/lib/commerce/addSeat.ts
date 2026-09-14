@@ -101,9 +101,7 @@ export async function addSeat(
     return fail(null, 'This licence has no repository attached. Get in touch.')
   }
 
-  const members = (purchase.seatMembers || []) as {
-    githubUsername?: string | null
-  }[]
+  const members = purchase.seatMembers || []
   const limit = seatLimit(productDoc)
   const snapshot = { used: listSeats(members), limit }
 

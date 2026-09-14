@@ -1,3 +1,4 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import ContactForm from '../ContactForm'
 
 /* Static landing for the Founders' Desk CTA. A real route (not a query
@@ -5,11 +6,14 @@ import ContactForm from '../ContactForm'
    the desk. The form only prefills a subject and a template with
    blanks; nothing from the calculator travels here. */
 
-export const metadata = {
-  title: 'Offer review',
-  description:
-    'Send the equity offer you ran through the Founders’ Desk and get a read from AMWARE.',
-}
+export const metadata = withSocialImage(
+  {
+    title: 'Offer review',
+    description:
+      'Send the equity offer you ran through the Founders’ Desk and get a read from AMWARE.',
+  },
+  'contact-offer-review'
+)
 
 export default function OfferReviewPage() {
   return <ContactForm topic="offer-review" />

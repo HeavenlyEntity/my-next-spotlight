@@ -1,3 +1,4 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import { Container } from '@/components/Container'
 import { RichText } from '@/components/site/RichText'
 import { getPayloadClient } from '@/lib/getPayloadClient'
@@ -9,11 +10,14 @@ import {
 
 export const revalidate = 60
 
-export const metadata = {
-  title: 'Services',
-  description:
-    'Fractional CTO leadership and focused engineering engagements — scoped, senior, outcome-driven.',
-}
+export const metadata = withSocialImage(
+  {
+    title: 'Services',
+    description:
+      'Fractional CTO leadership and focused engineering engagements — scoped, senior, outcome-driven.',
+  },
+  'services'
+)
 
 export default async function ServicesPage() {
   const payload = await getPayloadClient()

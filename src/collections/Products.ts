@@ -123,6 +123,16 @@ export const Products: CollectionConfig = {
     },
     { name: 'heroImage', type: 'upload', relationTo: 'media' },
     {
+      name: 'ogImage',
+      label: 'Social preview image',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description:
+          'Optional 1200 × 630 social preview. Falls back to edition artwork for WareKit, or the product hero image and AMWare branding for other products.',
+      },
+    },
+    {
       name: 'gallery',
       type: 'array',
       fields: [{ name: 'image', type: 'upload', relationTo: 'media' }],

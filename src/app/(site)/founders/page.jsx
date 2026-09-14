@@ -1,3 +1,4 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 
@@ -12,11 +13,14 @@ import {
   soonTools,
 } from '@/lib/founders/tools'
 
-export const metadata = {
-  title: 'Founders’ Desk',
-  description:
-    'Tools for the person who builds the thing. Find out whether you are being sized as a hire while doing founder work, then what to ask for instead, in cash and equity, with the market data behind each number.',
-}
+export const metadata = withSocialImage(
+  {
+    title: 'Founders’ Desk',
+    description:
+      'Tools for the person who builds the thing. Find out whether you are being sized as a hire while doing founder work, then what to ask for instead, in cash and equity, with the market data behind each number.',
+  },
+  'founders'
+)
 
 /* The desk landing is one composition: eyebrow, the hook, one sentence, one
    action, and the anchor. Never a card grid, never a sidebar.

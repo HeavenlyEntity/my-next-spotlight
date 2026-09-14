@@ -1,3 +1,4 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import { notFound } from 'next/navigation'
 import { Container } from '@/components/Container'
 import { CourseBody } from '@/components/site/CourseBody'
@@ -37,7 +38,10 @@ export async function generateMetadata({
   const { slug } = await params
   const course = await getCourse(slug)
   if (!course) return {}
-  return { title: course.title, description: course.summary ?? undefined }
+  return withSocialImage(
+    { title: course.title, description: course.summary ?? undefined },
+    'courses'
+  )
 }
 
 export default async function CoursePage({

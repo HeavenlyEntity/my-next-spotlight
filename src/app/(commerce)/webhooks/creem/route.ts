@@ -1,3 +1,4 @@
+import type { Purchase } from '@/payload-types'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { verifyCreemSignature } from '@/lib/commerce/creem'
 import { tryCreateAccessToken } from '@/lib/commerce/accessToken'
@@ -169,7 +170,10 @@ async function handleSubscriptionState(event) {
     return new Response('ignored (missing fields)', { status: 200 })
   }
 
-  const state = String(event.eventType).slice('subscription.'.length)
+  // POST has already checked the closed SUBSCRIPTION_STATES set.
+  const state = String(event.eventType).slice(
+    'subscription.'.length
+  ) as Purchase['subscriptionStatus']
   const payload = await getPayloadClient()
 
   const rows = await payload.find({

@@ -1,5 +1,6 @@
 'use server'
 
+import type { Product } from '@/payload-types'
 import crypto from 'crypto'
 import { redirect } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
@@ -94,7 +95,8 @@ export async function createCheckout(
      object.request_id, so signing it into the return URL lets the page match
      a real, paid purchase. See onboardingLink.ts for why the signature alone
      is not enough. */
-  const needsOnboarding = itemType === 'product' && item.type === 'boilerplate'
+  const needsOnboarding =
+    itemType === 'product' && (item as Product).type === 'boilerplate'
 
   let successUrl = `${site}/checkout/success`
   if (needsOnboarding) {

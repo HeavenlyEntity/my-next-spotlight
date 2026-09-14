@@ -1,3 +1,4 @@
+import { withSocialImage } from '@/lib/social/metadata'
 import { notFound } from 'next/navigation'
 import { getAllArticles } from '@/lib/getAllArticles'
 
@@ -38,29 +39,30 @@ export async function generateMetadata({ params }) {
         .split(',')
         .map((k) => k.trim())
     : undefined
-  return {
-    title: meta.title,
-    description: meta.description,
-    authors: meta.author ? [{ name: meta.author }] : undefined,
-    keywords,
-    alternates: canonical ? { canonical } : undefined,
-    openGraph: {
-      type: 'article',
+  return withSocialImage(
+    {
       title: meta.title,
       description: meta.description,
-      url: canonical,
-      images: ogImage ? [{ url: ogImage, alt: meta.og_image_alt }] : undefined,
-      publishedTime: meta.date,
-      authors: meta.author ? [meta.author] : undefined,
-      tags: meta.tags,
+      authors: meta.author ? [{ name: meta.author }] : undefined,
+      keywords,
+      alternates: canonical ? { canonical } : undefined,
+      openGraph: {
+        type: 'article',
+        title: meta.title,
+        description: meta.description,
+        url: canonical,
+        publishedTime: meta.date,
+        authors: meta.author ? [meta.author] : undefined,
+        tags: meta.tags,
+      },
+      twitter: {
+        title: meta.title,
+        description: meta.description,
+      },
     },
-    twitter: {
-      card: ogImage ? 'summary_large_image' : 'summary',
-      title: meta.title,
-      description: meta.description,
-      images: ogImage ? [ogImage] : undefined,
-    },
-  }
+    'articles',
+    ogImage ? { url: ogImage, alt: meta.og_image_alt } : undefined
+  )
 }
 
 export default async function ArticlePage({ params }) {

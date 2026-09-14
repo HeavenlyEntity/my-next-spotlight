@@ -1,0 +1,170 @@
+[
+  {
+    "key": "home",
+    "path": "/",
+    "width": 1200,
+    "height": 630,
+    "bytes": 251709
+  },
+  {
+    "key": "about",
+    "path": "/about",
+    "width": 1200,
+    "height": 630,
+    "bytes": 250619
+  },
+  {
+    "key": "story",
+    "path": "/story",
+    "width": 1200,
+    "height": 630,
+    "bytes": 70124
+  },
+  {
+    "key": "services",
+    "path": "/services",
+    "width": 1200,
+    "height": 630,
+    "bytes": 43430
+  },
+  {
+    "key": "speaking",
+    "path": "/speaking",
+    "width": 1200,
+    "height": 630,
+    "bytes": 57790
+  },
+  {
+    "key": "uses",
+    "path": "/uses",
+    "width": 1200,
+    "height": 630,
+    "bytes": 40652
+  },
+  {
+    "key": "courses",
+    "path": "/courses",
+    "width": 1200,
+    "height": 630,
+    "bytes": 58788
+  },
+  {
+    "key": "blog",
+    "path": "/blog",
+    "width": 1200,
+    "height": 630,
+    "bytes": 50962
+  },
+  {
+    "key": "articles",
+    "path": "/articles",
+    "width": 1200,
+    "height": 630,
+    "bytes": 52382
+  },
+  {
+    "key": "founders",
+    "path": "/founders",
+    "width": 1200,
+    "height": 630,
+    "bytes": 58223
+  },
+  {
+    "key": "founders-equity",
+    "path": "/founders/equity",
+    "width": 1200,
+    "height": 630,
+    "bytes": 58794
+  },
+  {
+    "key": "founders-job-offer",
+    "path": "/founders/job-offer",
+    "width": 1200,
+    "height": 630,
+    "bytes": 57061
+  },
+  {
+    "key": "contact",
+    "path": "/contact",
+    "width": 1200,
+    "height": 630,
+    "bytes": 66133
+  },
+  {
+    "key": "contact-offer-review",
+    "path": "/contact/offer-review",
+    "width": 1200,
+    "height": 630,
+    "bytes": 59445
+  },
+  {
+    "key": "projects",
+    "path": "/projects",
+    "width": 1200,
+    "height": 630,
+    "bytes": 34339
+  },
+  {
+    "key": "products",
+    "path": "/products",
+    "width": 1200,
+    "height": 630,
+    "bytes": 59913
+  },
+  {
+    "key": "pricing",
+    "path": "/pricing",
+    "width": 1200,
+    "height": 630,
+    "bytes": 56791
+  },
+  {
+    "key": "react-lite",
+    "path": "/products/warekit-react-netsuite-lite",
+    "width": 1200,
+    "height": 630,
+    "bytes": 55034
+  },
+  {
+    "key": "react-pro",
+    "path": "/products/warekit-react-netsuite-pro",
+    "width": 1200,
+    "height": 630,
+    "bytes": 55266
+  },
+  {
+    "key": "react-team",
+    "path": "/products/warekit-react-netsuite-team",
+    "width": 1200,
+    "height": 630,
+    "bytes": 56129
+  },
+  {
+    "key": "next-lite",
+    "path": "/products/warekit-next-netsuite-lite",
+    "width": 1200,
+    "height": 630,
+    "bytes": 59824
+  },
+  {
+    "key": "next-pro",
+    "path": "/products/warekit-next-netsuite-pro",
+    "width": 1200,
+    "height": 630,
+    "bytes": 59293
+  },
+  {
+    "key": "next-team",
+    "path": "/products/warekit-next-netsuite-team",
+    "width": 1200,
+    "height": 630,
+    "bytes": 60133
+  },
+  {
+    "key": "warekit-commerce",
+    "path": "/products/warekit",
+    "width": 1200,
+    "height": 630,
+    "bytes": 59146
+  }
+]
