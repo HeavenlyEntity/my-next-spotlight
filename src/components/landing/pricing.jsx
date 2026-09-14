@@ -211,7 +211,7 @@ function KitsEmpty() {
       </p>
       <Link
         href="/contact"
-        className="hover:text-[var(--amw-accent-ink)] mt-6 inline-flex text-sm font-medium text-zinc-700 no-underline transition-colors dark:text-zinc-300"
+        className="hover:text-[var(--amw-accent-ink)] min-h-11 mt-4 inline-flex items-center text-sm font-medium text-zinc-700 no-underline transition-colors dark:text-zinc-300"
       >
         Tell me when they are ready →
       </Link>
