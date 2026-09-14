@@ -224,6 +224,7 @@ export function StoryFan({ chapters }) {
           size={size}
           height={height}
           geometry={geometry}
+          bounds={columnW || undefined}
         />
       </div>
 

@@ -110,6 +110,7 @@ export const CarouselStacked = forwardRef(function CarouselStacked(
     size,
     height,
     geometry,
+    bounds,
     className,
   },
   ref
@@ -200,6 +201,7 @@ export const CarouselStacked = forwardRef(function CarouselStacked(
           progress={progress}
           geometry={geometry}
           size={size}
+          bounds={bounds}
           active={i === active}
           render={({ offset, active: isActive }) =>
             renderCard(item, i, { offset, active: isActive })
