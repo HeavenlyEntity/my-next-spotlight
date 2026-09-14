@@ -141,20 +141,25 @@ export function StoryFan({ chapters }) {
   const cardH = Math.max(Math.round(cardW * 1.12), needH)
   const size = useMemo(() => ({ w: cardW, h: cardH }), [cardW, cardH])
 
-  /* The diagonal arc. One step out is half a card right and a third of a
-     card down (mirrored for the card before); the curve flattens the
-     second step so the line bends rather than runs straight. */
-  const geometry = useMemo(
-    () => ({
-      dx: Math.round(cardW * 0.5),
+  /* The diagonal arc. One step out is up to half a card right and a
+     third of a card down (mirrored for the card before); the curve
+     flattens the second step so the line bends rather than runs straight.
+     The horizontal step is capped so the card one step out sits inside
+     the column instead of being cut at its edge: nothing here clips, the
+     page does, and only at the paper's edge. */
+  const scaleStep = 0.38
+  const geometry = useMemo(() => {
+    const neighbourHalf = (cardW * (1 - scaleStep)) / 2
+    const fits = Math.max(0, (columnW - cardW) / 2 + cardW / 2 - neighbourHalf)
+    return {
+      dx: Math.round(Math.max(cardW * 0.26, Math.min(cardW * 0.5, fits))),
       dy: Math.round(cardH * 0.34),
       curve: 0.7,
       rotation: 7,
-      scaleStep: 0.38,
+      scaleStep,
       minScale: 0.46,
-    }),
-    [cardW, cardH]
-  )
+    }
+  }, [cardW, cardH, columnW])
   const height = Math.round(cardH * 1.42)
 
   const next = useCallback(() => fan.current?.next(), [])
@@ -205,7 +210,10 @@ export function StoryFan({ chapters }) {
         aria-label="The story, one chapter per card"
         tabIndex={0}
         onKeyDown={onKeyDown}
-        className="focus-visible:ring-[var(--amw-accent)] focus-visible:ring-offset-[var(--amw-bg)] rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-offset-4"
+        /* No rounded-2xl here: a stylesheet rule gives that class a card
+           shadow, which drew a phantom card the size of the whole fan. The
+           radius is only wanted with the focus ring. */
+        className="focus-visible:ring-[var(--amw-accent)] focus-visible:ring-offset-[var(--amw-bg)] outline-none focus-visible:rounded-2xl focus-visible:ring-2 focus-visible:ring-offset-4"
       >
         <CarouselStacked
           ref={fan}

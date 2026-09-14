@@ -128,8 +128,10 @@ export default function AboutContent() {
         </div>
       </section>
 
-      {/* Story: sticky profile column beside the chapter fan */}
-      <section className="px-6 py-16 md:py-24">
+      {/* Story: sticky profile column beside the chapter fan. The fan's
+          outer cards are allowed past the column; the section is the paper,
+          and the paper is where overflow gets cut. */}
+      <section className="overflow-x-clip px-6 py-16 md:py-24">
         <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
           <motion.div
             ref={columnRef}

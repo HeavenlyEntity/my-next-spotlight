@@ -29,6 +29,9 @@ import { cn } from '@/lib/utils'
    - card size and the fan's height are props, decided by the parent from
      its own container and content, not by the window;
    - the card is a render prop;
+   - nothing is clipped here. The parent decides where overflow is cut
+     (the page's content pane, not the column), and sizes the arc so the
+     cards it wants seen fit inside it;
    - next() and prev() on a ref, onChange for the card in front, and a
      reduced-motion snap. The original is drag-only, which is no way in
      for a keyboard. */
@@ -155,7 +158,7 @@ export const CarouselStacked = forwardRef(function CarouselStacked(
   return (
     <div
       className={cn(
-        'relative flex w-full select-none items-center justify-center overflow-hidden',
+        'relative flex w-full select-none items-center justify-center overflow-visible',
         className
       )}
       style={{ height }}
