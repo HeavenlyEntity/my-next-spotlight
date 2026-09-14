@@ -15,9 +15,12 @@ import ClickStack from '@/components/react-bits/click-stack'
    on top and a contact shadow under the pile, so the problem does not
    exist to fix.
 
-   GLASS, STILL. The faces keep the holographic coating from storefront.css
-   (a translucent pane, a fixed specular corner, a tint, grain) because that
-   is the page's material; only the geometry changed.
+   SOLID, NOT GLASS. The coating from storefront.css stays (the fixed
+   specular corner, the tint, the grain), but on an opaque card. The old
+   pane was 68% translucent with a backdrop blur, which worked when the
+   thing beneath it was page background; in a deck the next four chapters
+   sit directly beneath, and their text bled through the front card. A
+   flash card is card stock. You read the one on top.
 
    HEIGHT. The stack positions every card absolutely, so the deck has no
    height of its own. A hidden copy of the longest chapter sits in flow and
@@ -38,7 +41,7 @@ function Face({ chapter, front }) {
   return (
     <div
       aria-hidden={front ? undefined : true}
-      className="amw-holo-pane border-[var(--amw-line-strong)] relative flex h-full flex-col overflow-hidden rounded-2xl border p-6 md:p-8"
+      className="bg-[var(--amw-card)] border-[var(--amw-line-strong)] relative flex h-full flex-col overflow-hidden rounded-2xl border p-6 md:p-8"
     >
       <span aria-hidden="true" className="amw-holo-tint" />
       <span aria-hidden="true" className="amw-holo-shift" />
@@ -158,7 +161,7 @@ export function StoryDeck({ chapters }) {
             visibleCount={VISIBLE}
             duration={reduce ? 0 : 0.4}
             borderRadius={16}
-            cardColor="transparent"
+            cardColor="var(--amw-card)"
             /* Soft and tinted to the page, never a black slab: the pile
                sits on the page, it does not float above it. */
             shadowBlur={28}
