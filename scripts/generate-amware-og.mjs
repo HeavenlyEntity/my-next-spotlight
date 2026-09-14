@@ -53,28 +53,53 @@ function artwork(item) {
       { position: 'relative', width: 400, height: 430, alignItems: 'center' },
       box({
         position: 'absolute',
-        top: 19,
-        left: 11,
-        width: 378,
-        height: 378,
-        borderRadius: 189,
+        top: 26,
+        left: 38,
+        width: 320,
+        height: 320,
+        borderRadius: 160,
         border: `1px solid ${faint}`,
+        background: surface,
       }),
-      box({
-        position: 'absolute',
-        top: 43,
-        left: 35,
-        width: 330,
-        height: 330,
-        borderRadius: 165,
-        background: mint,
-      }),
-      h('img', {
-        src: portrait,
-        width: 400,
-        height: 430,
-        style: { position: 'absolute', top: 0, left: 0, objectFit: 'contain' },
-      })
+      box(
+        {
+          position: 'absolute',
+          top: 58,
+          left: 0,
+          width: 320,
+          height: 320,
+          borderRadius: 160,
+          background: mint,
+          border: '1px solid #96c7ac',
+          overflow: 'hidden',
+        },
+        h('img', {
+          src: portrait,
+          width: 360,
+          height: 387,
+          style: {
+            position: 'absolute',
+            top: -12,
+            left: -25,
+            objectFit: 'contain',
+          },
+        })
+      ),
+      box(
+        {
+          position: 'absolute',
+          top: 263,
+          left: 260,
+          width: 132,
+          height: 132,
+          borderRadius: 66,
+          border: `6px solid ${item.dark ? '#162c24' : '#e8ece2'}`,
+          background: mint,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        mark(83)
+      )
     )
   }
   if (item.variant === 'kit') {
@@ -515,6 +540,28 @@ await sharp({
   .composite(thumbs)
   .png()
   .toFile(path.join(review, 'contact-sheet.png'))
+
+const portraitThumbs = await Promise.all(
+  ['home', 'about'].map(async (key, i) => ({
+    input: await sharp(path.join(output, `${key}.png`))
+      .resize(480, 252)
+      .png()
+      .toBuffer(),
+    left: 16 + i * 496,
+    top: 16,
+  }))
+)
+await sharp({
+  create: {
+    width: 1008,
+    height: 284,
+    channels: 3,
+    background: '#d6dbd2',
+  },
+})
+  .composite(portraitThumbs)
+  .png()
+  .toFile(path.join(review, 'portrait-thumbnails.png'))
 
 const escapeHtml = (s) =>
   s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;')

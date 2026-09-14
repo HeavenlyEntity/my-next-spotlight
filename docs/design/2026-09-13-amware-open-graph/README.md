@@ -50,3 +50,9 @@ The existing Speaking page contains inherited marketing copy whose factual claim
 - Regenerated the 24-cover gallery, contact sheet and asset report. SHA-256 comparison confirmed only `home.png` and `about.png` changed; the other 22 PNGs remain byte-identical.
 - Verified the updated gallery at 390px and 1440px: no horizontal overflow; all 24 images decoded at 1200 × 630. ESLint, Prettier and TypeScript checks passed.
 - Largest regenerated PNG: 251,709 bytes.
+
+## Circular portrait refinement
+
+Home and About now use a portrait clipped inside a 320px circle, an offset circular backing layer and a separate 132px crown circle beside the portrait. The crown overlaps the shoulder edge without covering the face. The original face, hair and headline remain fully visible. This intentionally replaces the earlier full-cutout treatment at the user's request.
+
+Full-size and paired 480px thumbnails were visually reviewed. The generator now refreshes `portrait-thumbnails.png` automatically. Independent review, changed-script ESLint/formatting and TypeScript checks passed. SHA-256 comparison confirmed the other 22 PNGs are unchanged. No product CMS assignments or application metadata changed.
