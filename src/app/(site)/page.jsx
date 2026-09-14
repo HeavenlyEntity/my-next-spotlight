@@ -58,6 +58,7 @@ export default async function HomePage() {
 
   let products = []
   let services = []
+  let kits = []
   let catalogError = false
 
   try {
@@ -83,6 +84,9 @@ export default async function HomePage() {
     const featured = productsRes.docs.filter((p) => p.featured)
     products = (featured.length > 0 ? featured : productsRes.docs).slice(0, 3)
     services = servicesRes.docs.slice(0, 3)
+    /* The published kits, for the homepage tier cards. Same rows /pricing
+       reads, so the two pages cannot quote different prices. */
+    kits = productsRes.docs.filter((p) => p.type === 'boilerplate')
   } catch {
     catalogError = true
   }
@@ -92,6 +96,7 @@ export default async function HomePage() {
       articles={articles}
       products={products}
       services={services}
+      kits={kits}
       catalogError={catalogError}
     />
   )

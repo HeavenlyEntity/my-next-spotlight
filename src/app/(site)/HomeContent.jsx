@@ -16,7 +16,7 @@ import { MasterpieceInterlude } from '@/components/landing/glyph-matrix/masterpi
    The previous terminal-cover-sheet homepage (crown hero, catalog,
    masonry, service record) is preserved in HomeContent.legacy.jsx. */
 
-export default function HomeContent() {
+export default function HomeContent({ kits = [] }) {
   return (
     <div className="amw">
       <Hero />
@@ -24,7 +24,7 @@ export default function HomeContent() {
       <Features />
       <Stats />
       <Testimonials />
-      <Pricing />
+      <Pricing kits={kits} />
       <FAQ />
       <FinalCTA />
       <MasterpieceInterlude />

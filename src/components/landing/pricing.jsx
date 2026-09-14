@@ -1,45 +1,47 @@
 'use client'
 
+import { useId, useState } from 'react'
 import { Check, ChevronRight } from 'lucide-react'
-import { motion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import Link from 'next/link'
 import { SectionEyebrow } from './section-eyebrow'
+import { OfferTabs, offerPanelProps } from './offer-tabs'
+import {
+  STACK_LABEL,
+  buildPricingTable,
+  cta,
+  highlights,
+  periodLabel,
+  popularId,
+  priceLabel,
+  seatLine,
+} from '@/lib/commerce/pricingTable'
 
 /* Ported from the "minimal" landing template (components/pricing.tsx):
    plan cards on a soft band, the recommended plan framed in the accent.
 
+   Two offers, two tabs. WareKits is the catalogue; Anti-Slop Alec is the
+   person. They used to share one four-up grid, where a single "WareKit"
+   card sat beside three retainers and quoted no price, because a hardcoded
+   number here had no way of tracking Lite/Pro/Team across two stacks. The
+   kit tab now reads the same Payload products /pricing does -- one price,
+   one source -- and shows the first stack's three tiers, pointing at
+   /pricing for the rest. When no kit is published it says so rather than
+   showing an empty grid, and the section opens on the tab that has
+   something to sell.
+
    The retainer tiers are the real ones as of 2026-09-09, confirmed by Alec.
    Anything quoted here is also what Creem is told during merchant
-   verification, so those two must not drift apart -- update both together.
-
-   The kit card deliberately quotes no single price. It used to say $249,
-   which stopped being true the moment the catalogue became Lite/Pro/Team at
-   three prices across two stacks -- a hardcoded number here had no way of
-   knowing. /pricing reads those from Payload, so this card points at it
-   rather than competing with it. The rule: one price, one source.
-
-   The template's two-card offset layout could not carry four plans, so the
-   grid is a plain four-up that steps down to two and then one. The offset
-   went with it: it only ever read as deliberate with exactly two cards. */
+   verification, so those two must not drift apart -- update both together. */
 
 const easeOut = [0.16, 1, 0.3, 1]
 
-const plans = [
-  {
-    name: 'WareKit',
-    tagline: 'Mode B: you build on mine',
-    price: 'Free',
-    period: 'to start',
-    note: 'Pro $499 · Team $999',
-    href: '/pricing',
-    features: [
-      'NetSuite starter kits, React or Next.js',
-      'Lite is the whole architecture, not a demo',
-      'Private repository access by invitation',
-      'Team licence covers five collaborators',
-      'Lifetime updates',
-    ],
-  },
+export const OFFER_TABS = [
+  { id: 'warekits', label: 'WareKits' },
+  { id: 'anti-slop-alec', label: 'Anti-Slop Alec' },
+]
+
+const retainers = [
   {
     name: 'Advisor',
     tagline: 'Best for pre-seed',
@@ -84,79 +86,163 @@ const plans = [
   },
 ]
 
-function PlanCard({ plan }) {
+const TIER_TAGLINE = {
+  lite: 'The whole architecture, free',
+  pro: 'For shipping to one account',
+  team: 'For a team shipping together',
+}
+
+const cardClass = (highlighted) =>
+  `rounded-2xl p-6 md:p-8 ${
+    highlighted
+      ? 'border-[var(--amw-accent)] bg-[var(--amw-card)] border-2 transition-[border-color,box-shadow] duration-300 hover:shadow-lg'
+      : 'bg-[var(--amw-card)] border-[var(--amw-line)] border transition-colors duration-300'
+  }`
+
+const cardMotion = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  whileHover: { y: -4 },
+  viewport: { once: true, amount: 0.3 },
+  transition: {
+    opacity: { duration: 0.6, ease: easeOut },
+    y: { duration: 0.3, ease: easeOut },
+  },
+}
+
+function Features({ items }) {
   return (
-    <motion.div
-      className={`rounded-2xl p-6 md:p-8 ${
-        plan.highlighted
-          ? 'border-[var(--amw-accent)] bg-[var(--amw-card)] border-2 transition-[border-color,box-shadow] duration-300 hover:shadow-lg'
-          : 'bg-[var(--amw-card)] border-[var(--amw-line)] border transition-colors duration-300'
-      }`}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{
-        opacity: { duration: 0.6, ease: easeOut },
-        y: { duration: 0.3, ease: easeOut },
-      }}
-    >
+    <ul className="space-y-3">
+      {items.map((feature) => (
+        <li
+          key={feature}
+          className="flex items-start gap-3 text-sm text-zinc-700 dark:text-zinc-300"
+        >
+          <Check
+            className="text-[var(--amw-accent-ink)] mt-0.5 h-4 w-4 shrink-0"
+            aria-hidden="true"
+          />
+          <span>{feature}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+/* Price on its own line, terms under it. Baseline-inline only worked while
+   every price was four characters: "/ month" wrapped under $12,000 but not
+   under $499, so the cards disagreed with each other. $12,000 at text-5xl is
+   also about 230px inside a 222px content box, hence the step down at xl --
+   the card width drives this, not the viewport. */
+function Price({ value, under }) {
+  return (
+    <div className="mb-8">
+      <span className="amw-price block text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-5xl xl:text-4xl">
+        {value}
+      </span>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{under}</p>
+    </div>
+  )
+}
+
+function RetainerCard({ plan }) {
+  return (
+    <motion.li className={cardClass(plan.highlighted)} {...cardMotion}>
       <div className="mb-6">
         <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
           {plan.name}
         </h3>
         <p className="amw-kicker mt-1">{plan.tagline}</p>
       </div>
+      <Price
+        value={plan.price}
+        under={`/ ${plan.period}${plan.note ? ` · ${plan.note}` : ''}`}
+      />
+      <Features items={plan.features} />
+    </motion.li>
+  )
+}
 
-      {/* Price on its own line, terms under it. Baseline-inline only worked
-          while every price was four characters: at the four-up width "/ month"
-          wrapped under $3,000, $7,500 and $12,000 but not under $249, so the
-          cards disagreed with each other. $12,000 at text-5xl is also about
-          230px inside a 222px content box, hence the step down at xl -- the
-          card width drives this, not the viewport. */}
-      <div className="mb-8">
-        <span className="amw-price block text-4xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 md:text-5xl xl:text-4xl">
-          {plan.price}
-        </span>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          / {plan.period}
-          {plan.note ? ` \u00b7 ${plan.note}` : ''}
+function KitCard({ kit, popular }) {
+  const action = cta(kit)
+  const bullets = [seatLine(kit), ...highlights(kit)]
+  return (
+    <motion.li className={cardClass(popular)} {...cardMotion}>
+      <div className="mb-6">
+        <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
+          {kit.name}
+        </h3>
+        <p className="amw-kicker mt-1">
+          {kit.tagline || TIER_TAGLINE[kit.tier] || ''}
         </p>
       </div>
-
-      {plan.href && (
+      <Price value={priceLabel(kit)} under={periodLabel(kit)} />
+      {action.live ? (
         <Link
-          href={plan.href}
+          href={`/products/${kit.slug}`}
           className="hover:text-[var(--amw-accent-ink)] mb-6 inline-flex text-sm font-medium text-zinc-700 no-underline transition-colors dark:text-zinc-300"
         >
-          See all three tiers →
+          {action.label} →
         </Link>
+      ) : (
+        /* Published but not yet purchasable: on the table so the stack
+           reads whole, never with a Buy link, because there is nothing to
+           charge against. Same rule as /pricing. */
+        <p className="amw-kicker mb-6">{action.label}</p>
       )}
+      <Features items={bullets} />
+    </motion.li>
+  )
+}
 
-      <ul className="space-y-3">
-        {plan.features.map((feature) => (
-          <li
-            key={feature}
-            className="flex items-start gap-3 text-sm text-zinc-700 dark:text-zinc-300"
-          >
-            <Check
-              className="text-[var(--amw-accent-ink)] mt-0.5 h-4 w-4 shrink-0"
-              aria-hidden="true"
-            />
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
+function KitsEmpty() {
+  return (
+    <motion.div
+      className={`${cardClass(false)} mx-auto max-w-xl text-center`}
+      {...cardMotion}
+    >
+      <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
+        The kits are not on sale yet
+      </h3>
+      <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+        NetSuite starter kits in React and Next.js, Lite free and the whole
+        architecture. They are being finished; when they go up, the tiers appear
+        here.
+      </p>
+      <Link
+        href="/contact"
+        className="hover:text-[var(--amw-accent-ink)] mt-6 inline-flex text-sm font-medium text-zinc-700 no-underline transition-colors dark:text-zinc-300"
+      >
+        Tell me when they are ready →
+      </Link>
     </motion.div>
   )
 }
 
-export function Pricing() {
+const panelMotion = (reduce) => ({
+  initial: reduce ? false : { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  exit: reduce ? { opacity: 1 } : { opacity: 0, y: -8 },
+  transition: { duration: reduce ? 0 : 0.28, ease: easeOut },
+})
+
+export function Pricing({ kits = [] }) {
+  const reduce = useReducedMotion()
+  const id = useId()
+
+  const stacks = buildPricingTable(kits)
+  const stack = stacks[0] ?? null
+  const popular = popularId(kits)
+
+  /* Open on whichever tab has something to sell. Leading with an empty kit
+     grid would be a homepage whose first impression is "not yet". */
+  const [tab, setTab] = useState(stack ? 'warekits' : 'anti-slop-alec')
+
   return (
     <section className="bg-[var(--amw-muted)] px-6 py-16 md:py-32">
       <div className="mx-auto max-w-6xl">
         <motion.div
-          className="mb-12 text-center md:mb-16"
+          className="mb-10 text-center md:mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -175,45 +261,111 @@ export function Pricing() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {plans.map((plan) => (
-            <PlanCard key={plan.name} plan={plan} />
-          ))}
+        <div className="mb-10 text-center md:mb-12">
+          <OfferTabs
+            id={id}
+            tabs={OFFER_TABS}
+            value={tab}
+            onChange={setTab}
+            label="Choose an offer"
+          />
         </div>
 
-        <motion.div
-          className="mt-12 flex flex-col items-center gap-4 md:mt-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2, ease: easeOut }}
-        >
-          <Link
-            href="/services"
-            className="bg-[var(--amw-accent)] text-zinc-950 group inline-flex w-full items-center justify-center gap-3 rounded-md py-3 pl-5 pr-3 font-medium no-underline transition-all duration-500 ease-out hover:rounded-[50px] hover:shadow-lg sm:w-auto"
-          >
-            <span>Book an intro call</span>
-            <span className="text-zinc-950 flex h-10 w-10 items-center justify-center rounded-full bg-white transition-all duration-300 group-hover:scale-110">
-              <ChevronRight
-                className="relative left-px h-4 w-4"
-                aria-hidden="true"
-              />
-            </span>
-          </Link>
-          {/* Says the price of starting before the call, not after it. The
-              deposit is credited, so it is a commitment gate rather than an
-              extra cost, and saying so is what stops it reading as a fee. */}
-          <p className="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-400">
-            Retainers begin after an intro call, with a $1,500 deposit credited
-            in full against your first month.
-          </p>
-          <Link
-            href="/pricing"
-            className="hover:text-[var(--amw-accent-ink)] min-h-11 inline-flex items-center text-sm text-zinc-600 no-underline transition-colors dark:text-zinc-400"
-          >
-            Compare the kit tiers
-          </Link>
-        </motion.div>
+        <AnimatePresence mode="wait" initial={false}>
+          {tab === 'warekits' ? (
+            <motion.div
+              key="warekits"
+              {...offerPanelProps(id, 'warekits')}
+              {...panelMotion(reduce)}
+            >
+              {stack ? (
+                <>
+                  <p className="amw-kicker mb-6 text-center">
+                    {STACK_LABEL[stack.stack] || stack.stack}
+                    {stacks.length > 1 ? ' · one of two stacks' : ''}
+                  </p>
+                  <ul className="mx-auto grid max-w-5xl grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {stack.tiers.map((kit) => (
+                      <KitCard
+                        key={kit.id}
+                        kit={kit}
+                        popular={kit.id === popular}
+                      />
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <KitsEmpty />
+              )}
+
+              <motion.div
+                className="mt-12 flex flex-col items-center gap-4 md:mt-16"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2, ease: easeOut }}
+              >
+                <Link
+                  href="/pricing"
+                  className="bg-[var(--amw-accent)] text-zinc-950 group inline-flex w-full items-center justify-center gap-3 rounded-md py-3 pl-5 pr-3 font-medium no-underline transition-all duration-500 ease-out hover:rounded-[50px] hover:shadow-lg sm:w-auto"
+                >
+                  <span>Compare every tier</span>
+                  <span className="text-zinc-950 flex h-10 w-10 items-center justify-center rounded-full bg-white transition-all duration-300 group-hover:scale-110">
+                    <ChevronRight
+                      className="relative left-px h-4 w-4"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </Link>
+                <p className="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-400">
+                  One payment, private repository access by invitation, lifetime
+                  updates. A Team licence covers five collaborators.
+                </p>
+              </motion.div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="anti-slop-alec"
+              {...offerPanelProps(id, 'anti-slop-alec')}
+              {...panelMotion(reduce)}
+            >
+              <ul className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {retainers.map((plan) => (
+                  <RetainerCard key={plan.name} plan={plan} />
+                ))}
+              </ul>
+
+              <motion.div
+                className="mt-12 flex flex-col items-center gap-4 md:mt-16"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2, ease: easeOut }}
+              >
+                <Link
+                  href="/services"
+                  className="bg-[var(--amw-accent)] text-zinc-950 group inline-flex w-full items-center justify-center gap-3 rounded-md py-3 pl-5 pr-3 font-medium no-underline transition-all duration-500 ease-out hover:rounded-[50px] hover:shadow-lg sm:w-auto"
+                >
+                  <span>Book an intro call</span>
+                  <span className="text-zinc-950 flex h-10 w-10 items-center justify-center rounded-full bg-white transition-all duration-300 group-hover:scale-110">
+                    <ChevronRight
+                      className="relative left-px h-4 w-4"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </Link>
+                {/* Says the price of starting before the call, not after it.
+                    The deposit is credited, so it is a commitment gate rather
+                    than an extra cost, and saying so is what stops it reading
+                    as a fee. */}
+                <p className="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-400">
+                  Retainers begin after an intro call, with a $1,500 deposit
+                  credited in full against your first month.
+                </p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   )
