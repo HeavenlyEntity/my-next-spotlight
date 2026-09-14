@@ -11,6 +11,10 @@
     --amware-admin-accent: #0b756c;
     --amware-admin-accent-bright: #14bbac;
     --amware-admin-accent-soft: rgba(20, 187, 172, 0.12);
+    /* Hover fill for the primary button: a step darker than the resting
+       accent so the change is felt without a shape change. Dark ink on it
+       stays above 7:1. */
+    --amware-admin-accent-hover: #10a798;
     --amware-admin-grid: rgba(24, 24, 27, 0.045);
     --color-base-0: #ffffff;
     --color-base-50: #fafafa;
@@ -37,8 +41,10 @@
       'Segoe UI', sans-serif;
     --font-mono: var(--font-nav-code), 'SFMono-Regular', 'SF Mono', Menlo,
       Consolas, monospace;
-    --style-radius-s: 6px;
-    --style-radius-m: 10px;
+    /* One shape scale for the whole admin: controls 8, surfaces 12, the
+       login card and dashboard intro 16. */
+    --style-radius-s: 8px;
+    --style-radius-m: 12px;
     --style-radius-l: 16px;
     --accessibility-outline: 2px solid var(--amware-admin-accent);
   }
@@ -47,6 +53,7 @@
     --amware-admin-accent: #5eead4;
     --amware-admin-accent-bright: #3ce8ce;
     --amware-admin-accent-soft: rgba(60, 232, 206, 0.12);
+    --amware-admin-accent-hover: #62f0da;
     --amware-admin-grid: rgba(255, 255, 255, 0.05);
   }
 
@@ -147,31 +154,86 @@
     color: inherit !important;
   }
 
+  /* ---- Navigation ------------------------------------------------------- */
+
   .nav__wrap {
     border-right: 1px solid var(--theme-elevation-100);
   }
 
+  .nav-group {
+    margin-bottom: 18px;
+  }
+
+  .nav-group__toggle {
+    margin-bottom: 6px;
+    padding: 6px 0;
+    color: var(--theme-elevation-500);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 150ms ease;
+  }
+
+  .nav-group__toggle:hover {
+    color: var(--theme-text);
+  }
+
+  .nav-group__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  /* Links are rows, not text: a 40px rounded surface that lights on hover
+     and fills with the accent when current. The indicator bar moves inside
+     the row so the fill and the bar read as one state. */
   .nav__link {
     position: relative;
-    min-height: 44px;
+    min-height: 40px;
+    margin-inline: -12px;
+    padding: 0 12px 0 14px;
     border-radius: var(--style-radius-s);
+    color: var(--theme-elevation-700);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.25;
     transition: color 150ms ease, background-color 150ms ease;
   }
 
   .nav__link:hover {
+    background: var(--theme-elevation-50);
+    color: var(--theme-text);
+  }
+
+  .nav__link:has(.nav__link-indicator) {
     background: var(--amware-admin-accent-soft);
+    color: var(--theme-text);
   }
 
   .nav__link-indicator {
+    inset-inline-start: 0;
+    width: 3px;
+    height: 18px;
+    border-radius: 0 3px 3px 0;
     background: var(--amware-admin-accent-bright);
   }
 
-  .nav-group__toggle {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  .nav__controls {
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--theme-elevation-100);
+  }
+
+  .nav__log-out {
+    min-height: 44px;
+    border-radius: var(--style-radius-s);
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+
+  .nav__log-out:hover {
+    background: var(--theme-elevation-50);
   }
 
   .app-header__bg {
@@ -180,31 +242,59 @@
     backdrop-filter: blur(14px);
   }
 
+  .app-header__actions {
+    gap: 8px;
+  }
+
   .step-nav__last {
     font-family: 'Layer', sans-serif;
     letter-spacing: -0.02em;
   }
 
+  /* ---- Buttons ------------------------------------------------------------ */
+
+  /* Height by size, not one number for every button: the blanket 44px also
+     inflated the small icon buttons in table rows. Interaction is a press
+     cycle -- lift on hover, settle on press, ring on keyboard focus -- and
+     never a shape change; the pill morph belongs to the marketing CTAs,
+     where there is one of them, not to forty admin buttons. */
   .btn {
-    min-height: 44px;
     border-radius: var(--style-radius-s);
     font-weight: 600;
-    transition: border-radius 300ms cubic-bezier(0.16, 1, 0.3, 1),
-      background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+    transition: background-color 150ms ease, border-color 150ms ease,
+      color 150ms ease, box-shadow 150ms ease,
+      transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn--size-large {
+    min-height: 48px;
+  }
+
+  .btn--size-medium {
+    min-height: 40px;
+  }
+
+  .btn:active:not(.btn--disabled) {
+    transform: translateY(0) scale(0.985);
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--amware-admin-accent);
+    outline-offset: 2px;
   }
 
   .btn--style-primary {
     --bg-color: var(--amware-admin-accent-bright);
     --btn-border: 1px solid var(--amware-admin-accent-bright);
     --color: #071f1c;
-    --hover-bg: var(--amware-admin-accent-bright);
-    --hover-btn-border: 1px solid var(--amware-admin-accent-bright);
+    --hover-bg: var(--amware-admin-accent-hover);
+    --hover-btn-border: 1px solid var(--amware-admin-accent-hover);
     --hover-color: #071f1c;
   }
 
-  .btn--style-primary:hover,
-  .btn--style-primary:focus-visible {
-    border-radius: 999px;
+  .btn--style-primary:hover:not(.btn--disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px -10px rgba(20, 187, 172, 0.65);
   }
 
   .btn--style-primary.btn--disabled {
@@ -214,17 +304,35 @@
     --hover-bg: var(--bg-color);
     --hover-btn-border: var(--btn-border);
     --hover-color: var(--color);
+    cursor: not-allowed;
   }
 
-  .btn--style-primary.btn--disabled:hover,
-  .btn--style-primary.btn--disabled:focus-visible {
-    border-radius: var(--style-radius-s);
+  .btn--style-secondary {
+    --hover-btn-border: 1px solid var(--amware-admin-accent);
+    --hover-color: var(--theme-text);
   }
+
+  .btn--style-secondary:hover:not(.btn--disabled) {
+    box-shadow: 0 0 0 3px var(--amware-admin-accent-soft);
+  }
+
+  .pill {
+    border-radius: 999px;
+  }
+
+  /* ---- Fields ------------------------------------------------------------- */
 
   .field-type input,
   .field-type textarea,
   .react-select .rs__control {
     border-radius: var(--style-radius-s);
+    transition: border-color 150ms ease, box-shadow 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .field-type input:hover:not(:focus),
+  .field-type textarea:hover:not(:focus) {
+    border-color: var(--theme-elevation-300);
   }
 
   .field-type input:focus,
@@ -233,41 +341,108 @@
   .field-type textarea:focus-within,
   .react-select .rs__control--is-focused {
     border-color: var(--amware-admin-accent) !important;
-    box-shadow: 0 0 0 4px var(--amware-admin-accent-soft) !important;
+    box-shadow: 0 0 0 3px var(--amware-admin-accent-soft) !important;
   }
 
+  .field-type input::placeholder,
+  .field-type textarea::placeholder {
+    color: var(--theme-elevation-450);
+  }
+
+  /* Browser autofill paints its own yellow or white; on the dark theme that
+     is a white block in a dark form. Paint over it with the input's own
+     surface. */
+  .field-type input:-webkit-autofill,
+  .field-type input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--theme-input-bg) inset;
+    -webkit-text-fill-color: var(--theme-text);
+  }
+
+  /* ---- Surfaces ----------------------------------------------------------- */
+
+  .card {
+    border-color: var(--theme-elevation-150);
+    border-radius: var(--style-radius-m);
+    transition: border-color 150ms ease, box-shadow 150ms ease,
+      transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card--has-onclick:hover {
+    border-color: color-mix(
+      in srgb,
+      var(--amware-admin-accent) 45%,
+      transparent
+    );
+    box-shadow: 0 10px 28px -16px rgba(9, 9, 11, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .list-header {
+    gap: 12px 16px;
+    margin-bottom: 20px;
+  }
+
+  .doc-controls__wrapper {
+    background: color-mix(in srgb, var(--theme-bg) 88%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  .table table tbody tr td {
+    transition: background-color 120ms ease;
+  }
+
+  .table table tbody tr:hover td {
+    background: var(--theme-elevation-50);
+  }
+
+  /* ---- Login -------------------------------------------------------------- */
+
   .template-minimal {
-    min-height: 100vh;
+    min-height: 100dvh;
     background: transparent;
   }
 
   .template-minimal__wrap {
-    width: min(100% - 40px, 520px);
+    width: min(100% - 32px, 460px);
     border: 1px solid var(--theme-elevation-150);
     border-radius: var(--style-radius-l);
     background: var(--theme-elevation-0);
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.14);
-    padding: clamp(28px, 5vw, 48px);
+    box-shadow: 0 1px 2px rgba(9, 9, 11, 0.04),
+      0 24px 64px -24px rgba(9, 9, 11, 0.18);
+    padding: clamp(28px, 5vw, 40px);
+    animation: amware-admin-rise 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   html[data-theme='dark'] .template-minimal__wrap {
     background: #0b0b0f;
-    box-shadow: 0 24px 90px rgba(0, 0, 0, 0.46);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 24px 80px -20px rgba(0, 0, 0, 0.6);
+  }
+
+  @keyframes amware-admin-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   .login__brand {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
   }
 
   // Payload reads admin component overrides when its server process starts.
   // Keep the login brand correct during config hot-reload gaps as well.
   .login__brand:has(> .graphic-logo) {
     display: flex;
-    min-height: 48px;
+    min-height: 40px;
     align-items: baseline;
     gap: 9px;
-    padding-left: 72px;
-    background: url('../images/logos/amware-crown-mark.webp') left center / 64px
+    padding-left: 62px;
+    background: url('../images/logos/amware-crown-mark.webp') left center / 54px
       auto no-repeat;
     color: #09090b;
   }
@@ -283,7 +458,7 @@
   .login__brand:has(> .graphic-logo)::before {
     content: 'AMWARE';
     font-family: 'Layer', sans-serif;
-    font-size: 31px;
+    font-size: 28px;
     letter-spacing: -0.045em;
     line-height: 1;
   }
@@ -298,29 +473,29 @@
   }
 
   .login__brand .amware-admin-wordmark > .amware-admin-mark {
-    width: 64px;
-    height: 48px;
+    width: 54px;
+    height: 40px;
   }
 
   .login__brand .amware-admin-wordmark__name {
-    font-size: 31px;
+    font-size: 28px;
   }
 
   .amware-admin-login-intro {
-    margin-bottom: 28px;
-    padding-top: 24px;
-    border-top: 1px solid var(--theme-elevation-150);
+    margin-bottom: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--theme-elevation-100);
   }
 
   .amware-admin-kicker {
     display: flex;
     align-items: center;
     gap: 9px;
-    margin: 0 0 12px;
+    margin: 0 0 10px;
     color: var(--amware-admin-accent);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     line-height: 1.4;
   }
 
@@ -333,24 +508,61 @@
   }
 
   .amware-admin-login-intro h1 {
-    font-size: clamp(34px, 7vw, 48px);
-    line-height: 0.98;
+    font-size: clamp(30px, 6vw, 38px);
+    line-height: 1;
   }
 
   .amware-admin-login-intro > p:last-child {
-    max-width: 38ch;
-    margin: 14px 0 0;
+    max-width: 36ch;
+    margin: 10px 0 0;
     color: var(--theme-elevation-600);
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.55;
   }
 
-  .login__form .field-type {
-    margin-bottom: 20px;
+  .login__form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .login__form__inputWrap {
+    gap: 18px;
+    margin-bottom: 4px;
+  }
+
+  .login__form .field-label {
+    padding-bottom: 6px;
+    color: var(--theme-elevation-700);
+    font-size: 13px;
+    font-weight: 500;
   }
 
   .login__form input {
     min-height: 48px;
+    padding-inline: 14px;
+    font-size: 15px;
+  }
+
+  /* A real target, on the right where the eye lands after the password,
+     and quiet until hovered: it is the exit, not the action. */
+  .login__form > a {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-end;
+    min-height: 44px;
+    margin: 0 0 4px;
+    color: var(--theme-elevation-600);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--theme-elevation-300);
+    text-underline-offset: 0.22em;
+    transition: color 150ms ease, text-decoration-color 150ms ease;
+  }
+
+  .login__form > a:hover {
+    color: var(--amware-admin-accent);
+    text-decoration-color: currentColor;
   }
 
   .login__form .form-submit,
@@ -359,7 +571,8 @@
   }
 
   .login__form .btn {
-    min-height: 48px;
+    min-height: 50px;
+    font-size: 14px;
   }
 
   .amware-admin-dashboard-intro {
@@ -542,8 +755,21 @@
 
   @media (prefers-reduced-motion: reduce) {
     .btn,
-    .nav__link {
+    .nav__link,
+    .card,
+    .field-type input,
+    .field-type textarea {
       transition: none;
+    }
+
+    .btn:hover,
+    .btn:active,
+    .card--has-onclick:hover {
+      transform: none;
+    }
+
+    .template-minimal__wrap {
+      animation: none;
     }
   }
 }

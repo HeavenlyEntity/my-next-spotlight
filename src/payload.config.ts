@@ -41,7 +41,7 @@ export default buildConfig({
       icons: {
         icon: '/favicon.ico',
       },
-      titleSuffix: ' — Amware Admin',
+      titleSuffix: ' - Amware Admin',
     },
     user: Users.slug,
   },
