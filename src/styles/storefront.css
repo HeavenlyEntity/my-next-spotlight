@@ -847,10 +847,13 @@
   );
 }
 
-/* Purely to stop the gradients banding on wide panes. */
+/* Purely to stop the gradients banding on wide panes. The noise used to be
+   set inline by the component; it lives with the rest of the coating now so
+   any pane that wears the class gets it. */
 .amw-holo-grain {
   opacity: 0.05;
   mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
 /* ---- Founders' Desk ------------------------------------------------------ */
@@ -887,6 +890,49 @@
 }
 .amw-segmented .amw-chip--input + .amw-chip--input {
   border-left: 1px solid var(--amw-line);
+}
+
+/* Offer tabs: the segmented pill, with the selected segment filled in the
+   accent and sliding between positions. 44px targets; the fill sits
+   behind the label so text stays crisp during the move. */
+.amw-tabs {
+  position: relative;
+  padding: 4px;
+  gap: 2px;
+  border: 1px solid var(--amw-line-strong);
+  border-radius: 999px;
+  background: var(--amw-card);
+}
+.amw-tab {
+  position: relative;
+  min-height: 44px;
+  padding: 0.6rem 1.15rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-geist, var(--font-sans, sans-serif));
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--amw-mut);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.amw-tab:hover {
+  color: var(--amw-ink);
+}
+.amw-tab[aria-selected='true'] {
+  color: var(--amw-accent-ink);
+}
+.amw-tab__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--amw-accent-soft);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--amw-accent) 45%, transparent);
+}
+.amw-tab__label {
+  position: relative;
 }
 
 /* Keyboard focus for radio chips and the slider thumb, matching the

@@ -23,7 +23,7 @@ import {
   PRIOR_EMPLOYERS,
 } from '@/components/about/service-records'
 import { StackRecord } from '@/components/about/stack-record'
-import { StoryStack } from '@/components/about/story-stack'
+import { StoryDeck } from '@/components/about/story-deck'
 import { SectionEyebrow } from '@/components/landing/section-eyebrow'
 import portraitImage from '@/images/portrait-bg-removed.png'
 import amwareLogo from '@/images/logos/AMWARE-Crown-Black.svg'
@@ -31,7 +31,7 @@ import crownMark from '@/images/logos/amware-crown-mark.webp'
 
 /* About page in the "minimal" landing template's grammar: a centred
    header over the photo strip, then the template's Features split (a
-   sticky profile column beside numbered story cards), then the service
+   sticky profile column beside a deck of story cards), then the service
    record on the template's section rhythm, closing on link cards. */
 
 const easeOut = [0.16, 1, 0.3, 1]
@@ -128,7 +128,7 @@ export default function AboutContent() {
         </div>
       </section>
 
-      {/* Story: sticky profile column beside numbered chapters */}
+      {/* Story: sticky profile column beside the chapter deck */}
       <section className="px-6 py-16 md:py-24">
         <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
           <motion.div
@@ -251,7 +251,7 @@ export default function AboutContent() {
           </motion.div>
 
           <div className="min-w-0 flex-1">
-            <StoryStack chapters={chapters} />
+            <StoryDeck chapters={chapters} />
           </div>
         </div>
       </section>
