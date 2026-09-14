@@ -478,6 +478,8 @@ export interface Service {
    * Creem prod_… id for a fixed-price package. Absence ⇒ "Request a quote".
    */
   creemProductId?: string | null
+  whopPlanId?: string | null
+  depositAmount?: number | null
   order?: number | null
   status?: ('draft' | 'published') | null
   updatedAt: string
@@ -522,7 +524,9 @@ export interface Purchase {
   /**
    * Idempotency key (Creem order id).
    */
-  creemOrderId: string
+  provider?: ('creem' | 'whop') | null
+  creemOrderId?: string | null
+  whopPaymentId?: string | null
   /**
    * Retainers only. Ties every renewal row back to one subscription.
    */
@@ -890,6 +894,8 @@ export interface ServicesSelect<T extends boolean = true> {
   bookingUrl?: T
   depositNote?: T
   creemProductId?: T
+  whopPlanId?: T
+  depositAmount?: T
   order?: T
   status?: T
   updatedAt?: T
@@ -917,7 +923,9 @@ export interface PurchasesSelect<T extends boolean = true> {
   item?: T
   itemType?: T
   creemProductId?: T
+  provider?: T
   creemOrderId?: T
+  whopPaymentId?: T
   creemSubscriptionId?: T
   creemTransactionId?: T
   amount?: T

@@ -67,6 +67,28 @@ export const Services: CollectionConfig = {
           'Creem prod_… id for a fixed-price package. Absence ⇒ "Request a quote".',
       },
     },
+    {
+      name: 'whopPlanId',
+      type: 'text',
+      admin: {
+        description:
+          'Whop plan_… id of the deposit plan. Present ⇒ the card offers ' +
+          '"Reserve your start" beside the intro call. Created and filled in ' +
+          'by `pnpm sim` (6-whop-engagements); paste one here only to point ' +
+          'at a plan made in the Whop dashboard.',
+      },
+    },
+    {
+      name: 'depositAmount',
+      type: 'number',
+      defaultValue: 1500,
+      admin: {
+        description:
+          'The deposit in whole dollars, as the Whop plan charges it. It is ' +
+          'what the button says and what the ads pixel is told, so it must ' +
+          'match the plan.',
+      },
+    },
     { name: 'order', type: 'number', defaultValue: 0 },
     {
       name: 'status',

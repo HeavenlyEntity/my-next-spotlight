@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import Link from 'next/link'
 import { BuyButton } from '@/components/commerce/BuyButton'
 import { BookCallButton } from '@/components/commerce/BookCallButton'
+import { DepositCheckout } from '@/components/commerce/DepositCheckout'
 import { calLinkFromUrl } from '@/lib/commerce/calLink'
 import { usd } from '@/lib/commerce/money'
 import { typeMeta } from '@/components/commerce/catalog-meta'
@@ -218,6 +219,11 @@ export function CourseCard({ course, index = 0 }) {
 const CTA_CLASS =
   'group inline-flex items-center gap-3 rounded-md bg-zinc-900 py-3 pl-5 pr-3 font-medium text-white no-underline transition-all duration-500 ease-out hover:rounded-[50px] dark:bg-zinc-100 dark:text-zinc-900'
 
+/* The second ask on a retainer card: the deposit, on Whop. Outlined, so the
+   call stays the primary. */
+const SECONDARY_CTA_CLASS =
+  'border-[var(--amw-line-strong)] hover:border-[var(--amw-accent)] hover:text-[var(--amw-accent-ink)] inline-flex min-h-11 items-center justify-center gap-2 rounded-md border px-5 py-3 font-medium text-zinc-800 no-underline transition-colors dark:text-zinc-200'
+
 function CtaLabel({ children }) {
   return (
     <>
@@ -335,6 +341,30 @@ export function ServiceCard({ service, index = 0, description = null }) {
               {service.bookingUrl ? 'Book an intro call' : 'Request a quote'}
             </CtaLabel>
           </Link>
+        )}
+        {/* A retainer starts with a call; the deposit reserves the start.
+            Present only when the tier has a Whop plan to charge against. */}
+        {!service.creemProductId && service.whopPlanId && (
+          <div className="mt-3">
+            <DepositCheckout
+              planId={service.whopPlanId}
+              serviceName={service.name}
+              amount={
+                typeof service.depositAmount === 'number'
+                  ? service.depositAmount
+                  : 1500
+              }
+              bookingUrl={service.bookingUrl || null}
+              className={`${SECONDARY_CTA_CLASS} w-full sm:w-auto`}
+            >
+              Reserve your start ·{' '}
+              {usd(
+                typeof service.depositAmount === 'number'
+                  ? service.depositAmount
+                  : 1500
+              )}
+            </DepositCheckout>
+          </div>
         )}
         {service.depositNote && (
           <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">

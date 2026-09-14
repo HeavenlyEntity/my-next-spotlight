@@ -132,3 +132,78 @@ Keep that link — it is how you add someone later, and it does not need an acco
     text: body,
   })
 }
+
+/* The deposit that starts an engagement, taken on Whop. There is nothing
+   to deliver; the receipt's job is to say what the money did (it is
+   credited, not spent) and what happens next, and to put the booking link
+   in front of anyone who paid before booking the call. Amount is in cents,
+   as the purchases table stores it. */
+function money(cents: number, currency: string): string {
+  const major = cents / 100
+  const code = currency.toUpperCase()
+  if (code === 'USD') {
+    return `$${major.toLocaleString('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })}`
+  }
+  return `${major.toLocaleString('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  })} ${code}`
+}
+
+export async function sendDepositReceivedEmail(args: {
+  to: string
+  name?: string
+  serviceName: string
+  amount: number
+  currency: string
+  bookingUrl?: string | null
+}): Promise<void> {
+  const greeting = args.name ? `Hi ${args.name.split(' ')[0]},` : 'Hi,'
+  const booking = args.bookingUrl
+    ? `\n\nIf we have not spoken yet, book the intro call here and we will start from there:\n${args.bookingUrl}`
+    : ''
+  await getResend().emails.send({
+    from: FROM,
+    to: args.to,
+    subject: `Your ${money(args.amount, args.currency)} deposit for ${
+      args.serviceName
+    } is in`,
+    text: `${greeting}
+
+Your ${money(args.amount, args.currency)} deposit for the ${
+      args.serviceName
+    } engagement is received. It is credited in full against your first month, so it is a start date, not an extra cost.${booking}
+
+I will be in touch within one business day to set the engagement up. Reply to this email any time.
+
+— Alec`,
+  })
+}
+
+/* The owner's heads-up. A deposit is a client arriving, which is worth an
+   interruption in a way a $12 download is not. Silent when no address is
+   configured. */
+export async function notifyDepositReceived(args: {
+  email: string
+  serviceName: string
+  amount: number
+  currency: string
+  paymentId: string
+}): Promise<void> {
+  const to = process.env.CONTACT_NOTIFY_TO
+  if (!to) return
+  await getResend().emails.send({
+    from: FROM,
+    to,
+    replyTo: args.email,
+    subject: `Deposit received: ${args.serviceName} from ${args.email}`,
+    text: `${money(args.amount, args.currency)} for ${
+      args.serviceName
+    }\nFrom: ${args.email}\nWhop payment: ${
+      args.paymentId
+    }\n\nReply to this email to reach them.`,
+  })
+}

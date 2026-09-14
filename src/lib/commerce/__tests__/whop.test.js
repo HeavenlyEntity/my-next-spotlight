@@ -1,0 +1,87 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@whop/sdk/helpers', () => ({ unwrapWebhook: vi.fn() }))
+
+import { unwrapWebhook } from '@whop/sdk/helpers'
+import { WhopError, verifyWhopWebhook, whopRequest } from '../whop'
+
+/* The thin edge between this code and Whop: the webhook helper's throw
+   becomes a null, and a failed API call becomes a WhopError that carries
+   the status so a caller can tell 404 from 500. */
+
+beforeEach(() => {
+  process.env.WHOP_WEBHOOK_SECRET = 'ws_test'
+  process.env.WHOP_API_KEY = 'apik_test'
+  unwrapWebhook.mockReset()
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
+
+describe('verifyWhopWebhook', () => {
+  it('returns the parsed event when the signature holds', () => {
+    unwrapWebhook.mockReturnValue({
+      id: 'msg_1',
+      type: 'payment.succeeded',
+      data: {},
+    })
+    const event = verifyWhopWebhook('{"x":1}', { 'webhook-id': 'msg_1' })
+    expect(event?.type).toBe('payment.succeeded')
+    expect(unwrapWebhook).toHaveBeenCalledWith('{"x":1}', {
+      headers: { 'webhook-id': 'msg_1' },
+      key: 'ws_test',
+    })
+  })
+
+  it('returns null, never throws, when the signature does not hold', () => {
+    unwrapWebhook.mockImplementation(() => {
+      throw new Error('bad signature')
+    })
+    expect(verifyWhopWebhook('{}', {})).toBeNull()
+  })
+
+  it('returns null without a secret configured, so nothing is ever trusted by default', () => {
+    delete process.env.WHOP_WEBHOOK_SECRET
+    unwrapWebhook.mockReturnValue({ type: 'payment.succeeded' })
+    expect(verifyWhopWebhook('{}', {})).toBeNull()
+    expect(unwrapWebhook).not.toHaveBeenCalled()
+  })
+})
+
+describe('whopRequest', () => {
+  it('sends the key and JSON body, and returns the parsed response', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ id: 'plan_1' }),
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    const out = await whopRequest('/plans', { method: 'POST', body: { a: 1 } })
+    expect(out).toEqual({ id: 'plan_1' })
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(url).toBe('https://api.whop.com/api/v1/plans')
+    expect(init.method).toBe('POST')
+    expect(init.headers.Authorization).toBe('Bearer apik_test')
+    expect(init.body).toBe('{"a":1}')
+  })
+
+  it('throws a WhopError carrying the status on a non-2xx', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+        text: async () => 'not found',
+      })
+    )
+    await expect(whopRequest('/plans/x')).rejects.toMatchObject({
+      name: 'WhopError',
+      status: 404,
+    })
+  })
+
+  it('refuses to run without an API key', async () => {
+    delete process.env.WHOP_API_KEY
+    await expect(whopRequest('/plans')).rejects.toBeInstanceOf(WhopError)
+  })
+})

@@ -18,7 +18,12 @@ export const Purchases: CollectionConfig = {
       'createdAt',
     ],
     // Chasing a failed invite starts from one of these three, never from a row id.
-    listSearchableFields: ['email', 'githubUsername', 'creemOrderId'],
+    listSearchableFields: [
+      'email',
+      'githubUsername',
+      'creemOrderId',
+      'whopPaymentId',
+    ],
     components: {
       beforeList: ['@/components/admin/PurchaseLedger#PurchaseLedger'],
     },
@@ -48,12 +53,38 @@ export const Purchases: CollectionConfig = {
     },
     { name: 'creemProductId', type: 'text' },
     {
+      name: 'provider',
+      type: 'select',
+      options: [
+        { label: 'Creem', value: 'creem' },
+        { label: 'Whop', value: 'whop' },
+      ],
+      defaultValue: 'creem',
+      admin: {
+        description:
+          'Who took the money. Creem for kits and downloads, Whop for ' +
+          'engagement deposits. Decides which id below is the idempotency key.',
+      },
+    },
+    {
       name: 'creemOrderId',
       type: 'text',
-      required: true,
       unique: true,
       index: true,
-      admin: { description: 'Idempotency key (Creem order id).' },
+      admin: {
+        description:
+          'Idempotency key for a Creem sale (order id). Empty on a Whop row.',
+      },
+    },
+    {
+      name: 'whopPaymentId',
+      type: 'text',
+      unique: true,
+      index: true,
+      admin: {
+        description:
+          'Idempotency key for a Whop sale (pay_… id). Empty on a Creem row.',
+      },
     },
     {
       name: 'creemSubscriptionId',

@@ -1,0 +1,142 @@
+import { getPayloadClient } from '@/lib/getPayloadClient'
+import { verifyWhopWebhook, type WhopPayment } from '@/lib/commerce/whop'
+import {
+  sendDepositReceivedEmail,
+  notifyDepositReceived,
+} from '@/lib/commerce/fulfillment'
+
+export const dynamic = 'force-dynamic'
+
+/* Whop's webhook, for the deposit that starts an engagement.
+ *
+ * Whop delivers at least once, in no particular order, and retries a non-2xx
+ * for three days. So: verify, record once (the payment id is unique on the
+ * purchases table, and a race on it is treated as the duplicate it is),
+ * answer 200 for anything that is not a fault of ours. Only a failed write
+ * gets a 500, because that is the one case where a retry helps.
+ *
+ * What is recorded: a Purchase with provider "whop", the service the plan
+ * belongs to, the amount in cents, and the buyer's email. Nothing to deliver:
+ * an engagement is scheduled with the client by hand, so fulfilment is
+ * "not_required" from the start. The buyer gets a receipt with the booking
+ * link and the owner gets a heads-up, because a deposit is a client, not a
+ * download. */
+
+export async function POST(req: Request) {
+  const raw = await req.text()
+  if (raw.length > 65536) {
+    return new Response('Payload too large', { status: 413 })
+  }
+  const event = verifyWhopWebhook(raw, Object.fromEntries(req.headers))
+  if (!event) return new Response('Invalid signature', { status: 401 })
+
+  if (event.type !== 'payment.succeeded') {
+    return new Response('ignored (event)', { status: 200 })
+  }
+
+  const payment = event.data as WhopPayment
+  const paymentId = payment.id
+  const planId = payment.plan?.id || null
+  const email = payment.user?.email || null
+  if (!paymentId || !email) {
+    console.error('Whop payment without id or email', { paymentId, planId })
+    return new Response('ignored (missing fields)', { status: 200 })
+  }
+  if (payment.status && payment.status !== 'paid') {
+    return new Response('ignored (not paid)', { status: 200 })
+  }
+
+  const payload = await getPayloadClient()
+
+  const existing = await payload.find({
+    collection: 'purchases',
+    where: { whopPaymentId: { equals: paymentId } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (existing.docs.length) {
+    return new Response('ok (duplicate)', { status: 200 })
+  }
+
+  /* The plan is how a payment finds its service. A payment for a plan no
+     service claims is still money that arrived, so it is recorded -- with
+     nothing attached and marked failed, which is what makes it show up in
+     the admin as something to look at. */
+  const service = planId
+    ? (
+        await payload.find({
+          collection: 'services',
+          where: { whopPlanId: { equals: planId } },
+          limit: 1,
+          overrideAccess: true,
+        })
+      ).docs[0] ?? null
+    : null
+
+  const major = payment.total ?? payment.usd_total ?? 0
+  const amount = Math.round(Number(major) * 100)
+  const currency = (payment.currency || 'usd').toLowerCase()
+
+  try {
+    await payload.create({
+      collection: 'purchases',
+      overrideAccess: true,
+      data: {
+        email,
+        provider: 'whop',
+        whopPaymentId: paymentId,
+        item: service
+          ? { relationTo: 'services', value: service.id }
+          : undefined,
+        itemType: 'service',
+        amount,
+        currency,
+        status: 'paid',
+        fulfillmentStatus: service ? 'not_required' : 'failed',
+      },
+    })
+  } catch (err) {
+    const recheck = await payload.find({
+      collection: 'purchases',
+      where: { whopPaymentId: { equals: paymentId } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (recheck.docs.length) {
+      return new Response('ok (duplicate)', { status: 200 })
+    }
+    console.error('Whop purchase create failed', paymentId, err)
+    return new Response('error', { status: 500 })
+  }
+
+  if (!service) {
+    console.error('Whop payment for a plan no service claims', {
+      paymentId,
+      planId,
+    })
+  }
+
+  const serviceName = service?.name || 'your engagement'
+  /* Mail is best effort: the sale is recorded, which is what must not be
+     lost. A mail failure is logged and the webhook still answers 200, or
+     Whop would retry into the duplicate path for three days. */
+  await Promise.all([
+    sendDepositReceivedEmail({
+      to: email,
+      name: payment.user?.name || undefined,
+      serviceName,
+      amount,
+      currency,
+      bookingUrl: service?.bookingUrl || null,
+    }).catch((err) => console.error('Deposit receipt failed', paymentId, err)),
+    notifyDepositReceived({
+      email,
+      serviceName,
+      amount,
+      currency,
+      paymentId,
+    }).catch((err) => console.error('Deposit notify failed', paymentId, err)),
+  ])
+
+  return new Response('ok', { status: 200 })
+}
