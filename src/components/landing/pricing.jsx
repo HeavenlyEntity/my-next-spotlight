@@ -5,6 +5,8 @@ import { Check, ChevronRight } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import Link from 'next/link'
 import { SectionEyebrow } from './section-eyebrow'
+import { DepositCheckout } from '@/components/commerce/DepositCheckout'
+import { usd } from '@/lib/commerce/money'
 import { OfferTabs, offerPanelProps } from './offer-tabs'
 import {
   STACK_LABEL,
@@ -43,6 +45,7 @@ export const OFFER_TABS = [
 
 const retainers = [
   {
+    slug: 'advisor',
     name: 'Advisor',
     tagline: 'Best for pre-seed',
     price: '$3,000',
@@ -56,6 +59,7 @@ const retainers = [
     ],
   },
   {
+    slug: 'fractional-cto',
     name: 'Fractional CTO',
     tagline: 'Best for seed to Series A',
     price: '$7,500',
@@ -71,6 +75,7 @@ const retainers = [
     ],
   },
   {
+    slug: 'embedded-cto',
     name: 'Embedded CTO',
     tagline: 'Best for Series A+ or M&A prep',
     price: '$12,000',
@@ -145,7 +150,33 @@ function Price({ value, under }) {
   )
 }
 
-function RetainerCard({ plan }) {
+/* The deposit button on a retainer card. The copy on the card is written
+   here; what the button needs (the Whop plan, the amount, the booking
+   link) lives on the service in Payload, matched by slug, so the homepage
+   and /services can never charge different deposits. Absent service or
+   plan, no button: the card still reads and the intro-call CTA below
+   still works. */
+const reserveClass =
+  'border-[var(--amw-line-strong)] hover:border-[var(--amw-accent)] hover:text-[var(--amw-accent-ink)] mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border px-5 py-3 text-sm font-medium text-zinc-800 no-underline transition-colors dark:text-zinc-200'
+
+function ReserveStart({ plan, service }) {
+  if (!service?.whopPlanId) return null
+  const amount =
+    typeof service.depositAmount === 'number' ? service.depositAmount : 1500
+  return (
+    <DepositCheckout
+      planId={service.whopPlanId}
+      serviceName={plan.name}
+      amount={amount}
+      bookingUrl={service.bookingUrl || null}
+      className={reserveClass}
+    >
+      Reserve your start · {usd(amount)}
+    </DepositCheckout>
+  )
+}
+
+function RetainerCard({ plan, service }) {
   return (
     <motion.li className={cardClass(plan.highlighted)} {...cardMotion}>
       <div className="mb-6">
@@ -159,6 +190,7 @@ function RetainerCard({ plan }) {
         under={`/ ${plan.period}${plan.note ? ` · ${plan.note}` : ''}`}
       />
       <Features items={plan.features} />
+      <ReserveStart plan={plan} service={service} />
     </motion.li>
   )
 }
@@ -226,7 +258,8 @@ const panelMotion = (reduce) => ({
   transition: { duration: reduce ? 0 : 0.28, ease: easeOut },
 })
 
-export function Pricing({ kits = [] }) {
+export function Pricing({ kits = [], services = [] }) {
+  const serviceBySlug = new Map(services.map((s) => [s.slug, s]))
   const reduce = useReducedMotion()
   const id = useId()
 
@@ -331,7 +364,11 @@ export function Pricing({ kits = [] }) {
             >
               <ul className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {retainers.map((plan) => (
-                  <RetainerCard key={plan.name} plan={plan} />
+                  <RetainerCard
+                    key={plan.name}
+                    plan={plan}
+                    service={serviceBySlug.get(plan.slug)}
+                  />
                 ))}
               </ul>
 

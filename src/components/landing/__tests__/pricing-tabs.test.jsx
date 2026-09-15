@@ -1,5 +1,11 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, within } from '@testing-library/react'
+
+/* Whop's embed is an iframe loader; the sheet stays closed in these tests,
+   so a stub is all the button needs. */
+vi.mock('@whop/checkout/react', () => ({
+  WhopCheckoutEmbed: () => <div data-testid="embed" />,
+}))
 
 import { Pricing } from '../pricing'
 
@@ -111,5 +117,46 @@ describe('Pricing tabs', () => {
       within(p).getByRole('link', { name: /tell me when they are ready/i })
     ).toHaveAttribute('href', '/contact')
     expect(within(p).queryByText('Free')).toBeNull()
+  })
+})
+
+describe('Pricing retainers and the deposit', () => {
+  const services = [
+    {
+      slug: 'fractional-cto',
+      name: 'Fractional CTO',
+      whopPlanId: 'plan_dep',
+      depositAmount: 1500,
+      bookingUrl: 'https://cal.com/amware/on-demand-outcome',
+    },
+  ]
+
+  it('offers the deposit only on the card whose service has a Whop plan', () => {
+    render(<Pricing kits={[]} services={services} />)
+    const p = panel()
+    const buttons = within(p).getAllByRole('button', {
+      name: /reserve your start/i,
+    })
+    expect(buttons).toHaveLength(1)
+    expect(buttons[0]).toHaveTextContent('$1,500')
+    // It sits inside the Fractional CTO card, not beside another tier.
+    expect(buttons[0].closest('li')).toHaveTextContent('Fractional CTO')
+  })
+
+  it('opens the deposit sheet for that service from the homepage', () => {
+    render(<Pricing kits={[]} services={services} />)
+    fireEvent.click(
+      within(panel()).getByRole('button', { name: /reserve your start/i })
+    )
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveTextContent('$1,500 deposit for Fractional CTO')
+    expect(within(dialog).getByTestId('embed')).toBeInTheDocument()
+  })
+
+  it('shows no deposit button when no service carries a plan', () => {
+    render(<Pricing kits={[]} services={[]} />)
+    expect(
+      within(panel()).queryByRole('button', { name: /reserve your start/i })
+    ).toBeNull()
   })
 })
