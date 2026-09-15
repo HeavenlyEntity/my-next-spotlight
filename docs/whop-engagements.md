@@ -1,0 +1,61 @@
+# Whop: the engagement deposit
+
+Whop takes the $1,500 deposit that starts a retainer. Creem keeps the kits
+and downloads. They never meet.
+
+## How a sale flows
+
+1. A published retainer carries `whopPlanId` (a one-time Whop plan) and
+   `depositAmount`. The service card offers **Reserve your start** beside
+   the intro call.
+2. `DepositCheckout` opens a side sheet and mounts Whop's embedded checkout
+   from the plan id alone. No server call first: the plan is the product.
+3. Whop charges the card inside the sheet and fires `payment.succeeded` at
+   `https://www.amware.dev/webhooks/whop`.
+4. The route verifies the Standard Webhooks signature with
+   `WHOP_WEBHOOK_SECRET`, records one Purchase (`provider: whop`,
+   `whopPaymentId` unique), mails the buyer a receipt with the booking link
+   and the owner (`CONTACT_NOTIFY_TO`) a heads-up, and answers 200.
+
+A payment for a plan no service claims is still recorded, with no item and
+`fulfillmentStatus: failed`, so it shows up in the admin as something to
+look at rather than vanishing.
+
+## Setup and idempotency
+
+`pnpm sim` (step `6-whop-engagements`) creates, once each: the hidden
+product "Anti-Slop Alec engagements", one deposit plan per published
+retainer (found again by `internal_notes: deposit:<slug>`), and the
+webhook. It writes each plan id onto its service. Running it twice changes
+nothing. It needs `WHOP_API_KEY` in `.env.local`.
+
+The webhook secret is shown by Whop **once**, on creation; the step writes
+it to `.whop-webhook-secret` (git-ignored). Store it as
+`WHOP_WEBHOOK_SECRET` in `.env.local` and in Vercel production, redeploy,
+then delete the file. Lose it and the only fix is to delete the webhook and
+create it again.
+
+## Verify
+
+- `curl -X POST https://www.amware.dev/webhooks/whop -d '{}'` must answer
+  **401**.
+- `POST https://api.whop.com/api/v1/webhooks/<hook id>/test` with
+  `{"event":"payment.succeeded"}` must report `status: 200`. Whop's sample
+  payload carries a fake plan, so the route records it as a `failed` Whop
+  purchase and mails the sample address; delete that row afterwards.
+
+## The pixel
+
+Opening the sheet reports `begin_checkout` (`content_type: deposit`).
+Nothing reports `purchase` for these: Whop processes the sale and reports it
+to the ad platforms itself, and its pixel rejects the duplicate. Kit and
+download sales on Creem still report `purchase`. See `docs/whop-events.md`.
+
+## Where things live
+
+| | |
+|---|---|
+| Plan ids, deposit amount | Payload → Services → each retainer |
+| Product, plans, webhook | Whop dashboard → `biz_PGSOCOwANQSket` |
+| Deposits taken | Payload → Purchases, `provider: whop` |
+| Client code | `src/lib/commerce/whop.ts`, `src/app/(commerce)/webhooks/whop/route.ts`, `src/components/commerce/DepositCheckout.jsx` |
