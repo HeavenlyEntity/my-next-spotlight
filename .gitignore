@@ -48,3 +48,6 @@ yarn-error.log*
 # agent tool scratch
 .21st/
 .impeccable/
+
+# Written once by sim/6-whop-engagements; store it as WHOP_WEBHOOK_SECRET and delete.
+.whop-webhook-secret

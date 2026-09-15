@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { WHOP_ACCOUNT_ID, whopRequest } from '@/lib/commerce/whop'
@@ -125,11 +127,15 @@ describe('Whop engagements', () => {
           resource_id: WHOP_ACCOUNT_ID,
         },
       })
-      console.log('\n' + '='.repeat(72))
-      console.log('WHOP WEBHOOK CREATED. Whop shows the secret only this once.')
-      console.log(`WHOP_WEBHOOK_SECRET=${hook.webhook_secret}`)
-      console.log('Store it in .env.local and in Vercel production.')
-      console.log('='.repeat(72) + '\n')
+      /* Whop shows the secret exactly once, and vitest does not reliably
+         print console output, so it goes to a file rather than the log.
+         Store it as WHOP_WEBHOOK_SECRET in .env.local and in Vercel
+         production, then delete the file. */
+      const out =
+        process.env.WHOP_WEBHOOK_SECRET_FILE ||
+        path.join(process.cwd(), '.whop-webhook-secret')
+      await fs.writeFile(out, `${hook.webhook_secret}\n`, { mode: 0o600 })
+      console.log(`WHOP WEBHOOK CREATED ${hook.id}; secret written to ${out}`)
     } else {
       console.log(`webhook exists ${hook.id} -> ${hook.url}`)
     }
