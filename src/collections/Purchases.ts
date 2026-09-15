@@ -87,6 +87,21 @@ export const Purchases: CollectionConfig = {
       },
     },
     {
+      name: 'whopEnvironment',
+      type: 'select',
+      options: [
+        { label: 'Production', value: 'production' },
+        { label: 'Sandbox', value: 'sandbox' },
+      ],
+      defaultValue: 'production',
+      admin: {
+        description:
+          'Sandbox rows are test payments made with Whop test cards. They ' +
+          'are kept so the whole flow can be checked, and left out of the ' +
+          'revenue figures above.',
+      },
+    },
+    {
       name: 'creemSubscriptionId',
       type: 'text',
       index: true,

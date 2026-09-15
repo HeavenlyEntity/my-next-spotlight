@@ -79,6 +79,17 @@ export const Services: CollectionConfig = {
       },
     },
     {
+      name: 'whopSandboxPlanId',
+      type: 'text',
+      admin: {
+        description:
+          "The same deposit plan on Whop's sandbox (plan_… on " +
+          'sandbox.whop.com). Used only when the site runs with ' +
+          'WHOP_ENV=sandbox, i.e. locally for testing with test cards. ' +
+          'Filled in by `pnpm sim` when run against a sandbox key.',
+      },
+    },
+    {
       name: 'depositAmount',
       type: 'number',
       defaultValue: 1500,

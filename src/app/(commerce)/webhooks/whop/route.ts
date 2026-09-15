@@ -1,5 +1,6 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { verifyWhopWebhook, type WhopPayment } from '@/lib/commerce/whop'
+import { whopEnvironment } from '@/lib/commerce/whopEnv'
 import {
   sendDepositReceivedEmail,
   notifyDepositReceived,
@@ -85,6 +86,9 @@ export async function POST(req: Request) {
         email,
         provider: 'whop',
         whopPaymentId: paymentId,
+        /* Stamped from this server's own setting, not the payload: a sandbox
+           webhook only ever reaches a server configured for the sandbox. */
+        whopEnvironment: whopEnvironment(),
         item: service
           ? { relationTo: 'services', value: service.id }
           : undefined,

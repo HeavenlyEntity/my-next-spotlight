@@ -5,7 +5,12 @@ import { fireEvent, render, screen } from '@testing-library/react'
    props and offers a button that stands in for a completed payment. */
 vi.mock('@whop/checkout/react', () => ({
   WhopCheckoutEmbed: (props) => (
-    <div data-testid="embed" data-plan={props.planId} data-theme={props.theme}>
+    <div
+      data-testid="embed"
+      data-plan={props.planId}
+      data-theme={props.theme}
+      data-env={props.environment}
+    >
       <button
         type="button"
         onClick={() => props.onComplete('plan_x', 'rcpt_1')}
@@ -27,6 +32,7 @@ beforeEach(() => {
 
 afterEach(() => {
   delete window.whop
+  delete process.env.NEXT_PUBLIC_WHOP_ENV
   document.documentElement.classList.remove('dark')
 })
 
@@ -83,6 +89,32 @@ describe('DepositCheckout', () => {
       screen.getByRole('link', { name: /book the intro call/i })
     ).toHaveAttribute('href', 'https://cal.com/amware/on-demand-outcome')
     expect(screen.queryByTestId('embed')).toBeNull()
+  })
+
+  it('mounts the production embed by default, with no sandbox warning', () => {
+    render(
+      <DepositCheckout planId="plan_dep" serviceName="Advisor">
+        Reserve your start
+      </DepositCheckout>
+    )
+    open()
+    expect(screen.getByTestId('embed')).toHaveAttribute(
+      'data-env',
+      'production'
+    )
+    expect(screen.queryByText(/sandbox/i)).toBeNull()
+  })
+
+  it('mounts the sandbox embed and says so when the site runs against the sandbox', () => {
+    process.env.NEXT_PUBLIC_WHOP_ENV = 'sandbox'
+    render(
+      <DepositCheckout planId="plan_sand" serviceName="Advisor">
+        Reserve your start
+      </DepositCheckout>
+    )
+    open()
+    expect(screen.getByTestId('embed')).toHaveAttribute('data-env', 'sandbox')
+    expect(screen.getByText(/sandbox: test cards only/i)).toBeInTheDocument()
   })
 
   it('tells the embed which theme the page is in', () => {

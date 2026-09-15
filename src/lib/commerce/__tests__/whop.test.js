@@ -80,6 +80,19 @@ describe('whopRequest', () => {
     })
   })
 
+  it('talks to the sandbox host when the environment says so', async () => {
+    process.env.WHOP_ENV = 'sandbox'
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: async () => ({}) })
+    vi.stubGlobal('fetch', fetchMock)
+    await whopRequest('/accounts/me')
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'https://sandbox-api.whop.com/api/v1/accounts/me'
+    )
+    delete process.env.WHOP_ENV
+  })
+
   it('refuses to run without an API key', async () => {
     delete process.env.WHOP_API_KEY
     await expect(whopRequest('/plans')).rejects.toBeInstanceOf(WhopError)

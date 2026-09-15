@@ -479,6 +479,7 @@ export interface Service {
    */
   creemProductId?: string | null
   whopPlanId?: string | null
+  whopSandboxPlanId?: string | null
   depositAmount?: number | null
   order?: number | null
   status?: ('draft' | 'published') | null
@@ -527,6 +528,7 @@ export interface Purchase {
   provider?: ('creem' | 'whop') | null
   creemOrderId?: string | null
   whopPaymentId?: string | null
+  whopEnvironment?: ('production' | 'sandbox') | null
   /**
    * Retainers only. Ties every renewal row back to one subscription.
    */
@@ -895,6 +897,7 @@ export interface ServicesSelect<T extends boolean = true> {
   depositNote?: T
   creemProductId?: T
   whopPlanId?: T
+  whopSandboxPlanId?: T
   depositAmount?: T
   order?: T
   status?: T
@@ -926,6 +929,7 @@ export interface PurchasesSelect<T extends boolean = true> {
   provider?: T
   creemOrderId?: T
   whopPaymentId?: T
+  whopEnvironment?: T
   creemSubscriptionId?: T
   creemTransactionId?: T
   amount?: T

@@ -3,7 +3,8 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { WHOP_ACCOUNT_ID, whopRequest } from '@/lib/commerce/whop'
+import { whopRequest } from '@/lib/commerce/whop'
+import { whopEnvironment } from '@/lib/commerce/whopEnv'
 
 /* Whop, set up for the engagements. Live account, real objects, nothing
    charged: one hidden product, one one-time deposit plan per published
@@ -16,8 +17,18 @@ import { WHOP_ACCOUNT_ID, whopRequest } from '@/lib/commerce/whop'
  * production, or the route answers 401 to everything. */
 
 const PRODUCT_TITLE = 'Anti-Slop Alec engagements'
+const ENV = whopEnvironment()
+/* Live Whop must reach production; the sandbox must reach the dev tunnel
+   (`pnpm dev:tunnel`). Override with WHOP_WEBHOOK_URL. */
 const WEBHOOK_URL =
-  process.env.WHOP_WEBHOOK_URL || 'https://www.amware.dev/webhooks/whop'
+  process.env.WHOP_WEBHOOK_URL ||
+  (ENV === 'sandbox'
+    ? 'https://my-portfolio.ngrok.app/webhooks/whop'
+    : 'https://www.amware.dev/webhooks/whop')
+/* The field the plan id is written to. Two ids per service, because the
+   database is shared between the site's production and its local sandbox
+   testing, and a sandbox plan must never reach a real customer. */
+const PLAN_FIELD = ENV === 'sandbox' ? 'whopSandboxPlanId' : 'whopPlanId'
 const DEFAULT_DEPOSIT = 1500
 
 const list = async (path) => (await whopRequest(path)).data ?? []
@@ -25,16 +36,24 @@ const list = async (path) => (await whopRequest(path)).data ?? []
 describe('Whop engagements', () => {
   let payload
   let product
+  let account
+
+  it('talks to the account the key belongs to', async () => {
+    account = await whopRequest('/accounts/me')
+    console.log(`${ENV}: ${account.id} (${account.title})`)
+    expect(account.id).toMatch(/^biz_/)
+    if (ENV === 'production') expect(account.id).toBe('biz_PGSOCOwANQSket')
+  })
 
   it('has the product', async () => {
     payload = await getPayload({ config })
-    const products = await list(`/products?account_id=${WHOP_ACCOUNT_ID}`)
+    const products = await list(`/products?account_id=${account.id}`)
     product = products.find((p) => p.title === PRODUCT_TITLE)
     if (!product) {
       product = await whopRequest('/products', {
         method: 'POST',
         body: {
-          account_id: WHOP_ACCOUNT_ID,
+          account_id: account.id,
           title: PRODUCT_TITLE,
           description:
             'The deposit that starts a retainer with Alec Mingione. Credited in full against the first month.',
@@ -64,7 +83,7 @@ describe('Whop engagements', () => {
     expect(docs.length).toBeGreaterThan(0)
 
     const plans = await list(
-      `/plans?account_id=${WHOP_ACCOUNT_ID}&product_id=${product.id}`
+      `/plans?account_id=${account.id}&product_id=${product.id}`
     )
 
     for (const service of docs) {
@@ -80,7 +99,7 @@ describe('Whop engagements', () => {
         plan = await whopRequest('/plans', {
           method: 'POST',
           body: {
-            account_id: WHOP_ACCOUNT_ID,
+            account_id: account.id,
             product_id: product.id,
             plan_type: 'one_time',
             initial_price: deposit,
@@ -99,19 +118,22 @@ describe('Whop engagements', () => {
       }
       expect(plan.id).toMatch(/^plan_/)
 
-      if (service.whopPlanId !== plan.id || service.depositAmount !== deposit) {
+      if (
+        service[PLAN_FIELD] !== plan.id ||
+        service.depositAmount !== deposit
+      ) {
         await payload.update({
           collection: 'services',
           id: service.id,
           overrideAccess: true,
-          data: { whopPlanId: plan.id, depositAmount: deposit },
+          data: { [PLAN_FIELD]: plan.id, depositAmount: deposit },
         })
       }
     }
   })
 
   it('has the webhook', async () => {
-    const hooks = await list(`/webhooks?account_id=${WHOP_ACCOUNT_ID}`)
+    const hooks = await list(`/webhooks?account_id=${account.id}`)
     let hook = hooks.find((h) => h.url === WEBHOOK_URL)
     if (!hook) {
       hook = await whopRequest('/webhooks', {
@@ -124,7 +146,7 @@ describe('Whop engagements', () => {
              `company_id`) so a Whop change cannot silently reshape events. */
           api_version_date: '2026-08-14',
           enabled: true,
-          resource_id: WHOP_ACCOUNT_ID,
+          resource_id: account.id,
         },
       })
       /* Whop shows the secret exactly once, and vitest does not reliably

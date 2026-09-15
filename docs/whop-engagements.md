@@ -44,6 +44,30 @@ create it again.
   payload carries a fake plan, so the route records it as a `failed` Whop
   purchase and mails the sample address; delete that row afterwards.
 
+## Sandbox: testing the whole flow with test cards
+
+Whop's sandbox is a separate account (`biz_ENQ4Ezoxk2a62S`, on
+sandbox.whop.com) with its own key, plans and webhook. Locally:
+
+```
+WHOP_API_KEY=<sandbox key>
+WHOP_WEBHOOK_SECRET=<sandbox webhook secret>
+WHOP_ENV=sandbox
+NEXT_PUBLIC_WHOP_ENV=sandbox
+```
+
+With that set, `pnpm sim` creates the product and plans on the sandbox and
+writes them to `whopSandboxPlanId` (the live `whopPlanId` is untouched: the
+database is shared, and a sandbox plan must never reach a real customer),
+the cards mount the sandbox embed with a visible "Sandbox" chip, and the
+sandbox webhook (`https://my-portfolio.ngrok.app/webhooks/whop`, reachable
+with `pnpm dev:tunnel`) lands on the local server. Payments are recorded
+with `whopEnvironment: sandbox` and left out of the admin's revenue
+figures. Test card `4242 4242 4242 4242`, any future date, any CVC;
+`4000 0000 0000 0002` declines.
+
+Production has none of these variables set and so is always live.
+
 ## The pixel
 
 Opening the sheet reports `begin_checkout` (`content_type: deposit`).
@@ -53,9 +77,9 @@ download sales on Creem still report `purchase`. See `docs/whop-events.md`.
 
 ## Where things live
 
-| | |
-|---|---|
-| Plan ids, deposit amount | Payload → Services → each retainer |
-| Product, plans, webhook | Whop dashboard → `biz_PGSOCOwANQSket` |
-| Deposits taken | Payload → Purchases, `provider: whop` |
-| Client code | `src/lib/commerce/whop.ts`, `src/app/(commerce)/webhooks/whop/route.ts`, `src/components/commerce/DepositCheckout.jsx` |
+|                          |                                                                                                                        |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Plan ids, deposit amount | Payload → Services → each retainer                                                                                     |
+| Product, plans, webhook  | Whop dashboard → `biz_PGSOCOwANQSket`                                                                                  |
+| Deposits taken           | Payload → Purchases, `provider: whop`                                                                                  |
+| Client code              | `src/lib/commerce/whop.ts`, `src/app/(commerce)/webhooks/whop/route.ts`, `src/components/commerce/DepositCheckout.jsx` |

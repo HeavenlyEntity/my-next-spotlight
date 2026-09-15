@@ -96,6 +96,7 @@ describe('Whop webhook', () => {
           currency: 'usd',
           status: 'paid',
           fulfillmentStatus: 'not_required',
+          whopEnvironment: 'production',
         }),
       })
     )
@@ -164,6 +165,19 @@ describe('Whop webhook', () => {
     db()
     expect((await POST(request())).status).toBe(200)
     expect(create).not.toHaveBeenCalled()
+  })
+
+  it('stamps a payment received by a sandbox-configured server as sandbox', async () => {
+    process.env.WHOP_ENV = 'sandbox'
+    verifyWhopWebhook.mockReturnValue(event(payment()))
+    db()
+    await POST(request())
+    expect(create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ whopEnvironment: 'sandbox' }),
+      })
+    )
+    delete process.env.WHOP_ENV
   })
 
   it('never lets a mail failure turn into a retry storm', async () => {

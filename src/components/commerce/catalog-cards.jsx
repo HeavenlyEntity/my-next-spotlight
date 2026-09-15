@@ -7,6 +7,7 @@ import { BuyButton } from '@/components/commerce/BuyButton'
 import { BookCallButton } from '@/components/commerce/BookCallButton'
 import { DepositCheckout } from '@/components/commerce/DepositCheckout'
 import { calLinkFromUrl } from '@/lib/commerce/calLink'
+import { depositPlanId } from '@/lib/commerce/whopEnv'
 import { usd } from '@/lib/commerce/money'
 import { typeMeta } from '@/components/commerce/catalog-meta'
 
@@ -243,6 +244,7 @@ export function ServiceCard({ service, index = 0, description = null }) {
   const icon = mediaUrl(service.icon)
   const hasPrice = typeof service.startingPrice === 'number'
   const booking = calLinkFromUrl(service.bookingUrl)
+  const depositPlan = depositPlanId(service)
   return (
     <motion.li
       id={service.slug}
@@ -344,10 +346,10 @@ export function ServiceCard({ service, index = 0, description = null }) {
         )}
         {/* A retainer starts with a call; the deposit reserves the start.
             Present only when the tier has a Whop plan to charge against. */}
-        {!service.creemProductId && service.whopPlanId && (
+        {!service.creemProductId && depositPlan && (
           <div className="mt-3">
             <DepositCheckout
-              planId={service.whopPlanId}
+              planId={depositPlan}
               serviceName={service.name}
               amount={
                 typeof service.depositAmount === 'number'

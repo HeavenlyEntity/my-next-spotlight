@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { SectionEyebrow } from './section-eyebrow'
 import { DepositCheckout } from '@/components/commerce/DepositCheckout'
 import { usd } from '@/lib/commerce/money'
+import { depositPlanId } from '@/lib/commerce/whopEnv'
 import { OfferTabs, offerPanelProps } from './offer-tabs'
 import {
   STACK_LABEL,
@@ -160,12 +161,13 @@ const reserveClass =
   'border-[var(--amw-line-strong)] hover:border-[var(--amw-accent)] hover:text-[var(--amw-accent-ink)] mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border px-5 py-3 text-sm font-medium text-zinc-800 no-underline transition-colors dark:text-zinc-200'
 
 function ReserveStart({ plan, service }) {
-  if (!service?.whopPlanId) return null
+  const planId = depositPlanId(service)
+  if (!planId) return null
   const amount =
     typeof service.depositAmount === 'number' ? service.depositAmount : 1500
   return (
     <DepositCheckout
-      planId={service.whopPlanId}
+      planId={planId}
       serviceName={plan.name}
       amount={amount}
       bookingUrl={service.bookingUrl || null}

@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/sheet'
 import { WHOP_EVENT, whopTrack } from '@/lib/analytics/whop'
 import { usd } from '@/lib/commerce/money'
+import { whopEnvironment } from '@/lib/commerce/whopEnv'
 
 /* The deposit that starts an engagement, paid without leaving the page.
    Whop's checkout mounts in a side sheet from the service's plan id; there
@@ -74,6 +75,10 @@ export function DepositCheckout({
   const [received, setReceived] = useState(false)
   const [dark, setDark] = useState(false)
   const [origin, setOrigin] = useState('')
+  /* Which Whop the embed talks to. Sandbox is announced in the sheet so a
+     tester with a real card cannot mistake it for the live thing, and vice
+     versa. */
+  const environment = whopEnvironment()
 
   /* Read at the moment of opening, from the click: the embed is an iframe
      that cannot see the page's theme, and the return URL must be absolute.
@@ -120,6 +125,11 @@ export function DepositCheckout({
             {usd(amount)} deposit for {serviceName}, credited in full against
             your first month.
           </SheetDescription>
+          {environment === 'sandbox' && (
+            <p className="amw-chip amw-chip--accent self-start">
+              Sandbox: test cards only, nothing is charged
+            </p>
+          )}
         </SheetHeader>
 
         {received ? (
@@ -140,6 +150,7 @@ export function DepositCheckout({
                   buttonText: `Pay ${usd(amount)} deposit`,
                 }}
                 returnUrl={`${origin}/checkout/deposit`}
+                environment={environment}
                 skipRedirect
                 onComplete={() => setReceived(true)}
                 fallback={

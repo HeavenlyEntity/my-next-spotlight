@@ -1,4 +1,5 @@
 import { unwrapWebhook } from '@whop/sdk/helpers'
+import { whopEnvironment } from './whopEnv'
 
 /*
  * Whop, for the engagements.
@@ -13,11 +14,19 @@ import { unwrapWebhook } from '@whop/sdk/helpers'
  * `whopRequest` is only used by the setup simulation (creating the product,
  * the plans and the webhook) and by nothing at request time, so a missing
  * WHOP_API_KEY cannot break a page. The webhook needs only
- * WHOP_WEBHOOK_SECRET.
+ * WHOP_WEBHOOK_SECRET. Which Whop -- live or sandbox -- is decided by
+ * whopEnv.ts; the key and the secret must belong to the same one.
  */
 
+/* The live account. The sandbox account has its own id; the setup resolves
+   it from the key rather than hardcoding a second one here. */
 export const WHOP_ACCOUNT_ID = 'biz_PGSOCOwANQSket'
-const API_URL = 'https://api.whop.com/api/v1'
+
+export function whopApiUrl(): string {
+  return whopEnvironment() === 'sandbox'
+    ? 'https://sandbox-api.whop.com/api/v1'
+    : 'https://api.whop.com/api/v1'
+}
 
 export class WhopError extends Error {
   status: number
@@ -34,7 +43,7 @@ export async function whopRequest<T = unknown>(
 ): Promise<T> {
   const key = process.env.WHOP_API_KEY
   if (!key) throw new WhopError('WHOP_API_KEY is not configured', 0)
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetch(`${whopApiUrl()}${path}`, {
     method: init.method || 'GET',
     headers: {
       Authorization: `Bearer ${key}`,

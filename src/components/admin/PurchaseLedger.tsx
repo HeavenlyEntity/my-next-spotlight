@@ -64,10 +64,23 @@ export const PurchaseLedger = async () => {
        summed, and there is no aggregate in the Local API. Capped: past a few
        thousand orders this wants a real query, and a wrong number here would
        be worse than no number. */
+    /* Sandbox rows are Whop test-card payments, kept so the flow can be
+       checked end to end; they are money in no sense. Rows written before
+       the field existed have no value and are real. */
+    const notSandbox = {
+      or: [
+        { whopEnvironment: { not_equals: 'sandbox' } },
+        { whopEnvironment: { exists: false } },
+      ],
+    }
     const paid = await payload.find({
       collection: 'purchases',
       where: {
-        and: [{ status: { equals: 'paid' } }, { amount: { greater_than: 0 } }],
+        and: [
+          { status: { equals: 'paid' } },
+          { amount: { greater_than: 0 } },
+          notSandbox,
+        ],
       },
       limit: 1000,
       depth: 0,
@@ -93,6 +106,7 @@ export const PurchaseLedger = async () => {
         and: [
           { amount: { greater_than: 0 } },
           { createdAt: { greater_than: since } },
+          notSandbox,
         ],
       }),
     ])
