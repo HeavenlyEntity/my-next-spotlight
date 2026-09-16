@@ -1,4 +1,5 @@
 import { withSocialImage } from '@/lib/social/metadata'
+import { ArrowUpRight } from 'lucide-react'
 import { Card } from '@/components/Card'
 import { Section } from '@/components/Section'
 import { SimpleLayout } from '@/components/SimpleLayout'
@@ -22,11 +23,30 @@ function ToolsSection({ children, ...props }) {
   )
 }
 
-function Tool({ title, href, children }) {
+function Tool({ title, href, affiliate = false, children }) {
   return (
     <Card as="li">
-      <Card.Title as="h3" href={href}>
-        {title}
+      <Card.Title
+        as="h3"
+        href={href}
+        {...(href
+          ? {
+              target: '_blank',
+              rel: affiliate
+                ? 'sponsored noopener noreferrer'
+                : 'noopener noreferrer',
+            }
+          : {})}
+      >
+        <span className="inline-flex items-center gap-1">
+          {title}
+          {href ? (
+            <ArrowUpRight
+              className="h-3.5 w-3.5 text-zinc-400 transition-colors group-hover:text-teal-500 dark:text-zinc-500"
+              aria-hidden="true"
+            />
+          ) : null}
+        </span>
       </Card.Title>
       <Card.Description>{children}</Card.Description>
     </Card>
@@ -37,7 +57,7 @@ export default function Uses() {
   return (
     <SimpleLayout
       title="Software I use, gadgets I love, and other things I recommend."
-      intro="I get asked a lot about the things I use to build software, stay productive, or buy to fool myself into thinking I'm being productive when I'm really just procrastinating. Here's a big list of all of my favorite stuff."
+      intro="I get asked a lot about the things I use to build software, stay productive, or buy to fool myself into thinking I'm being productive when I'm really just procrastinating. Here's a big list of all of my favorite stuff. Some links are affiliate: I may earn a commission if you buy through them, at no extra cost to you."
     >
       <div className="space-y-20">
         <ToolsSection title="Workstation">
@@ -86,16 +106,17 @@ export default function Uses() {
           </Tool>
         </ToolsSection>
         <ToolsSection title="Productivity">
-          <Tool title="Rize">
+          <Tool title="Rize" href="https://pxllnk.co/rize" affiliate>
             If you find yourself not knowing when to take a break because
             everything is so interstellar. This is the definition of time
             management and productivity. The past few years this has helped
             train my instincts to time, and how just a short break can solve
             your current problem(s).
           </Tool>
-          <Tool title="Jira">
-            Its been around for a while. The classic KANBAN board which I love
-            for any project to organize the priority of tasks and bugs.
+          <Tool title="Blitzit" href="https://pxllnk.co/blitzit" affiliate>
+            The board I actually keep open. Tasks, a pomodoro timer, and the
+            day&apos;s focus in one place, without the ceremony of a full issue
+            tracker.
           </Tool>
           <Tool title="Stashpad">
             Using a daily notes system instead of trying to keep things
@@ -104,9 +125,10 @@ export default function Uses() {
             discoverable by topic even though all of my writing happens in
             bucket.
           </Tool>
-          <Tool title="TidyCal">
-            Great tool for scheduling meetings while protecting my calendar and
-            making sure I still have lots of time for deep work during the week.
+          <Tool title="Roam HQ" href="https://pxllnk.co/roamware" affiliate>
+            The room I take meetings in. It protects the calendar so I still
+            have lots of time for deep work, and keeps the call, the notes, and
+            the next action in one place.
           </Tool>
           <Tool title="Focus">
             Simple tool for blocking distracting websites when I need to just do
