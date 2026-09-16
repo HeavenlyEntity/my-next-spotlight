@@ -96,7 +96,10 @@ function Card({
     [-2.6, -2, -1, 0, 1, 2, 2.6],
     [0, 0.5, 0.9, 1, 0.9, 0.5, 0]
   )
-  const zIndex = useTransform(offset, (o) => Math.round(100 - Math.abs(o) * 10))
+  /* Local only. The site header is z-50; a 100-scale here leaked through
+     the fan and painted the cards over the nav on scroll. isolate on the
+     root keeps even a future bump from competing with chrome. */
+  const zIndex = useTransform(offset, (o) => Math.round(10 - Math.abs(o) * 10))
 
   return (
     <motion.div
@@ -192,14 +195,15 @@ export const CarouselStacked = forwardRef(function CarouselStacked(
   return (
     <div
       className={cn(
-        'relative flex w-full select-none items-center justify-center overflow-visible',
+        'relative isolate flex w-full select-none items-center justify-center overflow-visible',
         className
       )}
       style={{ height }}
     >
       {/* The drag surface sits over the cards; they are pointer-events-none
-          so the whole fan is one grab. Motion sets touch-action: pan-y for
-          drag="x", so the page still scrolls under a thumb. */}
+          so the whole fan is one grab. z-20 is above the local card stack
+          and below the site header (z-50). Motion sets touch-action: pan-y
+          for drag="x", so the page still scrolls under a thumb. */}
       <motion.div
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
@@ -207,7 +211,7 @@ export const CarouselStacked = forwardRef(function CarouselStacked(
         onDragStart={onDragStart}
         onDrag={onDrag}
         onDragEnd={onDragEnd}
-        className="absolute inset-0 z-[110] cursor-grab active:cursor-grabbing"
+        className="absolute inset-0 z-20 cursor-grab active:cursor-grabbing"
       />
       {items.map((item, i) => (
         <Card
