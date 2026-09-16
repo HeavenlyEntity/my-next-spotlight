@@ -14,7 +14,12 @@ import { WHOP_EVENT, whopTrack } from '@/lib/analytics/whop'
 
    Brand colour and layout are the values from Cal.com's own snippet for this
    event type. One listener per namespace: several cards can share an event
-   type, and each booking should be reported once, not once per card. */
+   type, and each booking should be reported once, not once per card.
+
+   `onClick` is the caller's own bookkeeping -- the deposit sheet closes
+   itself with it so the popup is not trapped under the sheet's overlay.
+   Cal's document-level listener reads the data attributes off the same
+   click, so the popup still opens. */
 
 const BRAND = '#3fc5ac'
 const listening = new Set()
@@ -24,6 +29,7 @@ export function BookCallButton({
   namespace,
   serviceName,
   className,
+  onClick,
   children,
 }) {
   useEffect(() => {
@@ -68,6 +74,7 @@ export function BookCallButton({
       data-cal-link={calLink}
       data-cal-config='{"layout":"month_view"}'
       className={className}
+      onClick={onClick}
     >
       {children}
     </button>

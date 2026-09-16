@@ -220,11 +220,6 @@ export function CourseCard({ course, index = 0 }) {
 const CTA_CLASS =
   'group inline-flex items-center gap-3 rounded-md bg-zinc-900 py-3 pl-5 pr-3 font-medium text-white no-underline transition-all duration-500 ease-out hover:rounded-[50px] dark:bg-zinc-100 dark:text-zinc-900'
 
-/* The second ask on a retainer card: the deposit, on Whop. Outlined, so the
-   call stays the primary. */
-const SECONDARY_CTA_CLASS =
-  'border-[var(--amw-line-strong)] hover:border-[var(--amw-accent)] hover:text-[var(--amw-accent-ink)] inline-flex min-h-11 items-center justify-center gap-2 rounded-md border px-5 py-3 font-medium text-zinc-800 no-underline transition-colors dark:text-zinc-200'
-
 function CtaLabel({ children }) {
   return (
     <>
@@ -245,6 +240,8 @@ export function ServiceCard({ service, index = 0, description = null }) {
   const hasPrice = typeof service.startingPrice === 'number'
   const booking = calLinkFromUrl(service.bookingUrl)
   const depositPlan = depositPlanId(service)
+  const deposit =
+    typeof service.depositAmount === 'number' ? service.depositAmount : 1500
   return (
     <motion.li
       id={service.slug}
@@ -317,10 +314,24 @@ export function ServiceCard({ service, index = 0, description = null }) {
             name={service.name}
             label={'Purchase'}
           />
+        ) : depositPlan ? (
+          /* One ask, not two. The deposit reserves the start, and its
+             received state opens the same Cal.com popup the intro-call
+             button used to -- so the call now lives inside the reservation
+             instead of beside it. */
+          <DepositCheckout
+            planId={depositPlan}
+            serviceName={service.name}
+            amount={deposit}
+            bookingUrl={service.bookingUrl || null}
+            className={CTA_CLASS}
+          >
+            <CtaLabel>Reserve your start · {usd(deposit)}</CtaLabel>
+          </DepositCheckout>
         ) : booking ? (
-          /* A retainer does not start with a quote, it starts with a
-             conversation. A Cal.com link opens the booking here, in a popup,
-             which is the only way the booking itself can be observed. */
+          /* No plan to charge against yet, so the conversation is still the
+             way in. A Cal.com link opens the booking here, in a popup, which
+             is the only way the booking itself can be observed. */
           <BookCallButton
             calLink={booking.link}
             namespace={booking.namespace}
@@ -343,30 +354,6 @@ export function ServiceCard({ service, index = 0, description = null }) {
               {service.bookingUrl ? 'Book an intro call' : 'Request a quote'}
             </CtaLabel>
           </Link>
-        )}
-        {/* A retainer starts with a call; the deposit reserves the start.
-            Present only when the tier has a Whop plan to charge against. */}
-        {!service.creemProductId && depositPlan && (
-          <div className="mt-3">
-            <DepositCheckout
-              planId={depositPlan}
-              serviceName={service.name}
-              amount={
-                typeof service.depositAmount === 'number'
-                  ? service.depositAmount
-                  : 1500
-              }
-              bookingUrl={service.bookingUrl || null}
-              className={`${SECONDARY_CTA_CLASS} w-full sm:w-auto`}
-            >
-              Reserve your start ·{' '}
-              {usd(
-                typeof service.depositAmount === 'number'
-                  ? service.depositAmount
-                  : 1500
-              )}
-            </DepositCheckout>
-          </div>
         )}
         {service.depositNote && (
           <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">

@@ -10,6 +10,7 @@ vi.mock('@whop/checkout/react', () => ({
       data-plan={props.planId}
       data-theme={props.theme}
       data-env={props.environment}
+      data-return={props.returnUrl}
     >
       <button
         type="button"
@@ -19,6 +20,12 @@ vi.mock('@whop/checkout/react', () => ({
       </button>
     </div>
   ),
+}))
+
+/* The received state books the intro call through the Cal.com popup; the
+   embed script has no business loading in jsdom. */
+vi.mock('@calcom/embed-react', () => ({
+  getCalApi: vi.fn(async () => vi.fn()),
 }))
 
 import { DepositCheckout } from '../DepositCheckout'
@@ -71,7 +78,7 @@ describe('DepositCheckout', () => {
     expect(track.mock.calls.map(([e]) => e)).not.toContain('purchase')
   })
 
-  it('shows the received state with the booking link once payment completes', () => {
+  it('flows a completed payment into the same Cal.com popup as "Book an intro call"', () => {
     render(
       <DepositCheckout
         planId="plan_dep"
@@ -85,10 +92,75 @@ describe('DepositCheckout', () => {
     open()
     fireEvent.click(screen.getByRole('button', { name: 'simulate payment' }))
     expect(screen.getByRole('status')).toHaveTextContent('Deposit received')
+    expect(screen.queryByTestId('embed')).toBeNull()
+
+    /* The value moment: the dot-matrix checkmark is centred in the sheet.
+       The staged reveal is opacity only, so everything below it is already
+       in the document -- which is exactly what these queries prove. */
+    expect(screen.getByTestId('deposit-check-matrix')).toBeInTheDocument()
+
+    /* The intro call is the element-click embed the Cal script looks for,
+       not a link that sends the buyer away. */
+    const book = screen.getByRole('button', { name: /book the intro call/i })
+    expect(book).toHaveAttribute('data-cal-link', 'amware/on-demand-outcome')
+    expect(book).toHaveAttribute('data-cal-namespace', 'on-demand-outcome')
+
+    /* Clicking closes the sheet so the popup is not trapped under it. */
+    fireEvent.click(book)
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('keeps the plain link for a booking URL that is not Cal.com', () => {
+    render(
+      <DepositCheckout
+        planId="plan_dep"
+        serviceName="Advisor"
+        amount={1500}
+        bookingUrl="https://calendly.com/amware/intro"
+      >
+        Reserve your start
+      </DepositCheckout>
+    )
+    open()
+    fireEvent.click(screen.getByRole('button', { name: 'simulate payment' }))
     expect(
       screen.getByRole('link', { name: /book the intro call/i })
-    ).toHaveAttribute('href', 'https://cal.com/amware/on-demand-outcome')
-    expect(screen.queryByTestId('embed')).toBeNull()
+    ).toHaveAttribute('href', 'https://calendly.com/amware/intro')
+  })
+
+  it('sends the booking link along on the return URL for redirect payments', () => {
+    render(
+      <DepositCheckout
+        planId="plan_dep"
+        serviceName="Advisor"
+        amount={1500}
+        bookingUrl="https://cal.com/amware/on-demand-outcome"
+      >
+        Reserve your start
+      </DepositCheckout>
+    )
+    open()
+    expect(screen.getByTestId('embed')).toHaveAttribute(
+      'data-return',
+      `${
+        window.location.origin
+      }/checkout/deposit?service=Advisor&booking=${encodeURIComponent(
+        'https://cal.com/amware/on-demand-outcome'
+      )}`
+    )
+  })
+
+  it('keeps the bare return URL when there is no Cal.com booking link', () => {
+    render(
+      <DepositCheckout planId="plan_dep" serviceName="Advisor" amount={1500}>
+        Reserve your start
+      </DepositCheckout>
+    )
+    open()
+    expect(screen.getByTestId('embed')).toHaveAttribute(
+      'data-return',
+      `${window.location.origin}/checkout/deposit`
+    )
   })
 
   it('mounts the production embed by default, with no sandbox warning', () => {

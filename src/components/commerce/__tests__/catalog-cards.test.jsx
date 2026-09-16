@@ -118,7 +118,35 @@ describe('catalog cards', () => {
     expect(screen.getByText(/20 to 25 hrs/)).toBeInTheDocument()
   })
 
-  it('service card asks for the call when the tier has a booking link', () => {
+  it('service card leads with the reservation when the tier has a deposit plan', () => {
+    render(
+      <ul>
+        <ServiceCard
+          service={{
+            slug: 'cto',
+            name: 'Fractional CTO',
+            startingPrice: 7500,
+            bookingUrl: 'https://cal.com/amware/on-demand-outcome',
+            whopPlanId: 'plan_live',
+            depositAmount: 1500,
+          }}
+        />
+      </ul>
+    )
+    // The deposit is the one ask; the intro call now lives inside its
+    // received state, so the card no longer asks for the call beside it.
+    expect(
+      screen.getByRole('button', { name: /reserve your start · \$1,500/i })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /book an intro call/i })
+    ).toBeNull()
+    expect(
+      screen.queryByRole('link', { name: /book an intro call/i })
+    ).toBeNull()
+  })
+
+  it('service card asks for the call when the tier has a booking link but no deposit plan', () => {
     render(
       <ul>
         <ServiceCard
