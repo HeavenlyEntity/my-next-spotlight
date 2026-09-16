@@ -135,6 +135,17 @@ export default function Uses() {
             the work and get some momentum going.
           </Tool>
         </ToolsSection>
+        <ToolsSection title="Finance">
+          <Tool
+            title="Sequence"
+            href="https://go.getsequence.io/landing/join-and-earn-75?code=DHPHD"
+            affiliate
+          >
+            This is how I supercharged and automated my finances. Deposits route
+            into pods for operating cash, taxes, and savings before I can spend
+            them, so the money map runs without me babysitting transfers.
+          </Tool>
+        </ToolsSection>
       </div>
     </SimpleLayout>
   )

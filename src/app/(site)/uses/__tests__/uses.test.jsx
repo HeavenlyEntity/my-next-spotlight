@@ -7,6 +7,10 @@ const affiliates = [
   { name: 'Rize', href: 'https://pxllnk.co/rize' },
   { name: 'Blitzit', href: 'https://pxllnk.co/blitzit' },
   { name: 'Roam HQ', href: 'https://pxllnk.co/roamware' },
+  {
+    name: 'Sequence',
+    href: 'https://go.getsequence.io/landing/join-and-earn-75?code=DHPHD',
+  },
 ]
 
 describe('Uses', () => {
