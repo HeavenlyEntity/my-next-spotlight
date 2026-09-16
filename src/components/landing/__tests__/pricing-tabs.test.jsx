@@ -140,7 +140,30 @@ describe('Pricing retainers and the deposit', () => {
     expect(buttons).toHaveLength(1)
     expect(buttons[0]).toHaveTextContent('$1,500')
     // It sits inside the Fractional CTO card, not beside another tier.
-    expect(buttons[0].closest('li')).toHaveTextContent('Fractional CTO')
+    const card = buttons[0].closest('li')
+    expect(card).toHaveTextContent('Fractional CTO')
+    const guarantee = within(card).getByRole('complementary', {
+      name: /first call value and refund terms/i,
+    })
+    expect(guarantee).toHaveTextContent('Know what to fix next in 60 minutes.')
+    expect(guarantee).toHaveTextContent(
+      'You leave knowing your highest-priority technical risk and the next move to make.'
+    )
+    expect(guarantee).toHaveTextContent(
+      'Free tool included: CTO Systems Audit Prompt'
+    )
+    expect(guarantee.compareDocumentPosition(buttons[0])).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+    const refund = within(card).getByText(
+      'Full refund if we don’t work together.'
+    )
+    expect(buttons[0].compareDocumentPosition(refund)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+    expect(p).toHaveTextContent(
+      'The deposit holds your start. After the intro call, it is either credited in full to month one or returned before work begins.'
+    )
   })
 
   it('opens the deposit sheet for that service from the homepage', () => {

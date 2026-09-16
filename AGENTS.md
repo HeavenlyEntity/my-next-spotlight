@@ -39,8 +39,7 @@ runs is now safe.** The old rule against it no longer applies.
 - Lint with the ESLint CLI, never `next lint`; flat config lives in `eslint.config.mjs`
 - Loading skeletons cover only the main content area, not the nav sidebar
 - Graceful error handling on public pages (loadError prop, fallback UI with refresh); throw on staff pages
-- Card UIs should be minimal at rest; show supplementary details (status, expanded info) on hover/interaction only
-- Images should display full content without cropping (`object-contain`); keep media flush (no extra top/bottom padding); clip images and overlays inside card borders
+- Card UIs should be minimal at rest; reveal supplementary details on interaction; show full images without cropping (`object-contain`), keep media flush, and clip media/overlays inside card borders
 - About/ProfileCard spotlight UIs should shrink on mobile so the interaction stays playable without filling the viewport
 - When grouping commits, use the gitmoji.dev convention
 - Use `.toFixed(2)` for price display (e.g. `$75.00`)
@@ -52,3 +51,4 @@ runs is now safe.** The old rule against it no longer applies.
 - CMS is Payload 3 on Postgres (`@payloadcms/db-postgres`); commerce integrates Creem (`@creem_io/nextjs`)
 - Site positioning and meta use a fractional CTO tone; About narrative is engineer → architect → CTO with MBA as the business-technical bridge
 - Project cards use `BorderGlow`, sort most-recent-first, and pull cover assets from `src/images/projects/`
+- Deposit-plan service cards use reservation as their primary CTA and offer intro-call scheduling after successful payment; services without a deposit plan retain their direct booking/contact fallback

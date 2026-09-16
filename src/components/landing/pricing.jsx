@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import Link from 'next/link'
 import { SectionEyebrow } from './section-eyebrow'
 import { DepositCheckout } from '@/components/commerce/DepositCheckout'
+import { DepositRiskReversal } from '@/components/commerce/DepositRiskReversal'
 import { usd } from '@/lib/commerce/money'
 import { depositPlanId } from '@/lib/commerce/whopEnv'
 import { OfferTabs, offerPanelProps } from './offer-tabs'
@@ -158,7 +159,7 @@ function Price({ value, under }) {
    plan, no button: the card still reads and the intro-call CTA below
    still works. */
 const reserveClass =
-  'border-[var(--amw-line-strong)] hover:border-[var(--amw-accent)] hover:text-[var(--amw-accent-ink)] mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border px-5 py-3 text-sm font-medium text-zinc-800 no-underline transition-colors dark:text-zinc-200'
+  'border-[var(--amw-line-strong)] hover:border-[var(--amw-accent)] hover:text-[var(--amw-accent-ink)] inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border px-5 py-3 text-sm font-medium text-zinc-800 no-underline transition-colors dark:text-zinc-200'
 
 function ReserveStart({ plan, service }) {
   const planId = depositPlanId(service)
@@ -166,21 +167,26 @@ function ReserveStart({ plan, service }) {
   const amount =
     typeof service.depositAmount === 'number' ? service.depositAmount : 1500
   return (
-    <DepositCheckout
-      planId={planId}
-      serviceName={plan.name}
-      amount={amount}
-      bookingUrl={service.bookingUrl || null}
-      className={reserveClass}
-    >
-      Reserve your start · {usd(amount)}
-    </DepositCheckout>
+    <DepositRiskReversal className="mt-auto pt-6">
+      <DepositCheckout
+        planId={planId}
+        serviceName={plan.name}
+        amount={amount}
+        bookingUrl={service.bookingUrl || null}
+        className={reserveClass}
+      >
+        Reserve your start · {usd(amount)}
+      </DepositCheckout>
+    </DepositRiskReversal>
   )
 }
 
 function RetainerCard({ plan, service }) {
   return (
-    <motion.li className={cardClass(plan.highlighted)} {...cardMotion}>
+    <motion.li
+      className={`${cardClass(plan.highlighted)} flex flex-col`}
+      {...cardMotion}
+    >
       <div className="mb-6">
         <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
           {plan.name}
@@ -398,8 +404,9 @@ export function Pricing({ kits = [], services = [] }) {
                     than an extra cost, and saying so is what stops it reading
                     as a fee. */}
                 <p className="max-w-md text-center text-sm text-zinc-600 dark:text-zinc-400">
-                  Retainers begin after an intro call, with a $1,500 deposit
-                  credited in full against your first month.
+                  The deposit holds your start. After the intro call, it is
+                  either credited in full to month one or returned before work
+                  begins.
                 </p>
               </motion.div>
             </motion.div>

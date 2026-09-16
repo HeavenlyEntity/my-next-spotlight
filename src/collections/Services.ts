@@ -54,9 +54,10 @@ export const Services: CollectionConfig = {
       type: 'textarea',
       admin: {
         description:
-          'The money line under the call to action — the deposit and what ' +
-          'happens to it. Anything quoted here is a commitment to a client, ' +
-          'so it lives with the tier it applies to rather than in a layout.',
+          'Fallback money line for services without a Whop deposit plan. ' +
+          'Reservable services show the standardized call outcome, included ' +
+          'audit prompt, and refund terms from the storefront so the promise ' +
+          'cannot drift by tier.',
       },
     },
     {
@@ -73,7 +74,9 @@ export const Services: CollectionConfig = {
       admin: {
         description:
           'Whop plan_… id of the deposit plan. Present ⇒ the card offers ' +
-          '"Reserve your start" beside the intro call. Created and filled in ' +
+          '"Reserve your start" as its primary action and shows the call ' +
+          'outcome, included audit prompt, and refund terms. Created and ' +
+          'filled in ' +
           'by `pnpm sim` (6-whop-engagements); paste one here only to point ' +
           'at a plan made in the Whop dashboard.',
       },

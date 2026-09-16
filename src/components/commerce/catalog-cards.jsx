@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { BuyButton } from '@/components/commerce/BuyButton'
 import { BookCallButton } from '@/components/commerce/BookCallButton'
 import { DepositCheckout } from '@/components/commerce/DepositCheckout'
+import { DepositRiskReversal } from '@/components/commerce/DepositRiskReversal'
 import { calLinkFromUrl } from '@/lib/commerce/calLink'
 import { depositPlanId } from '@/lib/commerce/whopEnv'
 import { usd } from '@/lib/commerce/money'
@@ -319,15 +320,17 @@ export function ServiceCard({ service, index = 0, description = null }) {
              received state opens the same Cal.com popup the intro-call
              button used to -- so the call now lives inside the reservation
              instead of beside it. */
-          <DepositCheckout
-            planId={depositPlan}
-            serviceName={service.name}
-            amount={deposit}
-            bookingUrl={service.bookingUrl || null}
-            className={CTA_CLASS}
-          >
-            <CtaLabel>Reserve your start · {usd(deposit)}</CtaLabel>
-          </DepositCheckout>
+          <DepositRiskReversal>
+            <DepositCheckout
+              planId={depositPlan}
+              serviceName={service.name}
+              amount={deposit}
+              bookingUrl={service.bookingUrl || null}
+              className={CTA_CLASS}
+            >
+              <CtaLabel>Reserve your start · {usd(deposit)}</CtaLabel>
+            </DepositCheckout>
+          </DepositRiskReversal>
         ) : booking ? (
           /* No plan to charge against yet, so the conversation is still the
              way in. A Cal.com link opens the booking here, in a popup, which
@@ -355,7 +358,7 @@ export function ServiceCard({ service, index = 0, description = null }) {
             </CtaLabel>
           </Link>
         )}
-        {service.depositNote && (
+        {!depositPlan && service.depositNote && (
           <p className="mt-4 text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">
             {service.depositNote}
           </p>

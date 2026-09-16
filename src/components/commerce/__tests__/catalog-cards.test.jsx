@@ -129,6 +129,7 @@ describe('catalog cards', () => {
             bookingUrl: 'https://cal.com/amware/on-demand-outcome',
             whopPlanId: 'plan_live',
             depositAmount: 1500,
+            depositNote: 'Old CMS copy that must not override the guarantee.',
           }}
         />
       </ul>
@@ -144,6 +145,26 @@ describe('catalog cards', () => {
     expect(
       screen.queryByRole('link', { name: /book an intro call/i })
     ).toBeNull()
+    const guarantee = screen.getByRole('complementary', {
+      name: /first call value and refund terms/i,
+    })
+    expect(guarantee).toHaveTextContent('Know what to fix next in 60 minutes.')
+    expect(guarantee).toHaveTextContent(
+      'You leave knowing your highest-priority technical risk and the next move to make.'
+    )
+    expect(guarantee).toHaveTextContent(
+      'Free tool included: CTO Systems Audit Prompt'
+    )
+    const reserve = screen.getByRole('button')
+    const refund = screen.getByText('Full refund if we don’t work together.')
+    expect(guarantee.compareDocumentPosition(reserve)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+    expect(reserve.compareDocumentPosition(refund)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+    expect(screen.queryByText(/move forward/i)).toBeNull()
+    expect(screen.queryByText(/old cms copy/i)).toBeNull()
   })
 
   it('service card asks for the call when the tier has a booking link but no deposit plan', () => {
