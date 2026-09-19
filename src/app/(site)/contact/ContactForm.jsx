@@ -229,7 +229,7 @@ export default function ContactForm({ topic = 'default' }) {
 
   return (
     <div className="amw">
-      <section className="px-6 py-16 md:py-24">
+      <section className="min-[400px]:px-6 px-0 py-16 md:py-24">
         <div className="mx-auto max-w-6xl">
           <motion.div className="mb-12 text-center md:mb-16" {...fadeInUp}>
             <SectionEyebrow index="00" label={copy.eyebrow} />
@@ -301,7 +301,7 @@ export default function ContactForm({ topic = 'default' }) {
             {/* Form column */}
             <motion.form
               onSubmit={handleSubmit}
-              className="bg-[var(--amw-muted)] rounded-2xl p-6 md:p-8"
+              className="bg-[var(--amw-muted)] min-[400px]:px-6 rounded-2xl px-2 py-6 md:p-8"
               {...fadeInUp}
               transition={{ ...fadeInUp.transition, delay: 0.1 }}
             >
@@ -386,7 +386,13 @@ export default function ContactForm({ topic = 'default' }) {
                   aria-busy={submitting}
                   className="bg-[var(--amw-accent)] text-zinc-950 group inline-flex w-full items-center justify-center gap-3 rounded-md py-3 pl-5 pr-3 font-medium transition-all duration-500 ease-out hover:rounded-[50px] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:rounded-md disabled:hover:shadow-none sm:w-auto"
                 >
-                  <span>{submitting ? 'Sending' : 'Send Message'}</span>
+                  <span aria-live="polite">
+                    {submitting
+                      ? 'Sending'
+                      : captchaToken
+                      ? 'Send Message'
+                      : 'Complete CAPTCHA to Send'}
+                  </span>
                   <span className="text-zinc-950 flex h-10 w-10 items-center justify-center rounded-full bg-white transition-all duration-300 group-hover:scale-110 group-disabled:scale-100 dark:bg-zinc-900 dark:text-zinc-50">
                     <ChevronRight
                       className={`relative left-px h-4 w-4 ${

@@ -1,7 +1,6 @@
 'use client'
 
 import Script from 'next/script'
-import { identity } from '@/content/site/identity'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export function ContactCaptcha({ onToken }) {
@@ -29,7 +28,7 @@ export function ContactCaptcha({ onToken }) {
       widget = turnstile.render(container.current, {
         sitekey: siteKey,
         action: 'contact',
-        size: 'compact',
+        size: 'normal',
         theme: 'auto',
         'response-field': false,
         callback: (token) => {
@@ -74,27 +73,16 @@ export function ContactCaptcha({ onToken }) {
           }}
         />
       )}
-      <div ref={container} className="min-h-16" />
-      <p
-        role="status"
-        className="mt-2 text-xs text-zinc-600 dark:text-zinc-400"
-      >
-        {failed
-          ? 'The security check could not load. Please try again or refresh the page.'
-          : status === 'verified'
-          ? 'Security check complete.'
-          : 'Please complete the security check before sending.'}
-      </p>
-      <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
-        Trouble with the security check?{' '}
-        <a
-          className="underline underline-offset-4"
-          href={`mailto:${identity.email}`}
+      <div ref={container} className="min-h-[65px]" />
+      {failed && (
+        <p
+          role="alert"
+          className="mt-2 text-xs text-zinc-600 dark:text-zinc-400"
         >
-          Email me directly
-        </a>
-        .
-      </p>
+          The security check could not load. Please try again or refresh the
+          page.
+        </p>
+      )}
       {failed && siteKey && (
         <button
           type="button"
